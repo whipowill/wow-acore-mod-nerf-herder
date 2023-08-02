@@ -1,14 +1,19 @@
 # Nerf Herder
 
-An AzerothCore module for nerfing NPCs throughout the game to the appropriate level, such as guards and even faction leaders.
+An AzerothCore module for nerfing various NPCs throughout the game for various reasons.
 
-Primarily, this mod is intended for private servers limited to Vanilla or TBC, who want the towns folk to be limited to levels 60 or 70.
+This mod is primarily intended for servers limited to Vanilla or TBC who need an easy fix for towns people over the maximum level.
 
-Secondarily, this mod is designed to detect [AutoBalance](https://github.com/azerothcore/mod-autobalance.git) and allow for invasion of faction cities and assassination of faction leaders.
+THIS PROJECT IS IN IT'S INFANCY.  IT HAS NOT BEEN HEAVILY TESTED.
 
-Tertiarily, I might eventually add on some all around nerf/buff features for all classes.
+**What's Working**
 
-THIS IS A WORK IN PROGRESS AND IS NOT READY FOR USE
+- Town Guards
+- Faction Leaders (maybe, they still say ??)
+
+**Future Plans**
+
+On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.  This means enemy villages and towns need to be nerfed enough to make it doable.  This is the ultimate plan.
 
 ## Methodology
 
