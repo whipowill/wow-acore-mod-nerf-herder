@@ -171,7 +171,7 @@ public:
         if (is_zone_level_enabled)
         {
             // get max level for zone
-            uint32_t max_level = NerfHerder::GetZoneLevel(creature->GetMap()->GetId());
+            uint32_t max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
 
             // catch error
             if (!max_level) return;
