@@ -152,7 +152,7 @@ public:
         if (!is_enabled) return;
 
         // init
-        uint32_t max_level = 0;
+        uint32_t max_level;
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
@@ -161,15 +161,15 @@ public:
             // get max level for zone
             max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
 
-            // catch errors
-            if (!max_level) return;
-            if (max_level < 10) return;
-
-            // if creature is too high...
-            if (creature->GetLevel() > max_level)
+            // if valid
+            if (max_level && max_level < 10)
             {
-                // nerf em
-                NerfHerder::UpdateCreature(creature, max_level);
+                // if creature is too high...
+                if (creature->GetLevel() > max_level)
+                {
+                    // nerf em
+                    NerfHerder::UpdateCreature(creature, max_level);
+                }
             }
         }
 
@@ -180,18 +180,18 @@ public:
             // get max level for players
             max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
 
-            // catch errors
-            if (!max_level) return;
-            if (max_level < 10) return;
-
-            // if creature is too high...
-            if (creature->GetLevel() > max_level)
+            // if valid
+            if (max_level && max_level < 10)
             {
-                // calc new max level
-                max_level = creature->isElite() ? max_level : max_level - 5;
+                // if creature is too high...
+                if (creature->GetLevel() > max_level)
+                {
+                    // calc new max level
+                    max_level = creature->isElite() ? max_level : max_level - 5;
 
-                // nerf em
-                NerfHerder::UpdateCreature(creature, max_level);
+                    // nerf em
+                    NerfHerder::UpdateCreature(creature, max_level);
+                }
             }
         }
     }
