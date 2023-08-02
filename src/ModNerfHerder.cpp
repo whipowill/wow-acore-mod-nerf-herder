@@ -22,7 +22,7 @@ public:
         {
             if (creature->GetLevel() > max_level)
             {
-                uint32_t new_level = creature->IsElite() ? max_level : max_level - 5;
+                uint32_t new_level = creature->isElite() ? max_level : max_level - 5;
                 int32_t multiplier = -100 + ((new_level / creature->GetLevel()) * 100); // calc negative multiplier
 
                 // set new level
