@@ -83,12 +83,11 @@ std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {267, {"Hillsbrad Foothills", 267, 20, 25, ""}},
     {11, {"Wetlands", 11, 20, 25, ""}},
     {45, {"Arathi Highlands", 45, 25, 30, ""}},
-    {37, {"Northern Stranglethorn", 37, 25, 30, ""}},
+    {33, {"Stranglethorn Vale", 37, 25, 30, ""}}, // fix from CATA
     {406, {"Stonetalon Mountains", 406, 25, 30, ""}},
-    {673, {"Cape of Stranglethorn", 673, 30, 35, ""}},
     {405, {"Desolace", 405, 30, 35, ""}},
     {47, {"Hinterlands", 47, 30, 35, ""}},
-    {607, {"Southern Barrens", 607, 30, 35, ""}},
+    {17, {"Barrens", 607, 30, 35, ""}}, // fix from CATA
     {15, {"Dustwallow Marsh", 15, 35, 40, ""}},
     {357, {"Feralas", 357, 35, 40, ""}},
     {28, {"Western Plaguelands", 28, 35, 40, ""}},
@@ -156,7 +155,7 @@ public:
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
-        if (is_zone_level_enabled)
+        if (is_zone_level_enabled && creature->IsPVP())
         {
             // get max level for zone
             max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
