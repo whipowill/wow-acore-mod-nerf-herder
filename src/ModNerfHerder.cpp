@@ -16,7 +16,7 @@ public:
         }
 
         uint32_t is_enabled = sConfigMgr->GetOption<int>("NerfHerder.Enable", 0);
-        uint32_t max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 60); // <-- from worldserver.conf
+        uint32_t max_level = sConfigMgr->GetOption<int>("NerfHerder.MaxPlayerLevel", 60);
 
         if (is_enabled)
         {
