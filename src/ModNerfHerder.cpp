@@ -8,7 +8,7 @@ class NerfHerder : public CreatureScript
 public:
     NerfHerder() : CreatureScript("NerfHerder") {}
 
-    void OnCreatureUpdate(Creature* creature, uint32 diff)
+    void OnCreatureAddWorld(Creature* creature, uint32 diff)
     {
         if (creature->IsPlayer())
         {
@@ -39,7 +39,7 @@ public:
 
                 // nerf their abilities proportionately
                 creature->CastCustomSpell(creature, HpAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-                creature->CastCustomSpell(creature, DamageDoneTakenAura, NULL, &multiplier, NULL, true, NULL, NULL, creature->GetGUID());
+                creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &multiplier, NULL, true, NULL, NULL, creature->GetGUID());
                 creature->CastCustomSpell(creature, BaseStatAPAura, &multiplier, &multiplier, &multiplier, true, NULL, NULL, creature->GetGUID());
                 //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
                 creature->CastCustomSpell(creature, AbsorbAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
