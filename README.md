@@ -14,6 +14,8 @@ THIS IS A WORK IN PROGRESS AND IS NOT READY FOR USE
 
 This module uses [55Honey's ZoneDebuff](https://github.com/55Honey/Acore_ZoneDebuff/blob/master/zoneDebuff.lua) technique to apply the buffs and debuffs.
 
+An explanation of these auras and how to apply them is as follows:
+
 ```
 // use CastCustomSpell() to apply an aura w/ required params
 // player->CastCustomSpell(player, spellID, &param1, &param2, &param3, true, NULL, NULL, player->GetGUID());

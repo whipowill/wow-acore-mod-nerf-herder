@@ -8,8 +8,10 @@ class NerfHerder : public AllCreatureScript
 public:
     NerfHerder() : AllCreatureScript("NerfHerder") {}
 
-    void OnCreatureAddWorld(Creature* creature, uint32 diff)
+    void OnAllCreatureUpdate(Creature* creature, uint32 diff) override
     {
+        // Notes to self, OnCreatureAddWorld doesn't work.
+
         if (!creature)
         {
             return;
