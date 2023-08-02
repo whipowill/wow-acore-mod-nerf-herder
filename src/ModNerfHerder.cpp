@@ -88,13 +88,13 @@ public:
         {4197, {"Wintergrasp", 4197, 77, 80, "WOTLK"}}
     };
 
-    uint32_t GetZoneLevel(uint32_t zone_id)
+    static uint32_t GetZoneLevel(uint32_t zone_id)
     {
         if (zoneDataMap.find(zone_id) == zoneDataMap.end()) return 0;
         return zoneDataMap[zone_id].maxLevel;
     }
 
-    void UpdateCreature(Creature* creature, uint32_t max_level)
+    static void UpdateCreature(Creature* creature, uint32_t max_level)
     {
         // calc new level
         uint32_t new_level = creature->isElite() ? max_level : max_level - 5;
