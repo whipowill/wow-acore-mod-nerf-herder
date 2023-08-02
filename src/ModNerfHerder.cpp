@@ -162,7 +162,7 @@ public:
             max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
 
             // if valid
-            if (max_level && max_level < 10)
+            if (max_level && max_level >= 10)
             {
                 // if creature is too high...
                 if (creature->GetLevel() > max_level)
@@ -181,7 +181,7 @@ public:
             max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
 
             // if valid
-            if (max_level && max_level < 10)
+            if (max_level && max_level >= 10)
             {
                 // if creature is too high...
                 if (creature->GetLevel() > max_level)
