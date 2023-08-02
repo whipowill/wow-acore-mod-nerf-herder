@@ -3,17 +3,12 @@
 #include "CreatureData.h"
 #include "Config.h"
 
-class NerfHerder : public WorldScript
+class NerfHerder : public CreatureScript
 {
 public:
-    NerfHerder() : WorldScript("NerfHerder") {}
+    NerfHerder() : CreatureScript("NerfHerder") {}
 
-    void OnCreatureLoad(Creature* creature) override;
-}
-
-void NerfHerder::OnCreatureLoad
-{
-    void OnCreatureLoad(Creature* creature) override
+    void OnCreatureUpdate(Creature* creature, uint32 diff)
     {
         if (creature->IsPlayer())
         {
