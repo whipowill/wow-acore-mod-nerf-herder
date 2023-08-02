@@ -10,7 +10,7 @@ public:
 
     void OnAllCreatureUpdate(Creature* creature, uint32 diff) override
     {
-        // Notes to self, OnCreatureAddWorld doesn't work.
+        // Note to self, OnCreatureAddWorld doesn't work.
 
         if (!creature)
         {
@@ -32,11 +32,14 @@ public:
                 uint32_t new_level = creature->isElite() ? max_level : max_level - 5;
                 int32_t multiplier = -100 + ((new_level / creature->GetLevel()) * 100); // calc negative multiplier
 
+                // just in case
+                if (multiplier > 0) multiplier = 0;
+
                 // set new level
                 creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
                 // nerf auras
-                uint32_t HpAura= 89501;
+                uint32_t HpAura = 89501;
                 uint32_t DamageDoneTakenAura = 89502;
                 uint32_t BaseStatAPAura = 89503;
                 //uint32_t RageFromDamageAura = 89504;

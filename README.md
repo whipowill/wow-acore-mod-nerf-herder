@@ -13,11 +13,25 @@ THIS PROJECT IS IN IT'S INFANCY.  IT HAS NOT BEEN HEAVILY TESTED.
 
 **Future Plans**
 
-On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.  This means enemy villages and towns need to be nerfed enough to make it doable.  This is the ultimate plan.
+- PVP Vendors - remove vendors who don't belong
+- Zone Limits - make guards have zone appropriate level (for village raiding)
+- Capitol Nerfs - make capitol cities raidable somehow
+
+On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.  I intend this mod to work with [HonorGuard](https://github.com/azerothcore/mod-gain-honor-guard).
+
+This means enemy villages and towns need to be nerfed enough to make it doable.
+
+Some of the villages, even in starter zones, have super high level NPCs that were originally meant to discourage enemy players on PVP servers from ruining the starting zones for the other faction.
+
+These guards will be nerfed to a level appropriate for their respective zones.
+
+Finally, the coveted achievement of assassinating the enemy faction leaders is totally undoable without some significant tweaking.  I'm not sure how I will crack this nut yet but I will make an attempt.
+
+This is the ultimate plan.
 
 ## Methodology
 
-For the basic guard nerfing, this code runs on every creature on spawn and finds out if they're over the max level limit.  If they are, it cuts non-elites to 5 levels below the limit and elites to the limit, and it nerfs their HP, stats, resistances, damage, and healing proportionately from what they had been before.
+This code runs on every creature on spawn and finds out if they're over the max level limit.  If they are, it cuts non-elites to 5 levels below the limit and elites to the limit, and it nerfs their HP, stats, resistances, damage, and healing proportionately from what they had been before.
 
 ## Notes To Self
 
