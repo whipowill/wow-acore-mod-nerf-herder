@@ -1,15 +1,20 @@
 #include "ModNerfHerder.h"
 #include "ScriptMgr.h"
-#include "CreatureData.h"
 #include "Config.h"
+#include "Creature.h"
 
-class NerfHerder : public CreatureScript
+class NerfHerder : public AllCreatureScript
 {
 public:
-    NerfHerder() : CreatureScript("NerfHerder") {}
+    NerfHerder() : AllCreatureScript("NerfHerder") {}
 
     void OnCreatureAddWorld(Creature* creature, uint32 diff)
     {
+        if (!creature)
+        {
+            return;
+        }
+
         if (creature->IsPlayer())
         {
             return;
@@ -26,7 +31,7 @@ public:
                 int32_t multiplier = -100 + ((new_level / creature->GetLevel()) * 100); // calc negative multiplier
 
                 // set new level
-                creature->SetLevel(new_level);
+                creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
                 // nerf auras
                 uint32_t HpAura= 89501;
