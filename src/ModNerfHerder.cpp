@@ -155,7 +155,7 @@ public:
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
         if (is_zone_level_enabled)
         {
-            if (creature->IsHorde() || creature->IsAlliance())
+            if (creature->GetFaction() == 1 || creature->GetFaction() == 2)
             {
                 // get max level for zone
                 max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
@@ -199,7 +199,7 @@ public:
         uint32_t is_force_pvp = sConfigMgr->GetOption<int>("NerfHerder.ForceFactionPvPEnable", 0);
         if (is_force_pvp)
         {
-            if (creature->IsHorde() || creature->IsAlliance())
+            if (creature->GetFaction() == 1 || creature->GetFaction() == 2)
             {
                 // force them to be pvp
                 creature->SetPvP(1);
