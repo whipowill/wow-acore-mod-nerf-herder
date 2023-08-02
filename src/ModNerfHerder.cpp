@@ -142,8 +142,6 @@ public:
         if (creature->IsPlayer()) return;
         if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground()) return;
 
-        // might need to add some custom exceptions for faction leaders here
-
         // pull config
         uint32_t is_enabled = sConfigMgr->GetOption<int>("NerfHerder.Enable", 0);
 
@@ -155,19 +153,22 @@ public:
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
-        if (is_zone_level_enabled && creature->IsPvP()) // only do zone alterations on PVP flagged creatures
+        if (is_zone_level_enabled)
         {
-            // get max level for zone
-            max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
-
-            // if valid
-            if (max_level && max_level >= 10)
+            if (creature->IsHorde() || creature->IsAlliance())
             {
-                // if creature is too high...
-                if (creature->GetLevel() > max_level)
+                // get max level for zone
+                max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
+
+                // if valid
+                if (max_level && max_level >= 10)
                 {
-                    // nerf em
-                    NerfHerder::UpdateCreature(creature, max_level);
+                    // if creature is too high...
+                    if (creature->GetLevel() > max_level)
+                    {
+                        // nerf em
+                        NerfHerder::UpdateCreature(creature, max_level);
+                    }
                 }
             }
         }
@@ -191,6 +192,17 @@ public:
                     // nerf em
                     NerfHerder::UpdateCreature(creature, max_level);
                 }
+            }
+        }
+
+        // if force pvp is enabled...
+        uint32_t is_force_pvp = sConfigMgr->GetOption<int>("NerfHerder.ForceFactionPvPEnable", 0);
+        if (is_force_pvp)
+        {
+            if (creature->IsHorde() || creature->IsAlliance())
+            {
+                // force them to be pvp
+                creature->SetPvP(1);
             }
         }
     }
