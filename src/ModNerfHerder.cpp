@@ -8,6 +8,11 @@ class NerfHerder : public WorldScript
 public:
     NerfHerder() : WorldScript("NerfHerder") {}
 
+    void OnCreatureLoad(Creature* creature) override;
+}
+
+void NerfHerder::OnCreatureLoad
+{
     void OnCreatureLoad(Creature* creature) override
     {
         if (creature->IsPlayer())
