@@ -2,36 +2,31 @@
 
 An AzerothCore module for nerfing various NPCs throughout the game for various reasons.
 
-This mod is primarily intended for servers limited to Vanilla or TBC who need an easy fix for towns people over the maximum level.
+This mod is primarily intended for servers limited to Vanilla or TBC who need an easy fix for NPCs throughout Azeroth, such as town guards, over the maximum level.
 
 THIS PROJECT IS IN IT'S INFANCY.  IT HAS NOT BEEN HEAVILY TESTED.
 
-**What's Working**
+## Configuration
 
-- Town Guards
-- Faction Leaders (maybe, they still say ??)
+I understand this dynamic method of solving the problem won't perfectly match the original game.  The idea here is to get close, and be able to make additional optional changes to creatures that promote world PVP against the NPCs.
 
-**Future Plans**
+- ``NerfHerder.MaxPlayerLevelEnable`` - Nerf any creature over the max player level (from ``worldserver.conf``), provided they are not in a dungeon, raid, or battleground.  This includes town guards and faction leaders.  Under this ruleset, non-elites are cut to 5 levels below the limit and elites are cut to the limit, with all their stats discounted proportionately from what they were before.
 
-- PVP Vendors - remove vendors who don't belong
-- Zone Limits - make guards have zone appropriate level (for village raiding)
-- Capitol Nerfs - make capitol cities raidable somehow
+- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended level, which means the max questing level for the zone.  This includes village guards and flight masters.  Under this ruleset, non-elites and elites are cut to 5 levels above the limit, with all their stats discounted proportionately from what they were before.
+
+## The Vision
 
 On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.
 
 I intend this mod to work with [HonorGuard](https://github.com/azerothcore/mod-gain-honor-guard).  This means enemy villages and towns need to be nerfed enough to make them raidable, to make honor farming work.
 
-Some of the villages, even in starter zones, have super high level NPCs that were originally meant to discourage enemy players on PVP servers from ruining the starting zones for the other faction.
+Some of the villages, even in starter zones, have super high level NPCs that were originally meant to discourage enemy players on PVP servers from ruining the starting zones of the other faction.
 
 These guards will be nerfed to a level appropriate for their respective zones.
 
 Finally, the coveted achievement of assassinating the enemy faction leaders is totally undoable without some significant tweaking.  I'm not sure how I will crack this nut yet but I will make an attempt.
 
 This is the ultimate plan.
-
-## Methodology
-
-This code runs on every creature on spawn and finds out if they're over the max level limit.  If they are, it cuts non-elites to 5 levels below the limit and elites to the limit, and it nerfs their HP, stats, resistances, damage, and healing proportionately from what they had been before.
 
 ## Notes To Self
 

@@ -23,10 +23,19 @@ public:
         return NerfHerder::zoneDataMap[zone_id].maxLevel;
     }
 
-    static void UpdateCreature(Creature* creature, uint32_t max_level)
+    static void UpdateCreature(Creature* creature, uint32_t new_level)
     {
-        // calc new level
-        uint32_t new_level = creature->isElite() ? max_level : max_level - 5;
+        // nerf auras
+        uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        //uint32_t RageFromDamageAura = 89504;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        //uint32_t PhysicalDamageTakenAura = 89507;
+
+        // if creature already modified, bail
+        if (creature->HasAura(DamageDoneTakenAura)) return;
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
@@ -36,15 +45,6 @@ public:
 
         // just in case
         if (multiplier > 0) multiplier = 0;
-
-        // nerf auras
-        uint32_t HpAura = 89501;
-        uint32_t DamageDoneTakenAura = 89502;
-        uint32_t BaseStatAPAura = 89503;
-        //uint32_t RageFromDamageAura = 89504;
-        uint32_t AbsorbAura = 89505;
-        uint32_t HealingDoneAura = 89506;
-        //uint32_t PhysicalDamageTakenAura = 89507;
 
         // nerf their abilities proportionately
         creature->CastCustomSpell(creature, HpAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
@@ -153,20 +153,6 @@ public:
         // catch errors
         if (!is_enabled) return;
 
-        // if max player level is enabled...
-        if (is_player_level_enabled)
-        {
-            // get max level for players
-            uint32_t max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
-
-            // if creature is too high...
-            if (creature->GetLevel() > max_level)
-            {
-                // nerf em
-                NerfHerder::UpdateCreature(creature, max_level);
-            }
-        }
-
         // if max zone level is enabled...
         if (is_zone_level_enabled)
         {
@@ -179,6 +165,23 @@ public:
             // if creature is too high...
             if (creature->GetLevel() > max_level)
             {
+                // nerf em
+                NerfHerder::UpdateCreature(creature, max_level);
+            }
+        }
+
+        // if max player level is enabled...
+        if (is_player_level_enabled)
+        {
+            // get max level for players
+            uint32_t max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
+
+            // if creature is too high...
+            if (creature->GetLevel() > max_level)
+            {
+                // calc new max level
+                max_level = creature->isElite() ? max_level : max_level - 5;
+
                 // nerf em
                 NerfHerder::UpdateCreature(creature, max_level);
             }

@@ -7,4 +7,4 @@ NerfHerder.Enable = 1
 NerfHerder.MaxPlayerLevelEnable = 1
 
 # nerf any creature over max zone level, 0=off 1=on
-NerfHerder.MaxZoneLevelEnable = 1
+NerfHerder.MaxZoneLevelEnable = 0
