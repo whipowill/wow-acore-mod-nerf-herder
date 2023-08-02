@@ -16,7 +16,7 @@ public:
         }
 
         uint32_t is_enabled = sConfigMgr->GetOption<int>("NerfHerder.Enable", 0);
-        uint32_t max_level = sConfigMgr->GetOption<int>("MaxcreatureLevel", 60); // <-- from worldserver.conf
+        uint32_t max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 60); // <-- from worldserver.conf
 
         if (is_enabled)
         {
@@ -32,10 +32,10 @@ public:
                 uint32_t HpAura= 89501;
                 uint32_t DamageDoneTakenAura = 89502;
                 uint32_t BaseStatAPAura = 89503;
-                uint32_t RageFromDamageAura = 89504;
+                //uint32_t RageFromDamageAura = 89504;
                 uint32_t AbsorbAura = 89505;
                 uint32_t HealingDoneAura = 89506;
-                uint32_t PhysicalDamageTakenAura = 89507;
+                //uint32_t PhysicalDamageTakenAura = 89507;
 
                 // nerf their abilities proportionately
                 creature->CastCustomSpell(creature, HpAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
