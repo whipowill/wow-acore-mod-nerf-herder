@@ -17,6 +17,10 @@ On a server with only a few players, and no chance to do battlegrounds to accumu
 
 ## Methodology
 
+For the basic guard nerfing, this code runs on every creature on spawn and finds out if they're over the max level limit.  If they are, it cuts non-elites to 5 levels below the limit and elites to the limit, and it nerfs their HP, stats, resistances, damage, and healing proportionately from what they had been before.
+
+## Notes To Self
+
 This module uses [55Honey's ZoneDebuff](https://github.com/55Honey/Acore_ZoneDebuff/blob/master/zoneDebuff.lua) technique to apply the buffs and debuffs.
 
 An explanation of these auras and how to apply them is as follows:
@@ -25,7 +29,7 @@ An explanation of these auras and how to apply them is as follows:
 // use CastCustomSpell() to apply an aura w/ required params
 // player->CastCustomSpell(player, spellID, &param1, &param2, &param3, true, NULL, NULL, player->GetGUID());
 
-uint32_t HpAura= 89501;
+uint32_t HpAura = 89501;
 player->CastCustomSpell(player, HpAura, &hpModifier, NULL, NULL, true, NULL, NULL, player->GetGUID());
 
 uint32_t DamageDoneTakenAura = 89502;
