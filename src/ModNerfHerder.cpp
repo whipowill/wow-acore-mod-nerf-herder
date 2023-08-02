@@ -147,19 +147,21 @@ public:
 
         // pull config
         uint32_t is_enabled = sConfigMgr->GetOption<int>("NerfHerder.Enable", 0);
-        uint32_t is_player_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxPlayerLevelEnable", 0);
-        uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
 
         // catch errors
         if (!is_enabled) return;
 
+        // init
+        uint32_t max_level = 0;
+
         // if max zone level is enabled...
+        uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
         if (is_zone_level_enabled)
         {
             // get max level for zone
-            uint32_t max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
+            max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
 
-            // catch error
+            // catch errors
             if (!max_level) return;
             if (max_level < 10) return;
 
@@ -172,10 +174,15 @@ public:
         }
 
         // if max player level is enabled...
+        uint32_t is_player_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxPlayerLevelEnable", 0);
         if (is_player_level_enabled)
         {
             // get max level for players
-            uint32_t max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
+            max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
+
+            // catch errors
+            if (!max_level) return;
+            if (max_level < 10) return;
 
             // if creature is too high...
             if (creature->GetLevel() > max_level)
