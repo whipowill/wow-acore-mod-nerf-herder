@@ -6,13 +6,13 @@ This mod is primarily intended for servers limited to Vanilla or TBC who need an
 
 THIS PROJECT IS IN IT'S INFANCY.  IT HAS NOT BEEN HEAVILY TESTED.
 
+This dynamic method of solving the problem won't perfectly match the original game.  The idea is to get close, and add additional options to promote world PVP against the NPCs.
+
 ## Configuration
 
-I understand this dynamic method of solving the problem won't perfectly match the original game.  The idea here is to get close, and be able to make additional optional changes to creatures that promote world PVP against the NPCs.
+- ``NerfHerder.MaxPlayerLevelEnable`` - Nerf any creature over the max player level (from ``worldserver.conf``), provided they are not in a dungeon or raid.  This includes town guards and faction leaders.  Under this ruleset, a lvl 60 max would generate lvl 55 non-elites and lvl 60 elites, with all their stats discounted proportionately from what they were before.
 
-- ``NerfHerder.MaxPlayerLevelEnable`` - Nerf any creature over the max player level (from ``worldserver.conf``), provided they are not in a dungeon, raid, or battleground.  This includes town guards and faction leaders.  Under this ruleset, non-elites are cut to 5 levels below the limit and elites are cut to the limit, with all their stats discounted proportionately from what they were before.
-
-- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any PVP creature over the zone recommended level, which means the max questing level for the zone.  This includes village guards and flight masters.  Under this ruleset, non-elites and elites are cut to match the limit, with all their stats discounted proportionately from what they were before.  This effects many NPCs throughout the world.
+- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended questing level, provided they are flagged for PVP.  This includes village guards and flight masters.  Under this ruleset, a lvl 20 zone would generate lvl 20 non-elites and lvl 20 elites, with all their stats discounted proportionately from what they were before.
 
 ## The Vision
 

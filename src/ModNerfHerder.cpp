@@ -155,7 +155,7 @@ public:
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
-        if (is_zone_level_enabled && creature->IsPVP())
+        if (is_zone_level_enabled && creature->IsPVP()) // only do zone alterations on PVP flagged creatures
         {
             // get max level for zone
             max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
