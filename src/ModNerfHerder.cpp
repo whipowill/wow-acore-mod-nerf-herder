@@ -12,9 +12,54 @@ struct ZoneData {
     std::string expansion;
 };
 
+class NerfHerder
+{
+public:
+    static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
+
+    static uint32_t GetZoneLevel(uint32_t zone_id)
+    {
+        if (NerfHerder::zoneDataMap.find(zone_id) == NerfHerder::zoneDataMap.end()) return 0;
+        return NerfHerder::zoneDataMap[zone_id].maxLevel;
+    }
+
+    static void UpdateCreature(Creature* creature, uint32_t max_level)
+    {
+        // calc new level
+        uint32_t new_level = creature->isElite() ? max_level : max_level - 5;
+
+        // set new level
+        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
+
+        // calc negative multiplier
+        int32_t multiplier = -100 + ((new_level / creature->GetLevel()) * 100);
+
+        // just in case
+        if (multiplier > 0) multiplier = 0;
+
+        // nerf auras
+        uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        //uint32_t RageFromDamageAura = 89504;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        //uint32_t PhysicalDamageTakenAura = 89507;
+
+        // nerf their abilities proportionately
+        creature->CastCustomSpell(creature, HpAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &multiplier, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, BaseStatAPAura, &multiplier, &multiplier, &multiplier, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, AbsorbAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HealingDoneAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+    }
+};
+
 // Search this table to verify the map_ids are correct:
 // https://wow.tools/dbc/?dbc=worldmaparea&build=3.3.5.12340#page=1&search=3524
-std::unordered_map<uint32_t, ZoneData> zoneDataMap = {
+std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
     {1, {"Dun Morogh", 1, 1, 10, ""}},
     {14, {"Durotar", 14, 1, 10, ""}},
@@ -83,51 +128,6 @@ std::unordered_map<uint32_t, ZoneData> zoneDataMap = {
     {210, {"Icecrown", 210, 77, 80, "WOTLK"}},
     {67, {"Storm Peaks", 67, 77, 80, "WOTLK"}},
     {4197, {"Wintergrasp", 4197, 77, 80, "WOTLK"}}
-};
-
-class NerfHerder
-{
-public:
-    static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
-
-    static uint32_t GetZoneLevel(uint32_t zone_id)
-    {
-        if (NerfHerder::zoneDataMap.find(zone_id) == NerfHerder::zoneDataMap.end()) return 0;
-        return NerfHerder::zoneDataMap[zone_id].maxLevel;
-    }
-
-    static void UpdateCreature(Creature* creature, uint32_t max_level)
-    {
-        // calc new level
-        uint32_t new_level = creature->isElite() ? max_level : max_level - 5;
-
-        // set new level
-        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
-
-        // calc negative multiplier
-        int32_t multiplier = -100 + ((new_level / creature->GetLevel()) * 100);
-
-        // just in case
-        if (multiplier > 0) multiplier = 0;
-
-        // nerf auras
-        uint32_t HpAura = 89501;
-        uint32_t DamageDoneTakenAura = 89502;
-        uint32_t BaseStatAPAura = 89503;
-        //uint32_t RageFromDamageAura = 89504;
-        uint32_t AbsorbAura = 89505;
-        uint32_t HealingDoneAura = 89506;
-        //uint32_t PhysicalDamageTakenAura = 89507;
-
-        // nerf their abilities proportionately
-        creature->CastCustomSpell(creature, HpAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &multiplier, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, BaseStatAPAura, &multiplier, &multiplier, &multiplier, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, AbsorbAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, HealingDoneAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-    }
 };
 
 class NerfHerderCreature : public AllCreatureScript
