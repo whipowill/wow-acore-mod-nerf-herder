@@ -126,7 +126,7 @@ public:
         creature->CastCustomSpell(creature, HealingDoneAura, &multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
     }
-}
+};
 
 class NerfHerderCreature : public AllCreatureScript
 {
