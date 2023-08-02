@@ -12,7 +12,7 @@ I understand this dynamic method of solving the problem won't perfectly match th
 
 - ``NerfHerder.MaxPlayerLevelEnable`` - Nerf any creature over the max player level (from ``worldserver.conf``), provided they are not in a dungeon, raid, or battleground.  This includes town guards and faction leaders.  Under this ruleset, non-elites are cut to 5 levels below the limit and elites are cut to the limit, with all their stats discounted proportionately from what they were before.
 
-- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended level, which means the max questing level for the zone.  This includes village guards and flight masters.  Under this ruleset, non-elites and elites are cut to 5 levels above the limit, with all their stats discounted proportionately from what they were before.
+- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended level, which means the max questing level for the zone.  This includes village guards and flight masters.  Under this ruleset, non-elites and elites are cut to match the limit, with all their stats discounted proportionately from what they were before.  This effects many NPCs throughout the world.
 
 ## The Vision
 

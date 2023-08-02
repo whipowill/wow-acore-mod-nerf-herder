@@ -161,6 +161,7 @@ public:
 
             // catch error
             if (!max_level) return;
+            if (max_level < 10) return;
 
             // if creature is too high...
             if (creature->GetLevel() > max_level)
