@@ -10,7 +10,7 @@ public:
 
     void OnCreatureUpdate(Creature* creature, uint32 diff)
     {
-        if (creature->Iscreature())
+        if (creature->IsPlayer())
         {
             return;
         }
