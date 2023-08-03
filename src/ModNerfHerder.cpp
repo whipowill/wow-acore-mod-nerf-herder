@@ -22,12 +22,12 @@ public:
     {
         // mock thrall
         Creature* varianWrynnCreature = nullptr;
-        ObjectGuid varianGuid(HIGHGUID_UNIT, 29611);
+        ObjectGuid varianGuid = CreatureData::CreateObjectGuid(HIGHGUID_UNIT, 29611);
         varianWrynnCreature = ObjectAccessor::GetCreature(*creature, varianGuid);
 
         // mock thrall
         Creature* thrallCreature = nullptr;
-        ObjectGuid thrallGuid(HIGHGUID_UNIT, 3845);
+        ObjectGuid thrallGuid = CreatureData::CreateObjectGuid(HIGHGUID_UNIT, 3845);
         thrallCreature = ObjectAccessor::GetCreature(*creature, thrallGuid);
 
         // do you bow to varian?
