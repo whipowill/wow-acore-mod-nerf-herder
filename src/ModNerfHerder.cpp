@@ -21,7 +21,7 @@ public:
     {
         // mock thrall
         Creature* varianWrynnCreature = nullptr;
-        varianWrynnCreature = GetCreature(creature 29611);
+        varianWrynnCreature = GetCreature(creature, 29611);
 
         // mock thrall
         Creature* thrallCreature = nullptr;
