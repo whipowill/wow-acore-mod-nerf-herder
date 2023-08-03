@@ -24,64 +24,41 @@ public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_map<uint32_t, FactionData> factionDataMap;
 
-    static uint32_t GetCreatureFactionByRace(Creature* creature)
+    static uint32_t GetCreatureFactionByGossip(Creature* creature)
     {
-        // I found it very difficult to determine the faction of a creature.
-        // GetFaction() returns a sub-faction, and I'd have to match to alliances.
-        // IsHorde() and IsAlliance() only works on players.
-        // GetReactionTo() requires another creature to compare to, but is limited
-        // to only comparing creatures in the same zone.
+        // if you can talk to it, you should be able to kill it for honor
+        return creature->IsGossip();
+    }
 
-        // Also tried AreaTable flag, but can't figure out how ot get that info
-        // without copious DB queries.
+    static uint32_t IsFieldAgent(Creature* creature)
+    {
+        uint32_t pass_race = 0;
 
         switch (creature->getRace())
         {
             case RACE_HUMAN:
-                return 1;
-                break;     // Human
             case RACE_ORC:
-                return 2;
-                break;     // Orc
             case RACE_DWARF:
-                return 1;
-                break;     // Dwarf
             case RACE_NIGHTELF:
-                return 1;
-                break;     // Night Elf
             case RACE_UNDEAD_PLAYER:
-                return 2;
-                break;// Undead
             case RACE_TAUREN:
-                return 2;
-                break;     // Tauren
             case RACE_GNOME:
-                return 1;
-                break;     // Gnome
             case RACE_TROLL:
-                return 2;
-                break;     // Troll
             case RACE_BLOODELF:
-                return 2;
-                break;     // Blood Elf
             case RACE_DRAENEI:
-                return 1;
+                pass_race = 1;
                 break;     // Draenei
         }
 
-        return 0;
+        uint32_t pass_gossip = creature->IsGossip();
+
+        return (pass_race && pass_gossip) ? 1 : 0;
     }
 
-    static uint32_t GetCreatureFactionByFaction(uint32_t faction_id)
+    static uint32_t GetZoneLevel(Creature* creature)
     {
-        // This does not work and I don't know why.
+        uint32_t zone_id = creature->GetZoneId()
 
-        if (NerfHerder::factionDataMap.find(faction_id) == NerfHerder::factionDataMap.end()) return 0;
-        return NerfHerder::factionDataMap[faction_id].factionTranslatedID;
-    }
-
-    static uint32_t GetZoneLevel(uint32_t zone_id)
-    {
         if (NerfHerder::zoneDataMap.find(zone_id) == NerfHerder::zoneDataMap.end()) return 0;
         return NerfHerder::zoneDataMap[zone_id].maxLevel;
     }
@@ -226,9 +203,8 @@ public:
         // init
         uint32_t max_level;
 
-        // determine faction (not really)
-        //uint32_t faction = NerfHerder::GetCreatureFactionByFaction(creature->GetFaction());
-        uint32_t faction = NerfHerder::GetCreatureFactionByRace(creature->getRace());
+        // determine alliance / horde npcs in the world
+        uint32_t is_field_agent = NerfHerder::IsFieldAgent(creature);
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
@@ -237,7 +213,7 @@ public:
             if (faction == 1 || faction == 2)
             {
                 // get max level for zone
-                max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
+                max_level = NerfHerder::GetZoneLevel(creature);
 
                 // if valid
                 if (max_level && max_level >= 10)
