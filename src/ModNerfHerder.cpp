@@ -22,11 +22,13 @@ public:
     {
         // mock thrall
         Creature* varianWrynnCreature = nullptr;
-        varianWrynnCreature = ObjectAccessor::GetCreature(*creature, 29611);
+        ObjectGuid varianGuid(HIGHGUID_UNIT, 29611);
+        varianWrynnCreature = ObjectAccessor::GetCreature(*creature, varianGuid);
 
         // mock thrall
         Creature* thrallCreature = nullptr;
-        thrallCreature = ObjectAccessor::GetCreature(*creature, 3845);
+        ObjectGuid thrallGuid(HIGHGUID_UNIT, 3845);
+        thrallCreature = ObjectAccessor::GetCreature(*creature, thrallGuid);
 
         // do you bow to varian?
         if (creature->GetReactionTo(varianWrynnCreature) == REP_FRIENDLY)
