@@ -64,6 +64,8 @@ public:
         if (creature->IsArmorer()) return 1;
         if (creature->IsServiceProvider()) return 1;
         */
+
+        return 0;
     }
 
     static uint32_t GetZoneLevel(Creature* creature)
@@ -125,6 +127,7 @@ std::unordered_map<uint32_t, FactionData> NerfHerder::factionDataMap = {
 };
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
+// https://wowpedia.fandom.com/wiki/Zones_by_level_(Cataclysm)
 std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
     {1, {"Dun Morogh", 1, 1, 10, ""}},
@@ -152,7 +155,7 @@ std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {406, {"Stonetalon Mountains", 406, 25, 30, ""}},
     {405, {"Desolace", 405, 30, 35, ""}},
     {47, {"Hinterlands", 47, 30, 35, ""}},
-    {17, {"Barrens", 17, 30, 35, ""}}, // fix from CATA
+    {17, {"Barrens", 17, 10, 20, ""}}, // fix from CATA
     {15, {"Dustwallow Marsh", 15, 35, 40, ""}},
     {357, {"Feralas", 357, 35, 40, ""}},
     {28, {"Western Plaguelands", 28, 35, 40, ""}},
@@ -270,7 +273,7 @@ public:
             if (is_field_agent)
             {
                 // force them to be pvp
-                creature->SetPvP(1);
+                creature->SetPvP(true);
             }
         }
     }
