@@ -10,9 +10,9 @@ This dynamic method of solving the problem won't perfectly match the original ga
 
 ## Configuration
 
-- ``NerfHerder.MaxPlayerLevelEnable`` - Nerf any creature over the max player level (from ``worldserver.conf``), provided they are not in a dungeon or raid.  **This includes town guards and faction leaders.**  Under this ruleset, a lvl 60 max would generate lvl 55 non-elites and lvl 60 elites, with all their stats discounted proportionately from what they were before.
+- ``NerfHerder.MaxPlayerLevelEnable`` - Nerf any creature over the max player level (from ``worldserver.conf``), provided they are not in a dungeon or raid.  **This includes town guards and faction leaders.**
 
-- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended questing level, provided they are flagged for PVP.  **This includes village guards and flight masters.**  Under this ruleset, a lvl 20 zone would generate lvl 20 non-elites and lvl 20 elites, with all their stats discounted proportionately from what they were before.
+- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended questing level, provided they are allied to Alliance or Horde.  **This includes village guards and flight masters.**
 
 ## The Vision
 
