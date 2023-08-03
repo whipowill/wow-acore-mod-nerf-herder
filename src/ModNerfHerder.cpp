@@ -21,11 +21,11 @@ public:
     {
         // mock thrall
         Creature* varianWrynnCreature = nullptr;
-        varianWrynnCreature = GetCreature(creature, 29611);
+        varianWrynnCreature = ObjectAccessor::GetCreature(creature, 29611);
 
         // mock thrall
         Creature* thrallCreature = nullptr;
-        thrallCreature = GetCreature(creature, 3845);
+        thrallCreature = ObjectAccessor::GetCreature(creature, 3845);
 
         if (creature->GetReactionTo(varianWrynnCreature) == REP_FRIENDLY)
         {
