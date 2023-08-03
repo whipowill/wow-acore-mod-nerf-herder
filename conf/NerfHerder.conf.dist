@@ -6,8 +6,8 @@ NerfHerder.Enable = 1
 # nerf any creature over max player level, 0=off 1=on
 NerfHerder.MaxPlayerLevelEnable = 1
 
-# nerf any creature over max zone level, 0=off 1=on
+# nerf any alliance and horde over max zone level, 0=off 1=on
 NerfHerder.MaxZoneLevelEnable = 0
 
-# force all alliance and horde to pvp, 0=off 1=on
+# force any alliance and horde to pvp, 0=off 1=on
 NerfHerder.ForceFactionPvPEnable = 0

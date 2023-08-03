@@ -24,8 +24,58 @@ public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_map<uint32_t, FactionData> factionDataMap;
 
-    static uint32_t GetCreatureFaction(uint32_t faction_id)
+    static uint32_t GetCreatureFactionByRace(Creature* creature)
     {
+        // I found it very difficult to determine the faction of a creature.
+        // GetFaction() returns a sub-faction, and I'd have to match to alliances.
+        // IsHorde() and IsAlliance() only works on players.
+        // GetReactionTo() requires another creature to compare to, but is limited
+        // to only comparing creatures in the same zone.
+
+        // Also tried AreaTable flag, but can't figure out how ot get that info
+        // without copious DB queries.
+
+        switch (creature->getRace())
+        {
+            case RACE_HUMAN:
+                return 1;
+                break;     // Human
+            case RACE_ORC:
+                return 2;
+                break;     // Orc
+            case RACE_DWARF:
+                return 1;
+                break;     // Dwarf
+            case RACE_NIGHTELF:
+                return 1;
+                break;     // Night Elf
+            case RACE_UNDEAD_PLAYER:
+                return 2;
+                break;// Undead
+            case RACE_TAUREN:
+                return 2;
+                break;     // Tauren
+            case RACE_GNOME:
+                return 1;
+                break;     // Gnome
+            case RACE_TROLL:
+                return 2;
+                break;     // Troll
+            case RACE_BLOODELF:
+                return 2;
+                break;     // Blood Elf
+            case RACE_DRAENEI:
+                return 1;
+                break;     // Draenei
+        }
+
+        return 0;
+    }
+
+    static uint32_t GetCreatureFactionByFaction(uint32_t faction_id)
+    {
+        // This does not work and I don't know why.
+
         if (NerfHerder::factionDataMap.find(faction_id) == NerfHerder::factionDataMap.end()) return 0;
         return NerfHerder::factionDataMap[faction_id].factionTranslatedID;
     }
@@ -177,7 +227,8 @@ public:
         uint32_t max_level;
 
         // determine faction (not really)
-        uint32_t faction = NerfHerder::GetCreatureFaction(creature->GetFaction());
+        //uint32_t faction = NerfHerder::GetCreatureFactionByFaction(creature->GetFaction());
+        uint32_t faction = NerfHerder::GetCreatureFactionByRace(creature->getRace());
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
