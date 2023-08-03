@@ -18,30 +18,51 @@ class NerfHerder
 public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
 
-    static uint32_t IsCreatureTownsfolk(Creature* creature)
+    static uint32_t GetCreatureFaction(Creature* creature)
     {
-        uint32_t pass = 0;
+        // I found it very difficult to determine the faction of a creature.
+        // GetFaction() returns a sub-faction, and I'd have to match to alliances.
+        // IsHorde() and IsAlliance() only works on players.
+        // GetReactionTo() requires another creature to compare to, but is limited
+        // to only comparing creatures in the same zone.
+        // So in desperation I'm going to just match it by race.  This is imperfect,
+        // but might be the best I can do at the moment.
 
-        const AreaTable* areaTable = sAreaTableStore.LookupEntry(creature->GetAreaID());
-        if (areaTable)
+        switch (creature->GetRace())
         {
-            if (areaTable->IsAreaFlagSet(AREA_FLAG_CAPITAL))
-            {
-                pass = 1;
-            }
-
-            if (areaTable->IsAreaFlagSet(AREA_FLAG_CITY))
-            {
-                pass = 1;
-            }
-
-            if (areaTable->IsAreaFlagSet(AREA_FLAG_TOWN))
-            {
-                pass = 1;
-            }
+            case RACE_HUMAN:
+                return 1;
+                break;     // Human
+            case RACE_ORC:
+                return 2;
+                break;     // Orc
+            case RACE_DWARF:
+                return 1;
+                break;     // Dwarf
+            case RACE_NIGHTELF:
+                return 1;
+                break;     // Night Elf
+            case RACE_UNDEAD_PLAYER:
+                return 2;
+                break;// Undead
+            case RACE_TAUREN:
+                return 2;
+                break;     // Tauren
+            case RACE_GNOME:
+                return 1;
+                break;     // Gnome
+            case RACE_TROLL:
+                return 2;
+                break;     // Troll
+            case RACE_BLOODELF:
+                return 2;
+                break;     // Blood Elf
+            case RACE_DRAENEI:
+                return 1;
+                break;     // Draenei
         }
 
-        return pass;
+        return 0;
     }
 
     static uint32_t GetZoneLevel(uint32_t zone_id)
@@ -178,14 +199,14 @@ public:
         // init
         uint32_t max_level;
 
-        // determine capitol/city/town
-        uint32_t is_townsfolk = IsCreatureTownsfolk(creature);
+        // determine faction (not really)
+        uint32_t faction = NerfHerder::GetCreatureFaction(creature);
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
         if (is_zone_level_enabled)
         {
-            if (is_townsfolk)
+            if (faction == 1 || faction == 2)
             {
                 // get max level for zone
                 max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
@@ -229,7 +250,7 @@ public:
         uint32_t is_force_pvp = sConfigMgr->GetOption<int>("NerfHerder.ForceFactionPvPEnable", 0);
         if (is_force_pvp)
         {
-            if (is_townsfolk)
+            if (faction == 1 || faction == 2)
             {
                 // force them to be pvp
                 creature->SetPvP(1);
