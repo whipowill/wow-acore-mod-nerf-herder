@@ -21,14 +21,12 @@ public:
     static uint32_t GetCreatureFaction(Creature* creature)
     {
         // mock thrall
-        Unit* varianWrynnCreature = nullptr;
-        ObjectGuid varianGuid(LOWGUID_UNIT, 29611);
-        varianWrynnCreature = ObjectAccessor::GetUnit(*creature->GetMap(), varianGuid);
+        Creature* varianWrynnCreature = nullptr;
+        varianWrynnCreature = ObjectAccessor::GetCreature(*creature, 29611);
 
         // mock thrall
-        Unit* thrallCreature = nullptr;
-        ObjectGuid thrallGuid(LOWGUID_UNIT, 3845);
-        thrallCreature = ObjectAccessor::GetUnit(*creature->GetMap(), thrallGuid);
+        Creature* thrallCreature = nullptr;
+        thrallCreature = ObjectAccessor::GetCreature(*creature, 3845);
 
         // do you bow to varian?
         if (creature->GetReactionTo(varianWrynnCreature) == REP_FRIENDLY)
