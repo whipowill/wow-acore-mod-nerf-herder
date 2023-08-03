@@ -12,58 +12,22 @@ struct ZoneData {
     std::string expansion;
 };
 
+struct FactionData {
+    std::string factionName;
+    uint32_t factionID;
+    uint32_t factionTranslatedID; // 1=ally 2=horde
+};
+
 class NerfHerder
 {
 public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
+    static std::unordered_map<uint32_t, FactionData> factionDataMap;
 
-    static uint32_t GetCreatureFaction(Creature* creature)
+    static uint32_t GetCreatureFaction(uint32_t faction_id)
     {
-        // I found it very difficult to determine the faction of a creature.
-        // GetFaction() returns a sub-faction, and I'd have to match to alliances.
-        // IsHorde() and IsAlliance() only works on players.
-        // GetReactionTo() requires another creature to compare to, but is limited
-        // to only comparing creatures in the same zone.
-        // So in desperation I'm going to just match it by race.  This is imperfect,
-        // but might be the best I can do at the moment.
-        // Also tried AreaTable flag, but can't figure out how ot get that info
-        // without copious DB queries.
-
-        switch (creature->getRace())
-        {
-            case RACE_HUMAN:
-                return 1;
-                break;     // Human
-            case RACE_ORC:
-                return 2;
-                break;     // Orc
-            case RACE_DWARF:
-                return 1;
-                break;     // Dwarf
-            case RACE_NIGHTELF:
-                return 1;
-                break;     // Night Elf
-            case RACE_UNDEAD_PLAYER:
-                return 2;
-                break;// Undead
-            case RACE_TAUREN:
-                return 2;
-                break;     // Tauren
-            case RACE_GNOME:
-                return 1;
-                break;     // Gnome
-            case RACE_TROLL:
-                return 2;
-                break;     // Troll
-            case RACE_BLOODELF:
-                return 2;
-                break;     // Blood Elf
-            case RACE_DRAENEI:
-                return 1;
-                break;     // Draenei
-        }
-
-        return 0;
+        if (NerfHerder::factionDataMap.find(faction_id) == NerfHerder::factionDataMap.end()) return 0;
+        return NerfHerder::factionDataMap[faction_id].factionTranslatedID;
     }
 
     static uint32_t GetZoneLevel(uint32_t zone_id)
@@ -106,7 +70,20 @@ public:
     }
 };
 
-// Sorted and isolated all Alliance and Horde towns:
+// https://www.azerothcore.org/wiki/faction
+std::unordered_map<uint32_t, FactionData> NerfHerder::factionDataMap = {
+    {189, {"Alliance Generic", 189, 1}},
+    {469, {"Alliance", 469, 1}},
+    {891, {"Alliance Forces", 891, 1}},
+    {1037, {"Alliance Vanguard", 1037, 1}},
+    {1037, {"Mount - Taxi - Alliance", 1037, 1}},
+    {66, {"Horde Generic", 66, 2}},
+    {67, {"Horde", 67, 2}},
+    {892, {"Horde Forces", 892, 2}},
+    {1052, {"Horde Expedition", 1052, 2}},
+    {1113, {"Mount - Taxi - Horde", 1113, 2}}
+};
+
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
 std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
@@ -123,7 +100,6 @@ std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {148, {"Darkshore", 148, 10, 20, ""}},
     {3433, {"Ghostlands", 3433, 10, 20, "BC"}},
     {38, {"Loch Modan", 38, 10, 20, ""}},
-    {11, {"Northern Barrens", 11, 10, 20, ""}},
     {130, {"Silverpine Forest", 130, 10, 20, ""}},
     {5449, {"Ruins of Gilneas", 5449, 14, 20, ""}},
     {44, {"Redridge Mountains", 44, 15, 20, ""}},
@@ -132,11 +108,11 @@ std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {267, {"Hillsbrad Foothills", 267, 20, 25, ""}},
     {11, {"Wetlands", 11, 20, 25, ""}},
     {45, {"Arathi Highlands", 45, 25, 30, ""}},
-    {33, {"Stranglethorn Vale", 37, 25, 30, ""}}, // fix from CATA
+    {33, {"Stranglethorn Vale", 33, 25, 30, ""}}, // fix from CATA
     {406, {"Stonetalon Mountains", 406, 25, 30, ""}},
     {405, {"Desolace", 405, 30, 35, ""}},
     {47, {"Hinterlands", 47, 30, 35, ""}},
-    {17, {"Barrens", 607, 30, 35, ""}}, // fix from CATA
+    {17, {"Barrens", 17, 30, 35, ""}}, // fix from CATA
     {15, {"Dustwallow Marsh", 15, 35, 40, ""}},
     {357, {"Feralas", 357, 35, 40, ""}},
     {28, {"Western Plaguelands", 28, 35, 40, ""}},
@@ -201,7 +177,7 @@ public:
         uint32_t max_level;
 
         // determine faction (not really)
-        uint32_t faction = NerfHerder::GetCreatureFaction(creature);
+        uint32_t faction = NerfHerder::GetCreatureFaction(creature->GetFaction());
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
