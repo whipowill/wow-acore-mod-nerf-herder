@@ -2,7 +2,7 @@
 #include "ScriptMgr.h"
 #include "Config.h"
 #include "Creature.h"
-#include "ObjectAccessor.h"
+#include "AreaTable.h"
 #include <unordered_map>
 
 struct ZoneData {
@@ -18,51 +18,30 @@ class NerfHerder
 public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
 
-    static uint32_t GetCreatureFaction(Creature* creature)
+    static uint32_t IsCreatureTownsfolk(Creature* creature)
     {
-        // I found it very difficult to determine the faction of a creature.
-        // GetFaction() returns a sub-faction, and I'd have to match to alliances.
-        // IsHorde() and IsAlliance() only work on players.
-        // GetReactionTo() requires another creature to compare to, but is limited
-        // to only comparing creatures in the same zone.
-        // So in desperation I'm going to just match it by race.  This is imperfect,
-        // but might be the best I can do at the moment.
+        uint32_t pass = 0;
 
-        switch (creature->GetRace())
+        const AreaTable* areaTable = sAreaTableStore.LookupEntry(creature->GetAreaID());
+        if (areaTable)
         {
-            case RACE_HUMAN:
-                return 1;
-                break;     // Human
-            case RACE_ORC:
-                return 2;
-                break;     // Orc
-            case RACE_DWARF:
-                return 1;
-                break;     // Dwarf
-            case RACE_NIGHTELF:
-                return 1;
-                break;     // Night Elf
-            case RACE_UNDEAD_PLAYER:
-                return 2;
-                break;// Undead
-            case RACE_TAUREN:
-                return 2;
-                break;     // Tauren
-            case RACE_GNOME:
-                return 1;
-                break;     // Gnome
-            case RACE_TROLL:
-                return 2;
-                break;     // Troll
-            case RACE_BLOODELF:
-                return 2;
-                break;     // Blood Elf
-            case RACE_DRAENEI:
-                return 1;
-                break;     // Draenei
+            if (areaTable->IsAreaFlagSet(AREA_FLAG_CAPITAL))
+            {
+                pass = 1;
+            }
+
+            if (areaTable->IsAreaFlagSet(AREA_FLAG_CITY))
+            {
+                pass = 1;
+            }
+
+            if (areaTable->IsAreaFlagSet(AREA_FLAG_TOWN))
+            {
+                pass = 1;
+            }
         }
 
-        return 0;
+        return pass;
     }
 
     static uint32_t GetZoneLevel(uint32_t zone_id)
@@ -105,8 +84,8 @@ public:
     }
 };
 
-// Search this table to verify the map_ids are correct:
-// https://wow.tools/dbc/?dbc=worldmaparea&build=3.3.5.12340#page=1&search=3524
+// Sorted and isolated all Alliance and Horde towns:
+// https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
 std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
     {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
     {1, {"Dun Morogh", 1, 1, 10, ""}},
@@ -199,14 +178,14 @@ public:
         // init
         uint32_t max_level;
 
-        // determine faction
-        uint32_t faction = GetCreatureFaction(creature);
+        // determine capitol/city/town
+        uint32_t is_townsfolk = IsCreatureTownsfolk(creature);
 
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
         if (is_zone_level_enabled)
         {
-            if (faction == 1 || faction == 2)
+            if (is_townsfolk)
             {
                 // get max level for zone
                 max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
@@ -250,7 +229,7 @@ public:
         uint32_t is_force_pvp = sConfigMgr->GetOption<int>("NerfHerder.ForceFactionPvPEnable", 0);
         if (is_force_pvp)
         {
-            if (faction == 1 || faction == 2)
+            if (is_townsfolk)
             {
                 // force them to be pvp
                 creature->SetPvP(1);
