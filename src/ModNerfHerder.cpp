@@ -2,6 +2,7 @@
 #include "ScriptMgr.h"
 #include "Config.h"
 #include "Creature.h"
+#include "ObjectAccessor.h"
 #include <unordered_map>
 
 struct ZoneData {
@@ -21,16 +22,19 @@ public:
     {
         // mock thrall
         Creature* varianWrynnCreature = nullptr;
-        varianWrynnCreature = ObjectAccessor::GetCreature(creature, 29611);
+        varianWrynnCreature = ObjectAccessor::GetUnit(creature, 29611);
 
         // mock thrall
         Creature* thrallCreature = nullptr;
-        thrallCreature = ObjectAccessor::GetCreature(creature, 3845);
+        thrallCreature = ObjectAccessor::GetUnit(creature, 3845);
 
+        // do you bow to varian?
         if (creature->GetReactionTo(varianWrynnCreature) == REP_FRIENDLY)
         {
             return 1;
         }
+
+        // do you bow to thrall?
         if (creature->GetReactionTo(thrallCreature) == REP_FRIENDLY)
         {
             return 2;
