@@ -2,7 +2,6 @@
 #include "ScriptMgr.h"
 #include "Config.h"
 #include "Creature.h"
-#include "AreaTable.h"
 #include <unordered_map>
 
 struct ZoneData {
@@ -27,6 +26,8 @@ public:
         // to only comparing creatures in the same zone.
         // So in desperation I'm going to just match it by race.  This is imperfect,
         // but might be the best I can do at the moment.
+        // Also tried AreaTable flag, but can't figure out how ot get that info
+        // without copious DB queries.
 
         switch (creature->GetRace())
         {
