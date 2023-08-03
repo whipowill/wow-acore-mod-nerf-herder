@@ -20,26 +20,46 @@ public:
 
     static uint32_t GetCreatureFaction(Creature* creature)
     {
-        // mock thrall
-        Creature* varianWrynnCreature = nullptr;
-        ObjectGuid varianGuid = CreatureData::CreateObjectGuid(HIGHGUID_UNIT, 29611);
-        varianWrynnCreature = ObjectAccessor::GetCreature(*creature, varianGuid);
+        // I found it very difficult to determine the faction of a creature.
+        // GetFaction() returns a sub-faction, and I'd have to match to alliances.
+        // IsHorde() and IsAlliance() only work on players.
+        // GetReactionTo() requires another creature to compare to, but is limited
+        // to only comparing creatures in the same zone.
+        // So in desperation I'm going to just match it by race.  This is imperfect,
+        // but might be the best I can do at the moment.
 
-        // mock thrall
-        Creature* thrallCreature = nullptr;
-        ObjectGuid thrallGuid = CreatureData::CreateObjectGuid(HIGHGUID_UNIT, 3845);
-        thrallCreature = ObjectAccessor::GetCreature(*creature, thrallGuid);
-
-        // do you bow to varian?
-        if (creature->GetReactionTo(varianWrynnCreature) == REP_FRIENDLY)
+        switch (creature->GetRace())
         {
-            return 1;
-        }
-
-        // do you bow to thrall?
-        if (creature->GetReactionTo(thrallCreature) == REP_FRIENDLY)
-        {
-            return 2;
+            case RACE_HUMAN:
+                return 1;
+                break;     // Human
+            case RACE_ORC:
+                return 2;
+                break;     // Orc
+            case RACE_DWARF:
+                return 1;
+                break;     // Dwarf
+            case RACE_NIGHTELF:
+                return 1;
+                break;     // Night Elf
+            case RACE_UNDEAD_PLAYER:
+                return 2;
+                break;// Undead
+            case RACE_TAUREN:
+                return 2;
+                break;     // Tauren
+            case RACE_GNOME:
+                return 1;
+                break;     // Gnome
+            case RACE_TROLL:
+                return 2;
+                break;     // Troll
+            case RACE_BLOODELF:
+                return 2;
+                break;     // Blood Elf
+            case RACE_DRAENEI:
+                return 1;
+                break;     // Draenei
         }
 
         return 0;
