@@ -24,16 +24,12 @@ public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_map<uint32_t, FactionData> factionDataMap;
 
-    static uint32_t GetCreatureFactionByGossip(Creature* creature)
-    {
-        // if you can talk to it, you should be able to kill it for honor
-        return creature->IsGossip();
-    }
-
     static uint32_t IsFieldAgent(Creature* creature)
     {
-        uint32_t pass_race = 0;
+        if (creature->IsPvP()) return 1;
 
+        /*
+        uint32_t pass_race = 0;
         switch (creature->getRace())
         {
             case RACE_HUMAN:
@@ -46,20 +42,37 @@ public:
             case RACE_TROLL:
             case RACE_BLOODELF:
             case RACE_DRAENEI:
-                pass_race = 1;
-                break;     // Draenei
+                return 1;
+                break;
         }
+        */
 
-        uint32_t pass_gossip = creature->IsGossip();
-
-        return (pass_race && pass_gossip) ? 1 : 0;
+        if (creature->IsGossip()) return 1;
+        /*
+        if (creature->IsVendor()) return 1;
+        if (creature->IsTrainer()) return 1;
+        if (creature->IsQuestGiver()) return 1;
+        if (creature->IsTaxi()) return 1;
+        if (creature->IsGuildMaster()) return 1;
+        if (creature->IsBattleMaster()) return 1;
+        if (creature->IsBanker()) return 1;
+        if (creature->IsInnkeeper()) return 1;
+        //if (creature->IsSpiritHealer()) return 1;
+        //if (creature->IsSpiritGuide()) return 1;
+        if (creature->IsTabardDesigner()) return 1;
+        if (creature->IsAuctioner()) return 1;
+        if (creature->IsArmorer()) return 1;
+        if (creature->IsServiceProvider()) return 1;
+        */
     }
 
     static uint32_t GetZoneLevel(Creature* creature)
     {
-        uint32_t zone_id = creature->GetZoneId()
+        uint32_t zone_id = creature->GetZoneId();
 
-        if (NerfHerder::zoneDataMap.find(zone_id) == NerfHerder::zoneDataMap.end()) return 0;
+        if (NerfHerder::zoneDataMap.find(zone_id) == NerfHerder::zoneDataMap.end())
+            return 0;
+
         return NerfHerder::zoneDataMap[zone_id].maxLevel;
     }
 
