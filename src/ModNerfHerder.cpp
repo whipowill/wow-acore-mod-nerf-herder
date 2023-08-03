@@ -48,7 +48,6 @@ public:
         */
 
         if (creature->IsGossip()) return 1;
-        /*
         if (creature->IsVendor()) return 1;
         if (creature->IsTrainer()) return 1;
         if (creature->IsQuestGiver()) return 1;
@@ -63,7 +62,6 @@ public:
         if (creature->IsAuctioner()) return 1;
         if (creature->IsArmorer()) return 1;
         if (creature->IsServiceProvider()) return 1;
-        */
 
         return 0;
     }
@@ -229,7 +227,7 @@ public:
             if (is_field_agent)
             {
                 // get max level for zone
-                max_level = NerfHerder::GetZoneLevel(creature);
+                max_level = NerfHerder::GetZoneLevel(creature) + 5;
 
                 // if valid
                 if (max_level && max_level >= 10)
