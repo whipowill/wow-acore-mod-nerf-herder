@@ -29,7 +29,7 @@ public:
         // Also tried AreaTable flag, but can't figure out how ot get that info
         // without copious DB queries.
 
-        switch (creature->GetRace())
+        switch (creature->getRace())
         {
             case RACE_HUMAN:
                 return 1;
