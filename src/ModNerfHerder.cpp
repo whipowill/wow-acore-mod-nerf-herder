@@ -210,7 +210,7 @@ public:
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
         if (is_zone_level_enabled)
         {
-            if (faction == 1 || faction == 2)
+            if (is_field_agent)
             {
                 // get max level for zone
                 max_level = NerfHerder::GetZoneLevel(creature);
@@ -254,7 +254,7 @@ public:
         uint32_t is_force_pvp = sConfigMgr->GetOption<int>("NerfHerder.ForceFactionPvPEnable", 0);
         if (is_force_pvp)
         {
-            if (faction == 1 || faction == 2)
+            if (is_field_agent)
             {
                 // force them to be pvp
                 creature->SetPvP(1);
