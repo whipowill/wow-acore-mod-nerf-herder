@@ -17,6 +17,28 @@ class NerfHerder
 public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
 
+    static uint32_t GetCreatureFaction(Creature* creature)
+    {
+        // mock thrall
+        Creature* varianWrynnCreature = nullptr;
+        varianWrynnCreature = GetCreature(creature 29611);
+
+        // mock thrall
+        Creature* thrallCreature = nullptr;
+        thrallCreature = GetCreature(creature, 3845);
+
+        if (creature->GetReactionTo(varianWrynnCreature) == REP_FRIENDLY)
+        {
+            return 1;
+        }
+        if (creature->GetReactionTo(thrallCreature) == REP_FRIENDLY)
+        {
+            return 2;
+        }
+
+        return 0;
+    }
+
     static uint32_t GetZoneLevel(uint32_t zone_id)
     {
         if (NerfHerder::zoneDataMap.find(zone_id) == NerfHerder::zoneDataMap.end()) return 0;
@@ -151,11 +173,14 @@ public:
         // init
         uint32_t max_level;
 
+        // determine faction
+        uint32_t faction = GetCreatureFaction(creature);
+
         // if max zone level is enabled...
         uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
         if (is_zone_level_enabled)
         {
-            if (creature->GetFaction() == 1 || creature->GetFaction() == 2)
+            if (faction == 1 || faction == 2)
             {
                 // get max level for zone
                 max_level = NerfHerder::GetZoneLevel(creature->GetZoneId());
@@ -199,7 +224,7 @@ public:
         uint32_t is_force_pvp = sConfigMgr->GetOption<int>("NerfHerder.ForceFactionPvPEnable", 0);
         if (is_force_pvp)
         {
-            if (creature->GetFaction() == 1 || creature->GetFaction() == 2)
+            if (faction == 1 || faction == 2)
             {
                 // force them to be pvp
                 creature->SetPvP(1);
