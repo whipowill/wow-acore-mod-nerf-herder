@@ -12,6 +12,9 @@ No MySQL queries are used.  No effect in dungeons or raids.
 
 ## Configuration
 
+**Basics**
+
+- ``NerfHerder.Enabled`` - enable this module
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
 - ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as pvp
@@ -20,6 +23,15 @@ No MySQL queries are used.  No effect in dungeons or raids.
 - ``NerfHerder.HonorGreyEnabled`` - grey pvp flagged NPCs give honor
 - ``NerfHerder.HonorGreyRate`` - adjust the rate of grey honor gain
 - ``NerfHerder.ExtraNerfRate`` - additional stats debuff over proportional
+
+**Experimental**
+
+- ``NerfHerder.WorldBuff.Enabled`` - give world buff on kills
+- ``NerfHerder.WorldBuff.KillCount`` - number of kills to accumulate to get world buff
+- ``NerfHerder.WorldBuff.Cooldown`` - time cooldown between world buffs (minutes)
+- ``NerfHerder.WorldBuff.SpellId.01`` - which world buff to give option 1
+- ``NerfHerder.WorldBuff.SpellId.02`` - which world buff to give option 2
+- ``NerfHerder.WorldBuff.SpellId.03`` - which world buff to give option 3
 
 ## The Vision
 

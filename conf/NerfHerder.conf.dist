@@ -29,7 +29,7 @@ NerfHerder.ExtraNerfRate = 0.1
 # (how much more do you want to nerf em?)
 
 # give world buff on kills, 0=off 1=on
-NerfHerder.WorldBuff.Enabled = 1
+NerfHerder.WorldBuff.Enabled = 0
 
 # number of kills to accumulate to get world buff
 NerfHerder.WorldBuff.KillCount = 12

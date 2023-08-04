@@ -10,7 +10,6 @@
 #include "Pet.h"
 #include "Group.h"
 #include "Chat.h"
-#include "TaskScheduler.h"
 #include <unordered_map>
 #include <ctime>
 
@@ -519,7 +518,7 @@ public:
                         player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
 
                         // announce to player if honor was gained
-                        uint32_t is_chat_enable = 1;
+                        uint32_t is_chat_enable = 0; // not a fan atm
                         if (is_chat_enable)
                         {
                             ss << "You have been awarded |cff4CFF00%i |rHonor.";
