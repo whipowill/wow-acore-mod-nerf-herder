@@ -16,8 +16,9 @@ No MySQL queries are used in this mod, everything is handled dynamically.
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
 - ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as pvp
 - ``NerfHerder.HonorPvPEnabled`` - grant honor rewards on pvp flagged NPC kills
-- ``NerfHerder.HonorGreyEnabled`` - grey NPCs still give honor
 - ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
+- ``NerfHerder.HonorGreyEnabled`` - grey pvp flagged NPCs give honor
+- ``NerfHerder.HonorGreyRate`` - adjust the rate of grey honor gain
 
 Note that this mod has no effect on any creatures in dungeons or raids.
 
