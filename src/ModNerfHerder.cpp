@@ -135,7 +135,8 @@ public:
         if (creature->HasAura(DamageDoneTakenAura)) return;
 
         // calc negative multiplier
-        int32_t negative_multiplier = (-100 * (1 + NerfHerder_ExtraNerfRate)) + ((new_level / creature->GetLevel()) * 100);
+        float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
+        int32_t negative_multiplier = (-100 * (1 + NerfHerder_ExtraNerfRate)) + (ratio * 100);
 
         // just in case something goes wrong
         if (negative_multiplier > 0) negative_multiplier = 0;
