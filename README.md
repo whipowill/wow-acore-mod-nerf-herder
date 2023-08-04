@@ -8,6 +8,8 @@ But what's more, it brings back burning and pillaging to the game by flagging al
 
 No MySQL queries are used.  No effect in dungeons or raids.
 
+![Nerf Herder](https://i.imgur.com/gbW2964.jpg)
+
 ## Configuration
 
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
