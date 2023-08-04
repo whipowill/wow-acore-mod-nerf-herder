@@ -170,11 +170,14 @@ public:
             if (p->IsAlive() && !p->IsGameMaster() && is_faction_match)
             {
                 if (NerfHerder_WorldBuff_SpellId_01)
-                    p->CastSpell(p, NerfHerder_WorldBuff_SpellId_01, true);
+                    if (!p->HasAura(NerfHerder_WorldBuff_SpellId_01))
+                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_01, true);
                 if (NerfHerder_WorldBuff_SpellId_02)
-                    p->CastSpell(p, NerfHerder_WorldBuff_SpellId_02, true);
+                    if (!p->HasAura(NerfHerder_WorldBuff_SpellId_02))
+                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_02, true);
                 if (NerfHerder_WorldBuff_SpellId_03)
-                    p->CastSpell(p, NerfHerder_WorldBuff_SpellId_03, true);
+                    if (!p->HasAura(NerfHerder_WorldBuff_SpellId_03))
+                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_03, true);
             }
         });
     }
