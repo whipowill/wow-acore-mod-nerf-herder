@@ -110,10 +110,12 @@ public:
 
     static void ApplyWorldBuff(Player* player)
     {
+        if (!NerfHerder_WorldBuff_Enabled) return;
+
         // log the time
         uint32_t timestamp = std::time(nullptr);
 
-        if (player->IsAlliance())
+        if (player->GetTeamId() == TEAM_ALLIANCE)
         {
             // do we need to reset the faction kill count?
             if ((timestamp - NerfHerder_WorldBuff_Alliance_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
@@ -132,7 +134,7 @@ public:
             // at this point, we are going to world buff so log it
             NerfHerder_WorldBuff_Alliance_LastBuffTime = timestamp;
         }
-        else if (player->IsHorde())
+        else if (player->GetTeamId() == TEAM_HORDE)
         {
             // do we need to reset the faction kill count?
             if ((timestamp - NerfHerder_WorldBuff_Horde_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
@@ -158,8 +160,8 @@ public:
             player->GetMap()->DoForAllPlayers([&](Player* p)
             {
                 uint32_t is_faction_match = 0;
-                if (player->IsAlliance()) is_faction_match = p->IsAlliance() ? 1 : 0;
-                if (player->IsHorde()) is_faction_match = p->IsHorde() ? 1 : 0;
+                if (player->GetTeamId() == TEAM_ALLIANCE) is_faction_match = p->GetTeamId() == TEAM_ALLIANCE ? 1 : 0;
+                if (player->GetTeamId() == TEAM_HORDE) is_faction_match = p->GetTeamId() == TEAM_HORDE ? 1 : 0;
 
                 // no matter where they are, buff all players
                 if (p->IsAlive() && !p->IsGameMaster() && is_faction_match)
@@ -181,7 +183,7 @@ public:
         // Alliance and Horde NPCs.  I have tried many methods
         // and thus far this is the best way I've found.
 
-        // IsHorde() and IsAlliance() only works on players.
+        // GetTeamId() only works on players.
         // GetFaction() doesn't seem to work at all, and involves sub-factions.
         // GetMapId() involves too many sub-areas, even inside of towns.
         // GetUnitFlags() is the same thing as the below method.
@@ -520,6 +522,9 @@ public:
                             ss << "You have been awarded |cff4CFF00%i |rHonor.";
                             ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
                         }
+
+                        // apply world buff
+                        NerfHerderHelper::ApplyWorldBuff(player);
                     }
                 }
             }
