@@ -1,12 +1,12 @@
 # Nerf Herder
 
-An AzerothCore module for nerfing various NPCs throughout the game for various reasons.
+An AzerothCore module for nerfing faction NPCs to promote world PvP.
 
-This mod is intended for private servers limited to Vanilla or TBC who need an easy fix for NPCs throughout Azeroth, such as town guards, over the maximum level.
+This mod was initially intended for private servers limited to Vanilla or TBC who needed an easy fix for NPCsover the maximum player level, such as town guards.
 
-But what's more, it brings back burning and pillaging to the game by flagging all NPCs of both factions as PvP and granting honor for each one that you kill.
+But it became more of a world PvP mod, adding burning and pillaging to the game by flagging all NPCs of both factions as PvP and granting honor and world buffs for killing them.
 
-No MySQL queries are used.  No effect in dungeons or raids.
+Does not affect world database.  Does not affect dungeons or raids.
 
 ![Nerf Herder](https://i.imgur.com/gbW2964.jpg)
 
@@ -22,22 +22,21 @@ No MySQL queries are used.  No effect in dungeons or raids.
 - ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
 - ``NerfHerder.HonorGreyEnabled`` - grey pvp flagged NPCs give honor
 - ``NerfHerder.HonorGreyRate`` - adjust the rate of grey honor gain
-- ``NerfHerder.ExtraNerfRate`` - additional stats debuff over proportional
 
 **Experimental**
 
 - ``NerfHerder.WorldBuff.Enabled`` - give world buff on kills
 - ``NerfHerder.WorldBuff.KillCount`` - number of kills to accumulate to get world buff
 - ``NerfHerder.WorldBuff.Cooldown`` - time cooldown between world buffs (minutes)
-- ``NerfHerder.WorldBuff.SpellId.01`` - which world buff to give option 1
-- ``NerfHerder.WorldBuff.SpellId.02`` - which world buff to give option 2
-- ``NerfHerder.WorldBuff.SpellId.03`` - which world buff to give option 3
+- ``NerfHerder.WorldBuff.SpellId.01`` - world buff to give option 1
+- ``NerfHerder.WorldBuff.SpellId.02`` - world buff to give option 2
+- ``NerfHerder.WorldBuff.SpellId.03`` - world buff to give option 3
 
 ## The Vision
 
 On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.
 
-Some of the villages, even in starter zones, have super high level NPCs that were originally meant to discourage enemy players on PVP servers from ruining things for the other faction.
+Some of the villages, even in starter zones, have super high level NPCs that were originally meant to discourage players on PvP servers from ruining things for the other faction.
 
 These guards will be nerfed to a level appropriate for their respective zones.  You'll be able to burn and pillage any town you have the strength to conquer, and you will be rewarded.
 
