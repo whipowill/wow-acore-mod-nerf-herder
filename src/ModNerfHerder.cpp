@@ -251,8 +251,7 @@ public:
             if (is_field_agent)
             {
                 // force them to be pvp
-                //creature->SetPvP(true); // no worky
-                creature->SetUnitFlag(UNIT_FLAG_PVP);
+                creature->SetPvP(true); // no worky
             }
         }
     }
