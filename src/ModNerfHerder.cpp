@@ -27,26 +27,6 @@ public:
     static uint32_t IsFieldAgent(Creature* creature)
     {
         if (creature->IsPvP()) return 1;
-
-        /*
-        uint32_t pass_race = 0;
-        switch (creature->getRace())
-        {
-            case RACE_HUMAN:
-            case RACE_ORC:
-            case RACE_DWARF:
-            case RACE_NIGHTELF:
-            case RACE_UNDEAD_PLAYER:
-            case RACE_TAUREN:
-            case RACE_GNOME:
-            case RACE_TROLL:
-            case RACE_BLOODELF:
-            case RACE_DRAENEI:
-                return 1;
-                break;
-        }
-        */
-
         if (creature->IsGossip()) return 1;
         if (creature->IsVendor()) return 1;
         if (creature->IsTrainer()) return 1;

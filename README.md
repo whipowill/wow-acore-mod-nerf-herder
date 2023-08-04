@@ -14,6 +14,8 @@ This dynamic method of solving the problem won't perfectly match the original ga
 
 - ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended questing level, provided they are allied to Alliance or Horde.  **This includes village guards and flight masters.**
 
+- ``NerfHerder.ForceFactionPvPEnable`` - Nerf any creature over the zone recommended questing level, provided they are allied to Alliance or Horde.  **This includes village guards and flight masters.**
+
 ## The Vision
 
 On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.
