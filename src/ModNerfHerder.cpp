@@ -10,7 +10,9 @@
 #include "Pet.h"
 #include "Group.h"
 #include "Chat.h"
+#include "TaskScheduler.h"
 #include <unordered_map>
+#include <ctime>
 
 uint32_t NerfHerder_Enabled = 0;
 
@@ -28,6 +30,21 @@ float NerfHerder_HonorGreyRate = 0;
 float NerfHerder_ExtraNerfRate = 0;
 
 uint32_t NerfHerder_MaxPlayerLevel = 80;
+
+uint32_t NerfHerder_WorldBuff_Enabled = 0;
+uint32_t NerfHerder_WorldBuff_KillCount = 0;
+uint32_t NerfHerder_WorldBuff_Cooldown = 0;
+uint32_t NerfHerder_WorldBuff_SpellId_01 = 0;
+uint32_t NerfHerder_WorldBuff_SpellId_02 = 0;
+uint32_t NerfHerder_WorldBuff_SpellId_03 = 0;
+
+uint32_t NerfHerder_WorldBuff_Alliance_LastKillTime = 0;
+uint32_t NerfHerder_WorldBuff_Alliance_LastBuffTime = 0;
+uint32_t NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
+
+uint32_t NerfHerder_WorldBuff_Horde_LastKillTime = 0;
+uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
+uint32_t NerfHerder_WorldBuff_Horde_LastKillCount = 0;
 
 class NerfHerderConfig : public WorldScript
 {
@@ -61,6 +78,13 @@ public:
         NerfHerder_ExtraNerfRate = sConfigMgr->GetOption<int>("NerfHerder.ExtraNerfRate", 0);
 
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
+
+        NerfHerder_WorldBuff_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Enabled", 0);
+        NerfHerder_WorldBuff_KillCount = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.KillCount", 0);
+        NerfHerder_WorldBuff_Cooldown = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Cooldown", 0);
+        NerfHerder_WorldBuff_SpellId_01 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.01", 0);
+        NerfHerder_WorldBuff_SpellId_02 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.02", 0);
+        NerfHerder_WorldBuff_SpellId_03 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.03", 0);
     }
 };
 
@@ -84,11 +108,83 @@ public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_map<uint32_t, FactionData> factionDataMap;
 
+    static void ApplyWorldBuff(Player* player)
+    {
+        // log the time
+        uint32_t timestamp = std::time(nullptr);
+
+        if (player->IsAlliance())
+        {
+            // do we need to reset the faction kill count?
+            if ((timestamp - NerfHerder_WorldBuff_Alliance_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
+                NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
+
+            // update faction kill count
+            NerfHerder_WorldBuff_Alliance_LastKillTime = timestamp;
+            NerfHerder_WorldBuff_Alliance_LastKillCount++;
+
+            // have we achieved enough kills?  if not, bail
+            if (NerfHerder_WorldBuff_Alliance_LastKillCount < NerfHerder_WorldBuff_KillCount) return;
+
+            // has it been enough time since last world buff?  if not, bail
+            if ((timestamp - NerfHerder_WorldBuff_Alliance_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60)) return;
+
+            // at this point, we are going to world buff so log it
+            NerfHerder_WorldBuff_Alliance_LastBuffTime = timestamp;
+        }
+        else if (player->IsHorde())
+        {
+            // do we need to reset the faction kill count?
+            if ((timestamp - NerfHerder_WorldBuff_Horde_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
+                NerfHerder_WorldBuff_Horde_LastKillCount = 0;
+
+            // update faction kill count
+            NerfHerder_WorldBuff_Horde_LastKillTime = timestamp;
+            NerfHerder_WorldBuff_Horde_LastKillCount++;
+
+            // have we achieved enough kills?  if not, bail
+            if (NerfHerder_WorldBuff_Horde_LastKillCount < NerfHerder_WorldBuff_KillCount) return;
+
+            // has it been enough time since last world buff?  if not, bail
+            if ((timestamp - NerfHerder_WorldBuff_Horde_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60)) return;
+
+            // at this point, we are going to world buff so log it
+            NerfHerder_WorldBuff_Horde_LastBuffTime = timestamp;
+        }
+
+        // apply world buff
+        _scheduler.Schedule(3s, [this](TaskContext /*context*/)
+        {
+            player->GetMap()->DoForAllPlayers([&](Player* p)
+            {
+                uint32_t is_faction_match = 0;
+                if (player->IsAlliance()) is_faction_match = p->IsAlliance() ? 1 : 0;
+                if (player->IsHorde()) is_faction_match = p->IsHorde() ? 1 : 0;
+
+                // no matter where they are, buff all players
+                if (p->IsAlive() && !p->IsGameMaster() && is_faction_match)
+                {
+                    if (NerfHerder_WorldBuff_SpellId_01)
+                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_01, true);
+                    if (NerfHerder_WorldBuff_SpellId_02)
+                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_02, true);
+                    if (NerfHerder_WorldBuff_SpellId_03)
+                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_03, true);
+                }
+            });
+        });
+    }
+
     static uint32_t IsFieldAgent(Creature* creature)
     {
         // I know this is not the perfect way to identify
         // Alliance and Horde NPCs.  I have tried many methods
         // and thus far this is the best way I've found.
+
+        // IsHorde() and IsAlliance() only works on players.
+        // GetFaction() doesn't seem to work at all, and involves sub-factions.
+        // GetMapId() involves too many sub-areas, even inside of towns.
+        // GetUnitFlags() is the same thing as the below method.
 
         if (creature->IsPvP()) return 1;
         if (creature->IsGossip()) return 1;
@@ -417,19 +513,13 @@ public:
 
                         player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
 
-                        /*
-                        //announce to player if honor was gained
-                        if (GainHonorGuardOnGuardKill && killed->ToCreature()->IsGuard() && GainHonorGuardOnGuardKillAnnounce)
+                        // announce to player if honor was gained
+                        uint32_t is_chat_enable = 1;
+                        if (is_chat_enable)
                         {
                             ss << "You have been awarded |cff4CFF00%i |rHonor.";
                             ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
                         }
-                        else if (GainHonorGuardOnEliteKill && killed->ToCreature()->isElite() && GainHonorGuardOnEliteKillAnnounce)
-                        {
-                            ss << "You have been awarded |cffFF8000%i |rHonor.";
-                            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
-                        }
-                        */
                     }
                 }
             }

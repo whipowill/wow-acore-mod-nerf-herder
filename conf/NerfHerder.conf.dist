@@ -27,3 +27,20 @@ NerfHerder.HonorGreyRate = 0.5
 # rate of additional debuff, 0=0% 0.1=10% 0.2=20%
 NerfHerder.ExtraNerfRate = 0.1
 # (how much more do you want to nerf em?)
+
+# give world buff on kills, 0=off 1=on
+NerfHerder.WorldBuff.Enabled = 1
+
+# number of kills to accumulate to get world buff
+NerfHerder.WorldBuff.KillCount = 12
+
+# time cooldown before world buff can be gained again (minutes)
+NerfHerder.WorldBuff.Cooldown = 60
+
+# which world bufff to give
+NerfHerder.WorldBuff.SpellId.01 = 16609
+NerfHerder.WorldBuff.SpellId.02 = 0
+NerfHerder.WorldBuff.SpellId.03 = 0
+# Warchief's Blessing (16609)
+# Rallying Cry of the Dragonslayer (22888)
+# Spirit of Zandalar (24425)
