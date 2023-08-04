@@ -2,7 +2,7 @@
 
 An AzerothCore module for nerfing various NPCs throughout the game for various reasons.
 
-THIS PROJECT IS IN IT'S INFANCY.  IT HAS NOT BEEN HEAVILY TESTED.  MY IDEAS MIGHT NOT BE GOOD, WE'LL SEE HOW IT TURNS OUT.
+THIS PROJECT HAS NOT BEEN HEAVILY TESTED.  MY IDEAS MIGHT NOT BE GOOD, WE'LL SEE HOW IT TURNS OUT.
 
 This mod is intended for private servers limited to Vanilla or TBC who need an easy fix for NPCs throughout Azeroth, such as town guards, over the maximum level.
 
