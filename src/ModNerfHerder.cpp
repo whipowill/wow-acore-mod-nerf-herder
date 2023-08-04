@@ -132,6 +132,7 @@ public:
             if ((timestamp - NerfHerder_WorldBuff_Alliance_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60)) return;
 
             // at this point, we are going to world buff so log it
+            NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
             NerfHerder_WorldBuff_Alliance_LastBuffTime = timestamp;
         }
         else if (player->GetTeamId() == TEAM_HORDE)
