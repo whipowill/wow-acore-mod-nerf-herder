@@ -25,6 +25,8 @@ float NerfHerder_HonorPvPRate = 0;
 uint32_t NerfHerder_HonorGreyEnabled = 0;
 float NerfHerder_HonorGreyRate = 0;
 
+float NerfHerder_ExtraNerfRate = 0;
+
 uint32_t NerfHerder_MaxPlayerLevel = 80;
 
 class NerfHerderConfig : public WorldScript
@@ -55,6 +57,8 @@ public:
 
         NerfHerder_HonorGreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyEnabled", 0);
         NerfHerder_HonorGreyRate = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyRate", 0);
+
+        NerfHerder_ExtraNerfRate = sConfigMgr->GetOption<int>("NerfHerder.ExtraNerfRate", 0);
 
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
     }
@@ -134,9 +138,9 @@ public:
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
         // calc negative multiplier
-        int32_t multiplier = -100 + ((new_level / creature->GetLevel()) * 100);
+        int32_t multiplier = (-100 * (1 + NerfHerder_ExtraNerfRate)) + ((new_level / creature->GetLevel()) * 100);
 
-        // just in case
+        // just in case something goes wrong
         if (multiplier > 0) multiplier = 0;
 
         // nerf their abilities proportionately
