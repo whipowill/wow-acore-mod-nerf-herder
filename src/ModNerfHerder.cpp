@@ -161,25 +161,22 @@ public:
         }
 
         // apply world buff
-        _scheduler.Schedule(3s, [this](TaskContext /*context*/)
+        player->GetMap()->DoForAllPlayers([&](Player* p)
         {
-            player->GetMap()->DoForAllPlayers([&](Player* p)
-            {
-                uint32_t is_faction_match = 0;
-                if (player->GetTeamId() == TEAM_ALLIANCE) is_faction_match = p->GetTeamId() == TEAM_ALLIANCE ? 1 : 0;
-                if (player->GetTeamId() == TEAM_HORDE) is_faction_match = p->GetTeamId() == TEAM_HORDE ? 1 : 0;
+            uint32_t is_faction_match = 0;
+            if (player->GetTeamId() == TEAM_ALLIANCE) is_faction_match = p->GetTeamId() == TEAM_ALLIANCE ? 1 : 0;
+            if (player->GetTeamId() == TEAM_HORDE) is_faction_match = p->GetTeamId() == TEAM_HORDE ? 1 : 0;
 
-                // no matter where they are, buff all players
-                if (p->IsAlive() && !p->IsGameMaster() && is_faction_match)
-                {
-                    if (NerfHerder_WorldBuff_SpellId_01)
-                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_01, true);
-                    if (NerfHerder_WorldBuff_SpellId_02)
-                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_02, true);
-                    if (NerfHerder_WorldBuff_SpellId_03)
-                        p->CastSpell(p, NerfHerder_WorldBuff_SpellId_03, true);
-                }
-            });
+            // no matter where they are, buff all players
+            if (p->IsAlive() && !p->IsGameMaster() && is_faction_match)
+            {
+                if (NerfHerder_WorldBuff_SpellId_01)
+                    p->CastSpell(p, NerfHerder_WorldBuff_SpellId_01, true);
+                if (NerfHerder_WorldBuff_SpellId_02)
+                    p->CastSpell(p, NerfHerder_WorldBuff_SpellId_02, true);
+                if (NerfHerder_WorldBuff_SpellId_03)
+                    p->CastSpell(p, NerfHerder_WorldBuff_SpellId_03, true);
+            }
         });
     }
 
