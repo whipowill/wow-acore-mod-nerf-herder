@@ -23,11 +23,9 @@ No MySQL queries are used.  No effect in dungeons or raids.
 
 On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.
 
-I intend this mod to work with [HonorGuard](https://github.com/azerothcore/mod-gain-honor-guard).  This means enemy villages and towns need to be nerfed enough to make them raidable, to make honor farming work.
-
 Some of the villages, even in starter zones, have super high level NPCs that were originally meant to discourage enemy players on PVP servers from ruining things for the other faction.
 
-These guards will be nerfed to a level appropriate for their respective zones.
+These guards will be nerfed to a level appropriate for their respective zones.  You'll be able to burn and pillage any town you have the strength to conquer, and you will be rewarded.
 
 Finally, the coveted achievement of assassinating the enemy faction leaders is totally undoable without some significant tweaking.  I'm not sure how I will crack this nut yet but I will make an attempt.
 
