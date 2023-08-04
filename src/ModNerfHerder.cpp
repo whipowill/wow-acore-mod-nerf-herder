@@ -17,6 +17,7 @@ uint32_t NerfHerder_PlayerLevelEnabled = 0;
 uint32_t NerfHerder_ZoneLevelEnabled = 0;
 uint32_t NerfHerder_ForcePvPEnabled = 0;
 uint32_t NerfHerder_HonorPvPEnabled = 0;
+uint32_t NerfHerder_HonorGreyEnabled = 0;
 float NerfHerder_HonorPvPRate = 0;
 uint32_t NerfHerder_MaxPlayerLevel = 80;
 
@@ -41,6 +42,7 @@ public:
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
         NerfHerder_HonorPvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPEnabled", 0);
+        NerfHerder_HonorGreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.GreyIgnoreEnabled", 0);
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
     }
 };
@@ -334,6 +336,14 @@ public:
                     uint8 k_grey = Acore::XP::GetGrayLevel(k_level);
                     uint8 v_level = killed->getLevel();
 
+                    // handle grey override setting
+                    float honor_multiplier = NerfHerder_HonorPvPRate;
+                    if (NerfHerder_HonorGreyEnabled)
+                    {
+                        v_level = k_grey + 1; // treat grey as just above limit
+                        honor_multiplier = honor_multiplier / 2; // half honor
+                    }
+
                     // If guard or elite is grey to the player then no honor rewarded
                     if (v_level > k_grey)
                     {
@@ -360,9 +370,9 @@ public:
                         }
 
                         //Custom Gain Honor Rate
-                        if (NerfHerder_HonorPvPRate)
+                        if (honor_multiplier)
                         {
-                            honor_f *= NerfHerder_HonorPvPRate;
+                            honor_f *= honor_multiplier;
                         }
                         else
                         {

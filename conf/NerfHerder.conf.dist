@@ -15,5 +15,8 @@ NerfHerder.ForcePvPEnabled = 0
 # give honor on every pvp flagged kill, 0=off 1=on
 NerfHerder.HonorPvPEnabled = 0
 
+# grey NPCs still give honor, 0=off 1=on
+NerfHerder.HonorGreyEnabled = 0
+
 # rate of honor on every pvp flagged kill, 1=100% 2=200%
 NerfHerder.HonorPvPRate = 1

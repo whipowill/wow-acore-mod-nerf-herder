@@ -2,7 +2,7 @@
 
 An AzerothCore module for nerfing various NPCs throughout the game for various reasons.
 
-THIS PROJECT HAS NOT BEEN HEAVILY TESTED.  MY IDEAS MIGHT NOT BE GOOD.
+THIS PROJECT HAS NOT BEEN HEAVILY TESTED.  MY IDEAS MIGHT NOT BE GOODss.
 
 This mod is intended for private servers limited to Vanilla or TBC who need an easy fix for NPCs throughout Azeroth, such as town guards, over the maximum level.
 
@@ -16,9 +16,10 @@ No MySQL queries are used in this mod, everything is handled dynamically.
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
 - ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as pvp
 - ``NerfHerder.HonorPvPEnabled`` - grant honor rewards on pvp flagged NPC kills
+- ``NerfHerder.HonorGreyEnabled`` - grey NPCs still give honor
 - ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
 
-Note that this mod has no effect over any creatures in dungeons or raids.
+Note that this mod has no effect on any creatures in dungeons or raids.
 
 ## The Vision
 
