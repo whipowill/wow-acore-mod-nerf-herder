@@ -1,8 +1,12 @@
 #include "ModNerfHerder.h"
 #include "ScriptMgr.h"
 #include "Config.h"
+#include "World.h"
+#include "WorldPacket.h"
+#include "Unit.h"
 #include "Creature.h"
 #include "Player.h"
+#include "Group.h"
 #include "Chat.h"
 #include <unordered_map>
 
@@ -61,6 +65,10 @@ public:
 
     static uint32_t IsFieldAgent(Creature* creature)
     {
+        // I know this is not the perfect way to identify
+        // Alliance and Horde NPCs.  I have tried many methods
+        // and thus far this is the best way I've found.
+
         if (creature->IsPvP()) return 1;
         if (creature->IsGossip()) return 1;
         if (creature->IsVendor()) return 1;

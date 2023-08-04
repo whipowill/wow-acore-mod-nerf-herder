@@ -73,8 +73,10 @@ player->CastCustomSpell(player, PhysicalDamageTakenAura, &PhysicalDamageTakenMod
 
 - ChatGPT
 - 55Honey
+- HonorGuard
 
 ## External Links
 
 - [AzerothCore](https://github.com/azerothcore/azerothcore-wotlk)
 - [ZoneDebuff](https://github.com/55Honey/Acore_ZoneDebuff/blob/master/zoneDebuff.lua)
+- [HonorGuard](https://github.com/azerothcore/mod-gain-honor-guard)
