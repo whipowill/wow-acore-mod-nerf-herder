@@ -117,6 +117,10 @@ public:
 
         if (player->GetTeamId() == TEAM_ALLIANCE)
         {
+            // has it been enough time since last world buff?  if not, bail
+            if ((timestamp - NerfHerder_WorldBuff_Alliance_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
+                return;
+
             // do we need to reset the faction kill count?
             if ((timestamp - NerfHerder_WorldBuff_Alliance_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
                 NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
@@ -126,17 +130,18 @@ public:
             NerfHerder_WorldBuff_Alliance_LastKillCount++;
 
             // have we achieved enough kills?  if not, bail
-            if (NerfHerder_WorldBuff_Alliance_LastKillCount < NerfHerder_WorldBuff_KillCount) return;
-
-            // has it been enough time since last world buff?  if not, bail
-            if ((timestamp - NerfHerder_WorldBuff_Alliance_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60)) return;
+            if (NerfHerder_WorldBuff_Alliance_LastKillCount < NerfHerder_WorldBuff_KillCount)
+                return;
 
             // at this point, we are going to world buff so log it
-            NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
             NerfHerder_WorldBuff_Alliance_LastBuffTime = timestamp;
         }
         else if (player->GetTeamId() == TEAM_HORDE)
         {
+            // has it been enough time since last world buff?  if not, bail
+            if ((timestamp - NerfHerder_WorldBuff_Horde_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
+                return;
+
             // do we need to reset the faction kill count?
             if ((timestamp - NerfHerder_WorldBuff_Horde_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
                 NerfHerder_WorldBuff_Horde_LastKillCount = 0;
@@ -146,10 +151,8 @@ public:
             NerfHerder_WorldBuff_Horde_LastKillCount++;
 
             // have we achieved enough kills?  if not, bail
-            if (NerfHerder_WorldBuff_Horde_LastKillCount < NerfHerder_WorldBuff_KillCount) return;
-
-            // has it been enough time since last world buff?  if not, bail
-            if ((timestamp - NerfHerder_WorldBuff_Horde_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60)) return;
+            if (NerfHerder_WorldBuff_Horde_LastKillCount < NerfHerder_WorldBuff_KillCount)
+                return;
 
             // at this point, we are going to world buff so log it
             NerfHerder_WorldBuff_Horde_LastBuffTime = timestamp;
