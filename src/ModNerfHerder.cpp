@@ -13,13 +13,18 @@
 #include <unordered_map>
 
 uint32_t NerfHerder_Enabled = 0;
+
 uint32_t NerfHerder_PlayerLevelEnabled = 0;
 uint32_t NerfHerder_ZoneLevelEnabled = 0;
+
 uint32_t NerfHerder_ForcePvPEnabled = 0;
+
 uint32_t NerfHerder_HonorPvPEnabled = 0;
 float NerfHerder_HonorPvPRate = 0;
+
 uint32_t NerfHerder_HonorGreyEnabled = 0;
 float NerfHerder_HonorGreyRate = 0;
+
 uint32_t NerfHerder_MaxPlayerLevel = 80;
 
 class NerfHerderConfig : public WorldScript
@@ -39,13 +44,18 @@ public:
     {
         // pull configs
         NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
+
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
+
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
+
         NerfHerder_HonorPvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPEnabled", 0);
         NerfHerder_HonorPvPRate = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPRate", 0);
+
         NerfHerder_HonorGreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyEnabled", 0);
         NerfHerder_HonorGreyRate = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyRate", 0);
+
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
     }
 };
@@ -341,10 +351,13 @@ public:
 
                     // handle grey override setting
                     float honor_multiplier = NerfHerder_HonorPvPRate;
-                    if (NerfHerder_HonorGreyEnabled)
+                    if (v_level <= k_grey) // if npc was too low
                     {
-                        v_level = k_grey + 1; // treat grey as just above limit
-                        honor_multiplier = NerfHerder_HonorGreyRate;
+                        if (NerfHerder_HonorGreyEnabled)
+                        {
+                            v_level = k_grey + 1; // treat npc as just above limit
+                            honor_multiplier = NerfHerder_HonorGreyRate;
+                        }
                     }
 
                     // If guard or elite is grey to the player then no honor rewarded
