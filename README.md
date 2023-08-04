@@ -2,19 +2,23 @@
 
 An AzerothCore module for nerfing various NPCs throughout the game for various reasons.
 
-This mod is primarily intended for servers limited to Vanilla or TBC who need an easy fix for NPCs throughout Azeroth, such as town guards, over the maximum level.
-
 THIS PROJECT IS IN IT'S INFANCY.  IT HAS NOT BEEN HEAVILY TESTED.
 
-This dynamic method of solving the problem won't perfectly match the original game.  The idea is to get close, and add additional options to promote world PVP against the NPCs.
+This mod is intended for private servers limited to Vanilla or TBC who need an easy fix for NPCs throughout Azeroth, such as town guards, over the maximum level.
+
+But more than that, it lets you engage in world PvP by flagging all NPCs of both factions as PvP and granting you honor for each one that you honorably kill.
+
+No MySQL queries are used in this mod.  Everything is handled dynamically as the NPCs are loaded into the game.
 
 ## Configuration
 
-- ``NerfHerder.MaxPlayerLevelEnable`` - Nerf any creature over the max player level (from ``worldserver.conf``), provided they are not in a dungeon or raid.  **This includes town guards and faction leaders.**
+- ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
+- ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
+- ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as pvp
+- ``NerfHerder.HonorPvPEnabled`` - grant honor rewards on pvp-flagged NPC kills
+- ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
 
-- ``NerfHerder.MaxZoneLevelEnable`` - Nerf any creature over the zone recommended questing level, provided they are allied to Alliance or Horde.  **This includes village guards and flight masters.**
-
-- ``NerfHerder.ForceFactionPvPEnable`` - Nerf any creature over the zone recommended questing level, provided they are allied to Alliance or Horde.  **This includes village guards and flight masters.**
+Note that this mod has no effect over any creatures in dungeons or raids.
 
 ## The Vision
 

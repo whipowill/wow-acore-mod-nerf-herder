@@ -2,7 +2,42 @@
 #include "ScriptMgr.h"
 #include "Config.h"
 #include "Creature.h"
+#include "Player.h"
+#include "Chat.h"
 #include <unordered_map>
+
+uint32_t NerfHerder_Enabled = 0;
+uint32_t NerfHerder_PlayerLevelEnabled = 0;
+uint32_t NerfHerder_ZoneLevelEnabled = 0;
+uint32_t NerfHerder_ForcePvPEnabled = 0;
+uint32_t NerfHerder_HonorPvPEnabled = 0;
+float NerfHerder_HonorPvPRate = 0;
+uint32_t NerfHerder_MaxPlayerLevel = 80;
+
+class NerfHerderConfig : public WorldScript
+{
+public:
+    NerfHerderConfig() : WorldScript("NerfHerderConfig") {}
+
+    void OnBeforeConfigLoad(bool reload) override
+    {
+        if (!reload)
+        {
+            SetInitialWorldSettings();
+        }
+    }
+
+    void SetInitialWorldSettings()
+    {
+        // pull configs
+        NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
+        NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
+        NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
+        NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
+        NerfHerder_HonorPvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPEnabled", 0);
+        NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
+    }
+};
 
 struct ZoneData {
     std::string zoneName;
@@ -18,7 +53,7 @@ struct FactionData {
     uint32_t factionTranslatedID; // 1=ally 2=horde
 };
 
-class NerfHerder
+class NerfHerderHelper
 {
 public:
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
@@ -50,10 +85,10 @@ public:
     {
         uint32_t zone_id = creature->GetZoneId();
 
-        if (NerfHerder::zoneDataMap.find(zone_id) == NerfHerder::zoneDataMap.end())
+        if (NerfHerderHelper::zoneDataMap.find(zone_id) == NerfHerderHelper::zoneDataMap.end())
             return 0;
 
-        return NerfHerder::zoneDataMap[zone_id].maxLevel;
+        return NerfHerderHelper::zoneDataMap[zone_id].maxLevel;
     }
 
     static void UpdateCreature(Creature* creature, uint32_t new_level)
@@ -91,7 +126,7 @@ public:
 };
 
 // https://www.azerothcore.org/wiki/faction
-std::unordered_map<uint32_t, FactionData> NerfHerder::factionDataMap = {
+std::unordered_map<uint32_t, FactionData> NerfHerderHelper::factionDataMap = {
     {189, {"Alliance Generic", 189, 1}},
     {469, {"Alliance", 469, 1}},
     {891, {"Alliance Forces", 891, 1}},
@@ -102,11 +137,11 @@ std::unordered_map<uint32_t, FactionData> NerfHerder::factionDataMap = {
     {892, {"Horde Forces", 892, 2}},
     {1052, {"Horde Expedition", 1052, 2}},
     {1113, {"Mount - Taxi - Horde", 1113, 2}}
-};
+}; // I didn't end up using this, but I leave it here in case someday I do.
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
 // https://wowpedia.fandom.com/wiki/Zones_by_level_(Cataclysm)
-std::unordered_map<uint32_t, ZoneData> NerfHerder::zoneDataMap = {
+std::unordered_map<uint32_t, ZoneData> NerfHerderHelper::zoneDataMap = {
     {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
     {1, {"Dun Morogh", 1, 1, 10, ""}},
     {14, {"Durotar", 14, 1, 10, ""}},
@@ -188,26 +223,22 @@ public:
         if (creature->IsPlayer()) return;
         if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground()) return;
 
-        // pull config
-        uint32_t is_enabled = sConfigMgr->GetOption<int>("NerfHerder.Enable", 0);
-
         // catch errors
-        if (!is_enabled) return;
+        if (!NerfHerder_Enabled) return;
 
         // init
         uint32_t max_level;
 
         // determine alliance / horde npcs in the world
-        uint32_t is_field_agent = NerfHerder::IsFieldAgent(creature);
+        uint32_t is_field_agent = NerfHerderHelper::IsFieldAgent(creature);
 
         // if max zone level is enabled...
-        uint32_t is_zone_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxZoneLevelEnable", 0);
-        if (is_zone_level_enabled)
+        if (NerfHerder_ZoneLevelEnabled)
         {
             if (is_field_agent)
             {
                 // get max level for zone
-                max_level = NerfHerder::GetZoneLevel(creature) + 5;
+                max_level = NerfHerderHelper::GetZoneLevel(creature) + 5;
 
                 // if valid
                 if (max_level && max_level >= 10)
@@ -216,18 +247,16 @@ public:
                     if (creature->GetLevel() > max_level)
                     {
                         // nerf em
-                        NerfHerder::UpdateCreature(creature, max_level);
+                        NerfHerderHelper::UpdateCreature(creature, max_level);
                     }
                 }
             }
         }
 
         // if max player level is enabled...
-        uint32_t is_player_level_enabled = sConfigMgr->GetOption<int>("NerfHerder.MaxPlayerLevelEnable", 0);
-        if (is_player_level_enabled)
+        if (NerfHerder_PlayerLevelEnabled)
         {
-            // get max level for players
-            max_level = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
+            max_level = NerfHerder_MaxPlayerLevel;
 
             // if valid
             if (max_level && max_level >= 10)
@@ -239,14 +268,13 @@ public:
                     max_level = creature->isElite() ? max_level : max_level - 5;
 
                     // nerf em
-                    NerfHerder::UpdateCreature(creature, max_level);
+                    NerfHerderHelper::UpdateCreature(creature, max_level);
                 }
             }
         }
 
         // if force pvp is enabled...
-        uint32_t is_force_pvp = sConfigMgr->GetOption<int>("NerfHerder.ForceFactionPvPEnable", 0);
-        if (is_force_pvp)
+        if (NerfHerder_ForcePvPEnabled)
         {
             if (is_field_agent)
             {
@@ -257,8 +285,130 @@ public:
     }
 };
 
+class NerfHerderPlayer : public PlayerScript
+{
+public:
+    NerfHerderPlayer() : PlayerScript("NerfHerderPlayer") {}
+
+    // This was all taken straight from HonorGuard mod, but tweaked to
+    // give honor on any pvp flagged creature.
+
+    void OnCreatureKill(Player* player, Creature* killed)  //override
+    {
+        RewardHonor(player, killed);
+    }
+
+    void OnCreatureKilledByPet(Player* player, Creature* killed) //override
+    {
+        RewardHonor(player, killed);
+    }
+
+    void RewardHonor(Player* player, Creature* killed)
+    {
+        if (NerfHerder_HonorPvPEnabled && player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
+        {
+            if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
+            {
+                if ((NerfHerder_HonorPvPEnabled && killed->ToCreature()->IsPvP()))
+                {
+                    std::ostringstream ss;
+                    int honor = -1; //Honor is added as an int
+                    float honor_f = (float)honor; //Convert honor to float for calculations
+                    player->UpdateHonorFields();
+
+                    int groupsize = GetNumInGroup(player); //Determine if it was a gang beatdown
+
+                    //Determine level that is gray
+                    uint8 k_level = player->getLevel();
+                    uint8 k_grey = Acore::XP::GetGrayLevel(k_level);
+                    uint8 v_level = killed->getLevel();
+
+                    // If guard or elite is grey to the player then no honor rewarded
+                    if (v_level > k_grey)
+                    {
+                        honor_f = ceil(Acore::Honor::hk_honor_at_level_f(k_level) * (v_level - k_grey) / (k_level - k_grey));
+
+                        // count the number of playerkills in one day
+                        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
+                        // and those in a lifetime
+                        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS, killed->getClass());
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_RACE, killed->getRace());
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL, 1, 0, killed);
+
+                        if (killed != nullptr)
+                        {
+                            //A Gang beatdown of an enemy rewards less honor
+                            if (groupsize > 1)
+                                honor_f /= groupsize;
+
+                            // apply honor multiplier from aura (not stacking-get highest)
+                            AddPct(honor_f, player->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HONOR_GAIN_PCT));
+                        }
+
+                        //Custom Gain Honor Rate
+                        if (NerfHerder_HonorPvPRate)
+                        {
+                            honor_f *= NerfHerder_HonorPvPRate;
+                        }
+                        else
+                        {
+                            honor_f *= sWorld->getRate(RATE_HONOR);
+                        }
+
+                        //sLog->outError("%u: gained honor with a rate: %0.2f", player->GetGUID(), sWorld->getRate(RATE_HONOR));
+
+                        // Convert Honor Back to an int to add to player
+                        honor = int32(honor_f);
+
+                        //Not sure if this works.
+                        WorldPacket data(SMSG_PVP_CREDIT, 4 + 8 + 4);
+                        data << honor;
+
+                        // add honor points to player
+                        player->ModifyHonorPoints(honor);
+
+                        player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
+
+                        /*
+                        //announce to player if honor was gained
+                        if (GainHonorGuardOnGuardKill && killed->ToCreature()->IsGuard() && GainHonorGuardOnGuardKillAnnounce)
+                        {
+                            ss << "You have been awarded |cff4CFF00%i |rHonor.";
+                            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
+                        }
+                        else if (GainHonorGuardOnEliteKill && killed->ToCreature()->isElite() && GainHonorGuardOnEliteKillAnnounce)
+                        {
+                            ss << "You have been awarded |cffFF8000%i |rHonor.";
+                            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
+                        }
+                        */
+                    }
+                }
+            }
+        }
+    }
+
+    // Get the player's group size
+    int GetNumInGroup(Player* player)
+    {
+        int numInGroup = 1;
+        Group *group = player->GetGroup();
+        if (group)
+        {
+            Group::MemberSlotList const& groupMembers = group->GetMemberSlots();
+            numInGroup = groupMembers.size();
+        }
+        return numInGroup;
+    }
+};
+
 void AddNerfHerderScripts()
 {
-    new NerfHerder();
+    new NerfHerderConfig();
+    new NerfHerderHelper();
     new NerfHerderCreature();
+    new NerfHerderPlayer();
 }
