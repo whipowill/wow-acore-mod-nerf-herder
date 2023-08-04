@@ -302,6 +302,7 @@ public:
 
     // This was all taken straight from HonorGuard mod, but tweaked to
     // give honor on any pvp flagged creature.
+    // https://github.com/azerothcore/mod-gain-honor-guard/blob/master/src/GainHonorGuard.cpp
 
     void OnCreatureKill(Player* player, Creature* killed)  //override
     {
