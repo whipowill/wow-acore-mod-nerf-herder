@@ -1,11 +1,13 @@
 #include "ModNerfHerder.h"
 #include "ScriptMgr.h"
+#include "Formulas.h"
 #include "Config.h"
 #include "World.h"
 #include "WorldPacket.h"
 #include "Unit.h"
 #include "Creature.h"
 #include "Player.h"
+#include "Pet.h"
 #include "Group.h"
 #include "Chat.h"
 #include <unordered_map>

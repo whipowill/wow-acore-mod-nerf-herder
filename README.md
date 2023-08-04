@@ -6,11 +6,13 @@ THIS PROJECT IS IN IT'S INFANCY.  IT HAS NOT BEEN HEAVILY TESTED.
 
 This mod is intended for private servers limited to Vanilla or TBC who need an easy fix for NPCs throughout Azeroth, such as town guards, over the maximum level.
 
-But more than that, it lets you engage in world PvP by flagging all NPCs of both factions as PvP and granting you honor for each one that you honorably kill.
+But more than that, it's for servers that want to engage in world PvP by flagging all NPCs of both factions as PvP and granting you honor for each one that you honorably kill.
 
-No MySQL queries are used in this mod.  Everything is handled dynamically as the NPCs are loaded into the game.
+No MySQL queries are used in this mod, everything is handled dynamically as the NPCs are loaded into the game.
 
 ## Configuration
+
+Pick what you want:
 
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
