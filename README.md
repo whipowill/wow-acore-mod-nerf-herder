@@ -2,7 +2,7 @@
 
 An AzerothCore module for nerfing faction NPCs to promote world PvP.
 
-This mod was initially intended for private servers limited to Vanilla or TBC who needed an easy fix for NPCsover the maximum player level, such as town guards.
+This mod was initially intended for private servers limited to Vanilla or TBC who needed an easy fix for NPCs over the maximum player level, such as town guards.
 
 But it became more of a world PvP mod, adding burning and pillaging to the game by flagging all NPCs of both factions as PvP and granting honor and world buffs for killing them.
 
