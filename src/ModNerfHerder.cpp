@@ -110,15 +110,17 @@ public:
 
     static void ApplyWorldBuff(Player* player)
     {
+        // if disabled, bail
         if (!NerfHerder_WorldBuff_Enabled) return;
 
         // log the time
         uint32_t timestamp = std::time(nullptr);
 
+        // flight checks
         if (player->GetTeamId() == TEAM_ALLIANCE)
         {
             // has it been enough time since last world buff?  if not, bail
-            if ((timestamp - NerfHerder_WorldBuff_Alliance_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
+            if ((timestamp - NerfHerder_WorldBuff_Alliance_LastBuffTime) < (NerfHerder_WorldBuff_Cooldown * 60))
                 return;
 
             // do we need to reset the faction kill count?
@@ -139,7 +141,7 @@ public:
         else if (player->GetTeamId() == TEAM_HORDE)
         {
             // has it been enough time since last world buff?  if not, bail
-            if ((timestamp - NerfHerder_WorldBuff_Horde_LastBuffTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
+            if ((timestamp - NerfHerder_WorldBuff_Horde_LastBuffTime) < (NerfHerder_WorldBuff_Cooldown * 60))
                 return;
 
             // do we need to reset the faction kill count?
