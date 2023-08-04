@@ -167,7 +167,7 @@ public:
             if (player->GetTeamId() == TEAM_HORDE) is_faction_match = p->GetTeamId() == TEAM_HORDE ? 1 : 0;
 
             // no matter where they are, buff all players
-            if (p->IsAlive() && !p->IsGameMaster() && is_faction_match)
+            if (p->IsAlive() && p->IsPlayer() && is_faction_match)
             {
                 if (NerfHerder_WorldBuff_SpellId_01)
                     p->CastSpell(p, NerfHerder_WorldBuff_SpellId_01, true);
