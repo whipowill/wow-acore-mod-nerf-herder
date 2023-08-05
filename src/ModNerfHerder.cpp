@@ -115,7 +115,7 @@ struct VendorData {
 class NerfHerderHelper
 {
 public:
-    static std::unordered_map<uint32_t, ZoneData> vendorDataMap;
+    static std::unordered_map<uint32_t, VendorData> vendorDataMap;
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_map<uint32_t, FactionData> factionDataMap;
 
@@ -237,6 +237,8 @@ public:
             return 1;
         if (NerfHerder_MaxPlayerLevel <= 70 and expansionID > 1)
             return 1;
+
+        return 0;
     }
 
     static uint32_t GetZoneLevel(Creature* creature)
