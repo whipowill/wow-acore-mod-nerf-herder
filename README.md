@@ -17,10 +17,11 @@ Does not affect world database.  Does not affect dungeons or raids.
 - ``NerfHerder.Enabled`` - enable this module
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
-- ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as pvp
-- ``NerfHerder.HonorPvPEnabled`` - grant honor rewards on pvp flagged NPC kills
+- ``NerfHerder.HidePvPVendorsEnabled`` - hide PvP vendors who don't belong
+- ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as PvP
+- ``NerfHerder.HonorPvPEnabled`` - grant honor rewards on PvP flagged NPC kills
 - ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
-- ``NerfHerder.HonorGreyEnabled`` - grey pvp flagged NPCs give honor
+- ``NerfHerder.HonorGreyEnabled`` - grey PvP flagged NPCs give honor
 - ``NerfHerder.HonorGreyRate`` - adjust the rate of grey honor gain
 
 **Experimental**

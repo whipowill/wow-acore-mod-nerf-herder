@@ -226,7 +226,7 @@ public:
     {
         if (!NerfHerder_HidePvPVendorsEnabled) return 0;
 
-        uint32_t guid = creature->GetGUID();
+        uint32_t guid = creature->GetEntry();
 
         if (NerfHerderHelper::vendorDataMap.find(guid) == NerfHerderHelper::vendorDataMap.end())
             return 0;
