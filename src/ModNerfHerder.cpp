@@ -226,12 +226,12 @@ public:
     {
         if (!NerfHerder_HidePvPVendorsEnabled) return 0;
 
-        uint32_t guid = creature->GetEntry();
+        uint32_t entry_id = creature->GetEntry();
 
         if (NerfHerderHelper::vendorDataMap.find(guid) == NerfHerderHelper::vendorDataMap.end())
             return 0;
 
-        uint32_t expansionID = NerfHerderHelper::vendorDataMap[guid].expansionID;
+        uint32_t expansionID = NerfHerderHelper::vendorDataMap[entry_id].expansionID;
 
         if (NerfHerder_MaxPlayerLevel <= 60 and expansionID > 0)
             return 1;
@@ -287,7 +287,7 @@ public:
     }
 };
 
-std::unordered_map<VendorData> NerfHerderHelper::vendorDataMap = {
+std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
     {32385, {"Doris Volanthius", 2, 2, 32385}},
     {32380, {"Lieutenant Tristia", 1, 2, 32380}},
     {32832, {"Blood Guard Zar'shi", 2, 2, 32832}},
