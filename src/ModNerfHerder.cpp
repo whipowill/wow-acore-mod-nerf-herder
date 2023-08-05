@@ -408,7 +408,7 @@ public:
         // if pvp vendors
         if (NerfHerderHelper::IsPvPVendor(creature))
         {
-            creature->SetVisibility(false);
+            creature->SetVisible(false);
         }
 
         // init
