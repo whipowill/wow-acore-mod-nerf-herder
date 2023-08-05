@@ -231,8 +231,6 @@ public:
         if (NerfHerderHelper::vendorDataMap.find(entry_id) == NerfHerderHelper::vendorDataMap.end())
             return 0;
 
-        return 1;
-
         uint32_t expansion_id = NerfHerderHelper::vendorDataMap[entry_id].expansionID;
 
         if (NerfHerder_MaxPlayerLevel <= 70 and expansion_id > 1)
@@ -292,14 +290,14 @@ public:
 };
 
 std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
-    {32385, {"Doris Volanthius", 2, 2, 32385}},
-    {32380, {"Lieutenant Tristia", 1, 2, 32380}},
-    {32832, {"Blood Guard Zar'shi", 2, 2, 32832}},
-    {32834, {"Knight-Lieutenant Moonstrike", 1, 2, 32834}},
-    {32383, {"Sergeant Thunderhorn", 2, 2, 32383}},
-    {32381, {"Captain Dirgehammer", 1, 2, 32381}},
-    {32382, {"Lady Palanseer", 2, 2, 32382}}, // jewel crafting vendor
-    {32379, {"Captain O'Neal", 1, 2, 32379}}, // jewel crafting vendor
+    {34060, {"Doris Volanthius", 2, 2, 34060}},
+    {34078, {"Lieutenant Tristia", 1, 2, 34078}},
+    {34063, {"Blood Guard Zar'shi", 2, 2, 34063}},
+    {34084, {"Knight-Lieutenant Moonstrike", 1, 2, 34084}},
+    {34038, {"Sergeant Thunderhorn", 2, 2, 34038}},
+    {34075, {"Captain Dirgehammer", 1, 2, 34075}},
+    {34043, {"Lady Palanseer", 2, 2, 34043}}, // jewel crafting vendor
+    {34081, {"Captain O'Neal", 1, 2, 34081}}, // jewel crafting vendor
     //{12796, {"Raider Bork", 2, 2, 12796}}, // honor mount vendor
     //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
     {12788, {"Legionnaire Teena", 2, 1, 12788}},
@@ -407,9 +405,10 @@ public:
         // catch errors
         if (!NerfHerder_Enabled) return;
 
-        // if pvp vendors
+        // if pvp vendor
         if (NerfHerderHelper::IsPvPVendor(creature))
         {
+            // hide them
             creature->SetVisible(false);
         }
 
