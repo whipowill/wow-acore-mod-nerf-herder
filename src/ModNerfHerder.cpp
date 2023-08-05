@@ -109,7 +109,7 @@ struct VendorData {
     std::string vendorName;
     uint32_t teamID;
     uint32_t expansionID; // 0, 1, or 2
-    uint32_t GUID;
+    uint32_t entryID;
 };
 
 class NerfHerderHelper
@@ -231,11 +231,11 @@ public:
         if (NerfHerderHelper::vendorDataMap.find(entry_id) == NerfHerderHelper::vendorDataMap.end())
             return 0;
 
-        uint32_t expansionID = NerfHerderHelper::vendorDataMap[entry_id].expansionID;
+        uint32_t expansion_id = NerfHerderHelper::vendorDataMap[entry_id].expansionID;
 
-        if (NerfHerder_MaxPlayerLevel <= 60 and expansionID > 0)
+        if (NerfHerder_MaxPlayerLevel <= 70 and expansion_id > 1)
             return 1;
-        if (NerfHerder_MaxPlayerLevel <= 70 and expansionID > 1)
+        if (NerfHerder_MaxPlayerLevel <= 60 and expansion_id > 0)
             return 1;
 
         return 0;
@@ -298,8 +298,6 @@ std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
     {32381, {"Captain Dirgehammer", 1, 2, 32381}},
     {32382, {"Lady Palanseer", 2, 2, 32382}}, // jewel crafting vendor
     {32379, {"Captain O'Neal", 1, 2, 32379}}, // jewel crafting vendor
-    //{12796, {"Raider Bork", 2, 2, 12796}}, // honor mount vendor
-    //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
     {12788, {"Legionnaire Teena", 2, 1, 12788}},
     {12778, {"Lieutenant Rachel Vaccar ", 1, 1, 12778}},
 }; // there are no weapons pvp vendors in TBC or WOTLK
