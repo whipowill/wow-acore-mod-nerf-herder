@@ -231,6 +231,8 @@ public:
         if (NerfHerderHelper::vendorDataMap.find(entry_id) == NerfHerderHelper::vendorDataMap.end())
             return 0;
 
+        return 1;
+
         uint32_t expansion_id = NerfHerderHelper::vendorDataMap[entry_id].expansionID;
 
         if (NerfHerder_MaxPlayerLevel <= 70 and expansion_id > 1)
@@ -298,8 +300,10 @@ std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
     {32381, {"Captain Dirgehammer", 1, 2, 32381}},
     {32382, {"Lady Palanseer", 2, 2, 32382}}, // jewel crafting vendor
     {32379, {"Captain O'Neal", 1, 2, 32379}}, // jewel crafting vendor
+    //{12796, {"Raider Bork", 2, 2, 12796}}, // honor mount vendor
+    //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
     {12788, {"Legionnaire Teena", 2, 1, 12788}},
-    {12778, {"Lieutenant Rachel Vaccar ", 1, 1, 12778}},
+    {12778, {"Lieutenant Rachel Vaccar", 1, 1, 12778}}
 }; // there are no weapons pvp vendors in TBC or WOTLK
 
 // https://www.azerothcore.org/wiki/faction
