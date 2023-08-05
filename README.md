@@ -12,8 +12,6 @@ Does not affect world database.  Does not affect dungeons or raids.
 
 ## Configuration
 
-**Basics**
-
 - ``NerfHerder.Enabled`` - enable this module
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
@@ -23,9 +21,6 @@ Does not affect world database.  Does not affect dungeons or raids.
 - ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
 - ``NerfHerder.HonorGreyEnabled`` - grey PvP flagged NPCs give honor
 - ``NerfHerder.HonorGreyRate`` - adjust the rate of grey honor gain
-
-**Experimental**
-
 - ``NerfHerder.WorldBuff.Enabled`` - give world buff on kills
 - ``NerfHerder.WorldBuff.KillCount`` - number of kills to accumulate to get world buff
 - ``NerfHerder.WorldBuff.Cooldown`` - time cooldown between world buffs (minutes)
