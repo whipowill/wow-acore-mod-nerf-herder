@@ -18,6 +18,8 @@ uint32_t NerfHerder_Enabled = 0;
 uint32_t NerfHerder_PlayerLevelEnabled = 0;
 uint32_t NerfHerder_ZoneLevelEnabled = 0;
 
+uint32_t NerfHerder_HidePvPVendorsEnabled = 0;
+
 uint32_t NerfHerder_ForcePvPEnabled = 0;
 
 uint32_t NerfHerder_HonorPvPEnabled = 0;
@@ -66,6 +68,8 @@ public:
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
 
+        NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
+
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
 
         NerfHerder_HonorPvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPEnabled", 0);
@@ -98,12 +102,20 @@ struct ZoneData {
 struct FactionData {
     std::string factionName;
     uint32_t factionID;
-    uint32_t factionTranslatedID; // 1=ally 2=horde
+    uint32_t teamID; // 1=ally 2=horde
+};
+
+struct VendorData {
+    std::string vendorName;
+    uint32_t teamID;
+    uint32_t expansionID; // 0, 1, or 2
+    uint32_t GUID;
 };
 
 class NerfHerderHelper
 {
 public:
+    static std::unordered_map<uint32_t, ZoneData> vendorDataMap;
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_map<uint32_t, FactionData> factionDataMap;
 
@@ -210,6 +222,23 @@ public:
         return 0;
     }
 
+    static uint32_t IsPvPVendor(Creature* creature)
+    {
+        if (!NerfHerder_HidePvPVendorsEnabled) return 0;
+
+        uint32_t guid = creature->GetGUID();
+
+        if (NerfHerderHelper::vendorDataMap.find(guid) == NerfHerderHelper::vendorDataMap.end())
+            return 0;
+
+        uint32_t expansionID = NerfHerderHelper::vendorDataMap[guid].expansionID;
+
+        if (NerfHerder_MaxPlayerLevel <= 60 and expansionID > 0)
+            return 1;
+        if (NerfHerder_MaxPlayerLevel <= 70 and expansionID > 1)
+            return 1;
+    }
+
     static uint32_t GetZoneLevel(Creature* creature)
     {
         uint32_t zone_id = creature->GetZoneId();
@@ -256,6 +285,21 @@ public:
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
     }
+};
+
+std::unordered_map<VendorData> NerfHerderHelper::vendorDataMap = {
+    {32385, {"Doris Volanthius", 2, 2, 32385}},
+    {32380, {"Lieutenant Tristia", 1, 2, 32380}},
+    {32832, {"Blood Guard Zar'shi", 2, 2, 32832}},
+    {32834, {"Knight-Lieutenant Moonstrike", 1, 2, 32834}},
+    {32383, {"Sergeant Thunderhorn", 2, 2, 32383}},
+    {32381, {"Captain Dirgehammer", 1, 2, 32381}},
+    {32382, {"Lady Palanseer", 2, 2, 32382}}, // jewel crafting vendor
+    {32379, {"Captain O'Neal", 1, 2, 32379}}, // jewel crafting vendor
+    //{12796, {"Raider Bork", 2, 2, 12796}}, // honor mount vendor
+    //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
+    {12788, {"Legionnaire Teena", 2, 1, 12788}},
+    {12778, {"Lieutenant Rachel Vaccar ", 1, 1, 12778}},
 };
 
 // https://www.azerothcore.org/wiki/faction
@@ -358,6 +402,12 @@ public:
 
         // catch errors
         if (!NerfHerder_Enabled) return;
+
+        // if pvp vendors
+        if (NerfHerderHelper::IsPvPVendor())
+        {
+            creature->SetVisibility(false);
+        }
 
         // init
         uint32_t max_level;

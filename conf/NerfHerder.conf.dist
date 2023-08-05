@@ -9,6 +9,9 @@ NerfHerder.PlayerLevelEnabled = 1
 # nerf any alliance and horde over max zone level, 0=off 1=on
 NerfHerder.ZoneLevelEnabled = 0
 
+# hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
+NerfHerder.HidePvPVendorsEnabled = 1
+
 # force any alliance and horde to pvp, 0=off 1=on
 NerfHerder.ForcePvPEnabled = 0
 
