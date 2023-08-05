@@ -228,7 +228,7 @@ public:
 
         uint32_t entry_id = creature->GetEntry();
 
-        if (NerfHerderHelper::vendorDataMap.find(guid) == NerfHerderHelper::vendorDataMap.end())
+        if (NerfHerderHelper::vendorDataMap.find(entry_id) == NerfHerderHelper::vendorDataMap.end())
             return 0;
 
         uint32_t expansionID = NerfHerderHelper::vendorDataMap[entry_id].expansionID;
@@ -300,7 +300,7 @@ std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
     //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
     {12788, {"Legionnaire Teena", 2, 1, 12788}},
     {12778, {"Lieutenant Rachel Vaccar ", 1, 1, 12778}},
-};
+}; // there are no weapons pvp vendors in TBC or WOTLK
 
 // https://www.azerothcore.org/wiki/faction
 std::unordered_map<uint32_t, FactionData> NerfHerderHelper::factionDataMap = {
