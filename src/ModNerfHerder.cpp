@@ -202,13 +202,11 @@ public:
         // GetMapId() involves too many sub-areas, even inside of towns.
         // GetUnitFlags() is the same thing as the below method.
 
+        // this method only works on players
+        //if (creature->GetTeamId() == TEAM_ALLIANCE) return 1;
+        //if (creature->GetTeamId() == TEAM_HORDE) return 1;
+
         if (creature->IsPvP()) return 1;
-
-        // testing this approach
-        if (creature->GetTeamId() == TEAM_ALLIANCE) return 1;
-        if (creature->GetTeamId() == TEAM_HORDE) return 1;
-
-        /*
         if (creature->IsGossip()) return 1;
         if (creature->IsVendor()) return 1;
         if (creature->IsTrainer()) return 1;
@@ -224,7 +222,6 @@ public:
         if (creature->IsAuctioner()) return 1;
         if (creature->IsArmorer()) return 1;
         if (creature->IsServiceProvider()) return 1;
-        */
 
         return 0;
     }
