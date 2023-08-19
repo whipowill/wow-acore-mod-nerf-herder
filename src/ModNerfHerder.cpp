@@ -203,6 +203,11 @@ public:
         // GetUnitFlags() is the same thing as the below method.
 
         if (creature->IsPvP()) return 1;
+
+        // testing this approach
+        if (creature->GetTeamId() == TEAM_ALLIANCE) return 1;
+        if (creature->GetTeamId() == TEAM_HORDE) return 1;
+
         if (creature->IsGossip()) return 1;
         if (creature->IsVendor()) return 1;
         if (creature->IsTrainer()) return 1;
