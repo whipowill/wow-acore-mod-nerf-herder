@@ -306,6 +306,10 @@ std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
     //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
     {12788, {"Legionnaire Teena", 2, 1, 12788}},
     {12778, {"Lieutenant Rachel Vaccar", 1, 1, 12778}}
+    {33934, {"Ecton Brasstumbler", 0, 2, 33934}} // arena points vendor gadgetzan
+    {33935, {"Evee Coperspring", 0, 2, 33935}} // arena points vendor gadgetzan
+    {33939, {"Argex Irongut", 0, 2, 33939}} // arena points vendor gadgetzan
+    {34093, {"Blazzek the Biter", 0, 2, 34093}} // arena points vendor gadgetzan
 }; // there are no weapons pvp vendors in TBC or WOTLK
 
 // https://www.azerothcore.org/wiki/faction
