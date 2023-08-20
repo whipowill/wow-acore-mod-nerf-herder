@@ -473,6 +473,10 @@ public:
         {
             if (NerfHerderHelper::IsPvPVendor(creature))
             {
+                // This "hiding" method works, but not if you are a GM.
+                // That means the characters aren't really removed from the game?
+                // Also not sure how this might effect world PvP.
+
                 // hide them
                 creature->SetVisible(false);
             }
