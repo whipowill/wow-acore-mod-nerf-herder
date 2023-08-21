@@ -325,8 +325,11 @@ std::unordered_map<uint32_t, FactionData> NerfHerderHelper::factionDataMap = {
 }; // I didn't end up using this, but I leave it here in case someday I do.
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
+// https://wowpedia.fandom.com/wiki/Zones_by_level_(original)
 // https://wowpedia.fandom.com/wiki/Zones_by_level_(Cataclysm)
+// there was no WOTLK list so I had to edit this to fix it up
 std::unordered_map<uint32_t, ZoneData> NerfHerderHelper::zoneDataMap = {
+    // 1-10
     {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
     {1, {"Dun Morogh", 1, 1, 10, ""}},
     {14, {"Durotar", 14, 1, 10, ""}},
@@ -335,45 +338,67 @@ std::unordered_map<uint32_t, ZoneData> NerfHerderHelper::zoneDataMap = {
     {215, {"Mulgore", 215, 1, 10, ""}},
     {141, {"Teldrassil", 141, 1, 10, ""}},
     {85, {"Tirisfal Glades", 85, 1, 10, ""}},
-    {40, {"Westfall", 40, 10, 15, ""}},
-    {16, {"Azshara", 16, 10, 20, ""}},
+
+    // 10-20
     {3525, {"Bloodmyst Isle", 3525, 10, 20, "BC"}},
     {148, {"Darkshore", 148, 10, 20, ""}},
     {3433, {"Ghostlands", 3433, 10, 20, "BC"}},
     {38, {"Loch Modan", 38, 10, 20, ""}},
     {130, {"Silverpine Forest", 130, 10, 20, ""}},
-    {5449, {"Ruins of Gilneas", 5449, 14, 20, ""}},
-    {44, {"Redridge Mountains", 44, 15, 20, ""}},
-    {331, {"Ashenvale", 331, 20, 25, ""}},
-    {10, {"Duskwood", 10, 20, 25, ""}},
-    {267, {"Hillsbrad Foothills", 267, 20, 25, ""}},
-    {11, {"Wetlands", 11, 20, 25, ""}},
-    {45, {"Arathi Highlands", 45, 25, 30, ""}},
-    {33, {"Stranglethorn Vale", 33, 25, 30, ""}}, // fix from CATA
-    {406, {"Stonetalon Mountains", 406, 25, 30, ""}},
-    {405, {"Desolace", 405, 30, 35, ""}},
-    {47, {"Hinterlands", 47, 30, 35, ""}},
-    {17, {"Barrens", 17, 10, 20, ""}}, // fix from CATA
-    {15, {"Dustwallow Marsh", 15, 35, 40, ""}},
-    {357, {"Feralas", 357, 35, 40, ""}},
-    {28, {"Western Plaguelands", 28, 35, 40, ""}},
-    {139, {"Eastern Plaguelands", 139, 40, 45, ""}},
-    {400, {"Thousand Needles", 400, 40, 45, ""}},
-    {3, {"Badlands", 3, 45, 48, ""}},
-    {361, {"Felwood", 361, 45, 50, ""}},
-    {440, {"Tanaris", 440, 45, 50, ""}},
-    {51, {"Searing Gorge", 51, 47, 51, ""}},
-    {36, {"Blackrock Mountain", 36, 48, 52, ""}},
-    {38, {"Burning Steppes", 38, 50, 52, ""}},
-    {490, {"Un'goro Crater", 490, 50, 55, ""}},
-    {618, {"Winterspring", 618, 50, 55, ""}},
-    {51, {"Swamp of Sorrows", 51, 52, 54, ""}},
-    {4, {"Blasted Lands", 4, 55, 60, ""}},
-    {609, {"Plaguelands: The Scarlet Enclave", 609, 55, 56, "WOTLK"}},
+    {40, {"Westfall", 40, 10, 20, ""}},
+    {17, {"Barrens", 17, 10, 25, ""}},
+
+    // 15-25
+    {44, {"Redridge Mountains", 44, 15, 25, ""}},
+    {406, {"Stonetalon Mountains", 406, 15, 27, ""}},
+
+    // 20-30
+    {331, {"Ashenvale", 331, 18, 30, ""}},
+    {10, {"Duskwood", 10, 18, 30, ""}},
+    {267, {"Hillsbrad Foothills", 267, 20, 30, ""}},
+    {11, {"Wetlands", 11, 20, 30, ""}},
+
+    // 25-35
+    {400, {"Thousand Needles", 400, 25, 35, ""}},
+
+    // 30-40
+    {36, {"Alterac Mountains", 36, 30, 40, ""}},
+    {45, {"Arathi Highlands", 45, 30, 40, ""}},
+    {405, {"Desolace", 405, 30, 40, ""}},
+    {33, {"Stranglethorn Vale", 33, 30, 45, ""}},
+
+    // 35-45
+    {15, {"Dustwallow Marsh", 15, 35, 45, ""}},
+    {3, {"Badlands", 3, 35, 45, ""}},
+    {51, {"Swamp of Sorrows", 51, 35, 45, ""}},
+
+    // 40-50
+    {357, {"Feralas", 357, 40, 50, ""}},
+    {47, {"Hinterlands", 47, 40, 50, ""}},
+    {440, {"Tanaris", 440, 40, 50, ""}},
+
+    // 45-55
+    {51, {"Searing Gorge", 51, 45, 50, ""}},
+    {16, {"Azshara", 16, 45, 55, ""}},
+    {4, {"Blasted Lands", 4, 45, 55, ""}},
+    {490, {"Un'goro Crater", 490, 48, 55, ""}},
+    {361, {"Felwood", 361, 48, 55, ""}},
+
+    // 50-60
+    {38, {"Burning Steppes", 38, 50, 58, ""}},
+    {28, {"Western Plaguelands", 28, 51, 58, ""}},
+    {139, {"Eastern Plaguelands", 139, 53, 60, ""}},
+    {618, {"Winterspring", 618, 53, 60, ""}},
+
+    // 55-60
+    {609, {"Plaguelands: The Scarlet Enclave", 609, 55, 58, "WOTLK"}},
     {41, {"Deadwind Pass", 41, 55, 60, ""}},
     {80, {"Moonglade", 80, 55, 60, ""}},
     {261, {"Silithus", 261, 55, 60, ""}},
-    {772, {"Ahn'Qiraj: The Fallen Kingdom", 772, 55, 60, ""}},
+    {36, {"Blackrock Mountain", 36, 55, 60, ""}}, // not in official list?
+    {772, {"Ahn'Qiraj", 772, 55, 60, ""}}, // not in official list?
+
+    // 60-70
     {3483, {"Hellfire Peninsula", 3483, 58, 63, "BC"}},
     {3521, {"Zangarmarsh", 3521, 60, 64, "BC"}},
     {3519, {"Terokkar Forest", 3519, 62, 65, "BC"}},
@@ -381,9 +406,11 @@ std::unordered_map<uint32_t, ZoneData> NerfHerderHelper::zoneDataMap = {
     {3522, {"Blade's Edge Mountains", 3522, 65, 68, "BC"}},
     {3523, {"Netherstorm", 3523, 67, 70, "BC"}},
     {3520, {"Shadowmoon Valley", 3520, 67, 70, "BC"}},
+    {4080, {"Isle of Quel'Danas", 4080, 70, 73, "BC"}},
+
+    // 70-80
     {3537, {"Borean Tundra", 3537, 68, 72, "WOTLK"}},
     {495, {"Howling Fjord", 495, 68, 72, "WOTLK"}},
-    {4080, {"Isle of Quel'Danas", 4080, 70, 70, "BC"}},
     {65, {"Dragonblight", 65, 71, 75, "WOTLK"}},
     {394, {"Grizzly Hills", 394, 73, 75, "WOTLK"}},
     {66, {"Zul'Drak", 66, 74, 76, "WOTLK"}},
@@ -423,7 +450,7 @@ public:
             if (is_field_agent)
             {
                 // get max level for zone
-                max_level = NerfHerderHelper::GetZoneLevel(creature) + 5;
+                max_level = NerfHerderHelper::GetZoneLevel(creature);
 
                 // if valid
                 if (max_level && max_level >= 10)
