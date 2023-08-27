@@ -206,8 +206,16 @@ public:
         //if (creature->GetTeamId() == TEAM_ALLIANCE) return 1;
         //if (creature->GetTeamId() == TEAM_HORDE) return 1;
 
-        if (Player::TeamIdForRace(creature->getRace()) == TEAM_HORDE) return 1;
-        if (Player::TeamIdForRace(creature->getRace()) == TEAM_ALLIANCE) return 1;
+        if (creature->getRace() == RACE_HUMAN) return 1;
+        if (creature->getRace() == RACE_ORC) return 1;
+        if (creature->getRace() == RACE_DWARF) return 1;
+        if (creature->getRace() == RACE_NIGHTELF) return 1;
+        if (creature->getRace() == RACE_UNDEAD_PLAYER) return 1;
+        if (creature->getRace() == RACE_TAUREN) return 1;
+        if (creature->getRace() == RACE_GNOME) return 1;
+        if (creature->getRace() == RACE_TROLL) return 1;
+        if (creature->getRace() == RACE_BLOODELF) return 1;
+        if (creature->getRace() == RACE_DRAENEI) return 1;
 
         if (creature->IsPvP()) return 1;
         /*
