@@ -91,6 +91,13 @@ public:
     }
 };
 
+struct VendorData {
+    std::string vendorName;
+    uint32_t teamID;
+    uint32_t expansionID; // 0, 1, or 2
+    uint32_t entryID;
+};
+
 struct ZoneData {
     std::string zoneName;
     uint32_t mapID;
@@ -102,7 +109,7 @@ struct ZoneData {
 class NerfHerderHelper
 {
 public:
-    static std::unordered_set<uint32_t> vendorDataMap;
+    static std::unordered_map<uint32_t, VendorData> vendorDataMap;
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_set<uint32_t> townDataMap;
 
@@ -303,23 +310,23 @@ public:
     }
 };
 
-std::unordered_set<uint32_t> NerfHerderHelper::vendorDataMap = {
-    34060, // Doris Volanthius
-    34078, // Lieutenant Tristia
-    34063, // Blood Guard Zar'shi
-    34084, // Knight-Lieutenant Moonstrike
-    34038, // Sergeant Thunderhorn
-    34075, // Captain Dirgehammer
-    34043, // Lady Palanseer - jewel crafting vendor
-    34081, // Captain O'Neal - jewel crafting vendor
-    12788, // Legionnaire Teena - tbc armor honor vendor
-    12778, // Lieutenant Rachel Vaccar - tbc armor honor vendor
-    33934, // Ecton Brasstumbler - arena points vendor gadgetzan
-    33935, // Evee Copperspring - arena points vendor gadgetzan
-    33939, // Argex Irongut - arena points vendor gadgetzan
-    34093, // Blazzek the Biter - arena points vendor gadgetzan
-    //12796, // Raider Bork - honor mount vendor
-    //12783, // Lieutenant Karter - honor mount vendor
+std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
+    {34060, {"Doris Volanthius", 2, 2, 34060}},
+    {34078, {"Lieutenant Tristia", 1, 2, 34078}},
+    {34063, {"Blood Guard Zar'shi", 2, 2, 34063}},
+    {34084, {"Knight-Lieutenant Moonstrike", 1, 2, 34084}},
+    {34038, {"Sergeant Thunderhorn", 2, 2, 34038}},
+    {34075, {"Captain Dirgehammer", 1, 2, 34075}},
+    {34043, {"Lady Palanseer", 2, 2, 34043}}, // jewel crafting vendor
+    {34081, {"Captain O'Neal", 1, 2, 34081}}, // jewel crafting vendor
+    //{12796, {"Raider Bork", 2, 2, 12796}}, // honor mount vendor
+    //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
+    {12788, {"Legionnaire Teena", 2, 1, 12788}}, // tbc armor honor vendor
+    {12778, {"Lieutenant Rachel Vaccar", 1, 1, 12778}}, // tbc armor honor vendor
+    {33934, {"Ecton Brasstumbler", 3, 2, 33934}}, // arena points vendor gadgetzan
+    {33935, {"Evee Copperspring", 3, 2, 33935}}, // arena points vendor gadgetzan
+    {33939, {"Argex Irongut", 3, 2, 33939}}, // arena points vendor gadgetzan
+    {34093, {"Blazzek the Biter", 3, 2, 34093}} // arena points vendor gadgetzan
 };
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
