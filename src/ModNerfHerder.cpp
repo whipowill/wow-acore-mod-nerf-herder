@@ -111,7 +111,7 @@ class NerfHerderHelper
 public:
     static std::unordered_map<uint32_t, VendorData> vendorDataMap;
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
-    static std::unordered_map<uint32_t> townDataMap;
+    static std::unordered_set<uint32_t> townDataMap;
 
     static void ApplyWorldBuff(Player* player)
     {
@@ -190,6 +190,7 @@ public:
         // this will get the map id (as opposed to zone id)
         uint32_t map_id = creature->GetMapId();
 
+        // find any NPC in an alliance/horde town
         if (NerfHerderHelper::townDataMap.find(map_id) == NerfHerderHelper::townDataMap.end())
             return 0;
 
