@@ -99,17 +99,10 @@ struct ZoneData {
     std::string expansion;
 };
 
-struct VendorData {
-    std::string vendorName;
-    uint32_t teamID;
-    uint32_t expansionID; // 0, 1, or 2
-    uint32_t entryID;
-};
-
 class NerfHerderHelper
 {
 public:
-    static std::unordered_map<uint32_t, VendorData> vendorDataMap;
+    static std::unordered_set<uint32_t> vendorDataMap;
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
     static std::unordered_set<uint32_t> townDataMap;
 
@@ -187,11 +180,11 @@ public:
 
     static uint32_t IsFieldAgent(Creature* creature)
     {
-        // this will get the map id (as opposed to zone id)
-        uint32_t map_id = creature->GetMapId();
+        // this will get the area id (as opposed to zone id or map id)
+        uint32_t area_id = creature->GetAreaId();
 
         // find any NPC in an alliance/horde town
-        if (NerfHerderHelper::townDataMap.find(map_id) == NerfHerderHelper::townDataMap.end())
+        if (NerfHerderHelper::townDataMap.find(area_id) == NerfHerderHelper::townDataMap.end())
             return 0;
 
         return 1;
@@ -210,6 +203,7 @@ public:
         //if (creature->GetTeamId() == TEAM_HORDE) return 1;
 
         /*
+        // this only seems to work for players
         if (creature->getRace() == RACE_HUMAN) return 1;
         if (creature->getRace() == RACE_ORC) return 1;
         if (creature->getRace() == RACE_DWARF) return 1;
@@ -309,26 +303,26 @@ public:
     }
 };
 
-std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
-    {34060, {"Doris Volanthius", 2, 2, 34060}},
-    {34078, {"Lieutenant Tristia", 1, 2, 34078}},
-    {34063, {"Blood Guard Zar'shi", 2, 2, 34063}},
-    {34084, {"Knight-Lieutenant Moonstrike", 1, 2, 34084}},
-    {34038, {"Sergeant Thunderhorn", 2, 2, 34038}},
-    {34075, {"Captain Dirgehammer", 1, 2, 34075}},
-    {34043, {"Lady Palanseer", 2, 2, 34043}}, // jewel crafting vendor
-    {34081, {"Captain O'Neal", 1, 2, 34081}}, // jewel crafting vendor
-    //{12796, {"Raider Bork", 2, 2, 12796}}, // honor mount vendor
-    //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
-    {12788, {"Legionnaire Teena", 2, 1, 12788}}, // tbc armor honor vendor
-    {12778, {"Lieutenant Rachel Vaccar", 1, 1, 12778}}, // tbc armor honor vendor
-    {33934, {"Ecton Brasstumbler", 3, 2, 33934}}, // arena points vendor gadgetzan
-    {33935, {"Evee Copperspring", 3, 2, 33935}}, // arena points vendor gadgetzan
-    {33939, {"Argex Irongut", 3, 2, 33939}}, // arena points vendor gadgetzan
-    {34093, {"Blazzek the Biter", 3, 2, 34093}} // arena points vendor gadgetzan
+std::unordered_set<uint32_t> NerfHerderHelper::vendorDataMap = {
+    34060, // Doris Volanthius
+    34078, // Lieutenant Tristia
+    34063, // Blood Guard Zar'shi
+    34084, // Knight-Lieutenant Moonstrike
+    34038, // Sergeant Thunderhorn
+    34075, // Captain Dirgehammer
+    34043, // Lady Palanseer - jewel crafting vendor
+    34081, // Captain O'Neal - jewel crafting vendor
+    12788, // Legionnaire Teena - tbc armor honor vendor
+    12778, // Lieutenant Rachel Vaccar - tbc armor honor vendor
+    33934, // Ecton Brasstumbler - arena points vendor gadgetzan
+    33935, // Evee Copperspring - arena points vendor gadgetzan
+    33939, // Argex Irongut - arena points vendor gadgetzan
+    34093, // Blazzek the Biter - arena points vendor gadgetzan
+    //12796, // Raider Bork - honor mount vendor
+    //12783, // Lieutenant Karter - honor mount vendor
 };
 
-// https://www.azerothcore.org/wiki/faction
+// https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
 std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
 {
     496, // Brackenwall Village
@@ -341,9 +335,8 @@ std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
 // https://wowpedia.fandom.com/wiki/Zones_by_level_(original)
-// https://wowpedia.fandom.com/wiki/Zones_by_level_(Cataclysm)
-// there was no WOTLK list so I had to edit this to fix it up
-std::unordered_map<uint32_t, ZoneData> NerfHerderHelper::zoneDataMap = {
+std::unordered_map<uint32_t, ZoneData> NerfHerderHelper::zoneDataMap =
+{
     // 1-10
     {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
     {1, {"Dun Morogh", 1, 1, 10, ""}},
