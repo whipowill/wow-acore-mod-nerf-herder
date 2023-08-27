@@ -99,12 +99,6 @@ struct ZoneData {
     std::string expansion;
 };
 
-struct FactionData {
-    std::string factionName;
-    uint32_t factionID;
-    uint32_t teamID; // 1=ally 2=horde
-};
-
 struct VendorData {
     std::string vendorName;
     uint32_t teamID;
@@ -117,7 +111,7 @@ class NerfHerderHelper
 public:
     static std::unordered_map<uint32_t, VendorData> vendorDataMap;
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
-    static std::unordered_map<uint32_t, FactionData> factionDataMap;
+    static std::unordered_map<uint32_t> townDataMap;
 
     static void ApplyWorldBuff(Player* player)
     {
@@ -193,6 +187,14 @@ public:
 
     static uint32_t IsFieldAgent(Creature* creature)
     {
+        // this will get the map id (as opposed to zone id)
+        uint32_t map_id = creature->GetMapId();
+
+        if (NerfHerderHelper::townDataMap.find(map_id) == NerfHerderHelper::townDataMap.end())
+            return 0;
+
+        return 1;
+
         // I know this is not the perfect way to identify
         // Alliance and Horde NPCs.  I have tried many methods
         // and thus far this is the best way I've found.
@@ -206,6 +208,7 @@ public:
         //if (creature->GetTeamId() == TEAM_ALLIANCE) return 1;
         //if (creature->GetTeamId() == TEAM_HORDE) return 1;
 
+        /*
         if (creature->getRace() == RACE_HUMAN) return 1;
         if (creature->getRace() == RACE_ORC) return 1;
         if (creature->getRace() == RACE_DWARF) return 1;
@@ -216,6 +219,7 @@ public:
         if (creature->getRace() == RACE_TROLL) return 1;
         if (creature->getRace() == RACE_BLOODELF) return 1;
         if (creature->getRace() == RACE_DRAENEI) return 1;
+        */
 
         if (creature->IsPvP()) return 1;
         /*
@@ -324,18 +328,15 @@ std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
 };
 
 // https://www.azerothcore.org/wiki/faction
-std::unordered_map<uint32_t, FactionData> NerfHerderHelper::factionDataMap = {
-    {189, {"Alliance Generic", 189, 1}},
-    {469, {"Alliance", 469, 1}},
-    {891, {"Alliance Forces", 891, 1}},
-    {1037, {"Alliance Vanguard", 1037, 1}},
-    {1037, {"Mount - Taxi - Alliance", 1037, 1}},
-    {66, {"Horde Generic", 66, 2}},
-    {67, {"Horde", 67, 2}},
-    {892, {"Horde Forces", 892, 2}},
-    {1052, {"Horde Expedition", 1052, 2}},
-    {1113, {"Mount - Taxi - Horde", 1113, 2}}
-}; // I didn't end up using this, but I leave it here in case someday I do.
+std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
+{
+    496, // Brackenwall Village
+    513, // Theramore Isle
+    1497, // Undercity
+    1637, // Orgrimmar
+    1638, // Thunder Bluff
+    3487, // Silvermoon City
+};
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
 // https://wowpedia.fandom.com/wiki/Zones_by_level_(original)
