@@ -188,7 +188,7 @@ public:
     static uint32_t IsFieldAgent(Creature* creature)
     {
         // if already marked, accept it
-        if (creature->IsPvP()) return 1;
+        //if (creature->IsPvP()) return 1;
 
         // this will get the area id (as opposed to zone id or map id)
         uint32_t area_id = creature->GetAreaId();
