@@ -379,7 +379,7 @@ std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
     // Moonglade
     // 2361, // Nighthaven -- considered a neutral town
     // Mulgore
-    1638, // Thunder Bluff
+    1638, 1639, 1640, 1641 // Thunder Bluff
     222, // Bloodhoof Village
     // Silithus
     // 3425, // Cenarion Hold -- considered a neutral town
