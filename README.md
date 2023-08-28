@@ -21,6 +21,8 @@ Does not affect world database.  Does not affect dungeons or raids.
 - ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
 - ``NerfHerder.HonorGreyEnabled`` - grey PvP flagged NPCs give honor
 - ``NerfHerder.HonorGreyRate`` - adjust the rate of grey honor gain
+- ``NerfHerder.HonorPlunderEnabled`` - give plunder reward on honor kill
+- ``NerfHerder.HonorPlunderAmountPerLevel`` - amount of money per level of creature
 - ``NerfHerder.WorldBuff.Enabled`` - give world buff on kills
 - ``NerfHerder.WorldBuff.KillCount`` - number of kills to accumulate to get world buff
 - ``NerfHerder.WorldBuff.Cooldown`` - time cooldown between world buffs (minutes)

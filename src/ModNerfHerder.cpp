@@ -94,7 +94,7 @@ class NerfHerderHelper
 public:
     static std::unordered_map<uint32_t, VendorData> vendorDataMap;
     static std::unordered_map<uint32_t, ZoneData> zoneDataMap;
-    static std::unordered_set<uint32_t> townDataMap;
+    static std::unordered_map<uint32_t, TownData> townDataMap;
 
     static void ApplyWorldBuff(Player* player)
     {
