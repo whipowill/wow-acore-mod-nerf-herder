@@ -19,19 +19,19 @@ NerfHerder.ForcePvPEnabled = 0
 NerfHerder.HonorPvPEnabled = 0
 
 # rate of honor on every pvp flagged kill, 1=100% 2=200%
-NerfHerder.HonorPvPRate = 1
+NerfHerder.HonorPvPRate = 3
 
 # grey NPCs still give honor, 0=off 1=on
 NerfHerder.HonorGreyEnabled = 0
 
 # rate of honor on every grey pvp flagged kill, 1=100% 2=200%
-NerfHerder.HonorGreyRate = 0.5
+NerfHerder.HonorGreyRate = 3
 
 # give money on honor kills? 0=off 1=on
 NerfHerder.HonorPlunderEnabled = 0
 
-# how much money per level of creature on honor kill? (in copper)
-NerfHerder.HonorPlunderAmountPerLevel = 100
+# how much money per creature level on honor kill? (in copper)
+NerfHerder.HonorPlunderAmountPerLevel = 50
 
 # give world buff on kills, 0=off 1=on
 NerfHerder.WorldBuff.Enabled = 0

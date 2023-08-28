@@ -283,7 +283,7 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
 
         // nerf their abilities proportionately
-        creature->CastCustomSpell(creature, HpAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, HpAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
