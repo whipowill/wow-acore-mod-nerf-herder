@@ -187,18 +187,24 @@ public:
 
     static uint32_t IsFieldAgent(Creature* creature)
     {
+        // if already marked, accept it
+        if (creature->IsPvP()) return 1;
+
         // this will get the area id (as opposed to zone id or map id)
         uint32_t area_id = creature->GetAreaId();
 
-        // find any NPC in an alliance/horde town
+        // find any NPC NOT in an alliance/horde town
         if (NerfHerderHelper::townDataMap.find(area_id) == NerfHerderHelper::townDataMap.end())
+        {
+            // not in a town, mark as false
             return 0;
+        }
 
+        // mark as pvp
         return 1;
 
-        // I know this is not the perfect way to identify
-        // Alliance and Horde NPCs.  I have tried many methods
-        // and thus far this is the best way I've found.
+        // Below is every other method I tried for flagging horde/alliance
+        // and why it didn't work.  I ended up just marking them by the town.
 
         // GetTeamId() only works on players.
         // GetFaction() doesn't seem to work at all, and involves sub-factions.
@@ -223,8 +229,8 @@ public:
         if (creature->getRace() == RACE_DRAENEI) return 1;
         */
 
-        if (creature->IsPvP()) return 1;
         /*
+        // this worked but imperfectly
         if (creature->IsGossip()) return 1;
         if (creature->IsVendor()) return 1;
         if (creature->IsTrainer()) return 1;
@@ -241,8 +247,6 @@ public:
         if (creature->IsArmorer()) return 1;
         if (creature->IsServiceProvider()) return 1;
         */
-
-        return 0;
     }
 
     static uint32_t IsPvPVendor(Creature* creature)
@@ -332,12 +336,163 @@ std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
 std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
 {
+    // These are the towns wherein all NPCs will be flagged as PVP,
+    // yield honor, and nerfed to zone appropriate levels.
+
+    // This data may be imperfect and I will fix as I discover mistakes.
+
+    // =================================================
+    // Kalimdor
+    // =================================================
+    // Ashenvale
+    2897, // Zoram'gar Outpost
+    415, // Astranaar
+    431, // Splintertree Post
+    2358, // Forest Song
+    // Azshara
+    // Azuremist Isle
+    3576, // Azure Watch
+    3573, // Odesyus' Landing
+    3572, // Stillpine Hold
+    3557, // The Exodar
+    // Bloodmist Isle
+    3584, // Blood Watch
+    3608, // Vindicator's Rest
+    // Darkshore
+    442, // Auberdine
+    // Desolace
+    2408, // Shadowprey Village
+    608, // Nijel's Point
+    // Durotar
+    1637, // Orgrimmar
+    362, // Razor Hill
+    367, // Sen'jin Village
+    // Dustwallow Marsh
     496, // Brackenwall Village
     513, // Theramore Isle
-    1497, // Undercity
-    1637, // Orgrimmar
+    // Felwood
+    1997, // Bloodvenom Post
+    2479, // Emerald Sanctuary
+    1998, // Talonbranch Glade
+    // Feralas
+    1116, // Feathermoon Stronghold
+    1099, // Camp Mojache
+    // Moonglade
+    // 2361, // Nighthaven -- considered a neutral town
+    // Mulgore
     1638, // Thunder Bluff
+    222, // Bloodhoof Village
+    // Silithus
+    // 3425, // Cenarion Hold -- considered a neutral town
+    // Stonetalon Mountains
+    2539, // Malaka'jin
+    460, // Sun Rock Retreat
+    467, // Stonetalon Peak
+    // Tanaris
+    // Teldrassil
+    1657, // Darnassus
+    186, // Dolanaar
+    256, // Aldrassil
+    // The Barrens
+    380, // Crossroads
+    378, // Camp Taurajo
+    // Thousand Needles
+    484, // Freewind Post
+    489, // Thalanaar
+    // Un'goro Crater
+    541, // Marshal's Refuge - considered a neutral town
+    // Winterspring
+    // =================================================
+    // Eastern Kingdoms
+    // =================================================
+    // Alterac Mountains
+    // Arathi Highlands
+    320, // Refuge Pointe
+    321, // Hammerfall
+    // Badlands
+    340, // Kargath
+    // Blasted Lands
+    1438, // Nethergarde Keep
+    // Burning Steppes
+    2418, // Morgan's Vigil
+    // Deadwind Pass
+    // Dun Morogh
+    77, // Anvilmar
+    131, // Kharanos
+    1537, // Ironforge
+    189, // Steelgrill's Depot
+    // Duskwood
+    42, // Darkshire
+    // Eastern Plaguelands
+    // Light's Hope Chapel - considered a neutral town
+    // Elwynn Forest
+    87, // Goldshire
+    1519, // Stormwind
+    4411, // Stormwind Harbor
+    24, // Northshire Abbey
+    // Eversong Woods
     3487, // Silvermoon City
+    3665, // Falconwing Square
+    // Ghostlands
+    3488, // Tranquillien
+    // Hillsbrad Foothills
+    271, 2369, // Southshore
+    272, 2368, // Tauren Mill
+    // Isle of Quel'Danas
+    // Loch Modan
+    144, // Thelsamar
+    // Redridge Mountains
+    69, // Lakeshire
+    // Searing Gorge
+    // Thorium Point - considered a neutral town
+    // Silverpine Forest
+    228, // The Sepulcher
+    // Stranglethorn Vale
+    117, // Grom'gol Base Camp
+    99, // Rebel Camp
+    // Swamp of Sorrows
+    75, // Stonard
+    // Hinterlands
+    348, // Aerie Peak
+    3317, // Revantusk Village
+    // Tirisfal Glades
+    1497, // Undercity
+    159, 2118, // Brill
+    152, 813, // The Bulwark
+    // Western Plaguelands
+    3197, // Chillwind Camp
+    152, 813, // The Bulwark
+    // Westfall
+    108, // Sentinel Hill
+    // Wetlands
+    150, // Menethil Harbor
+    269, // Dun Algaz (tunnels?)
+    // =================================================
+    // Outland
+    // =================================================
+    // Blades Edge Mountains
+    3772, // Sylvanaar
+    3769, // Thunderlord Stronghold
+    // Hellfire Peninsula
+    3536, // Thrallmar
+    3538, // Honor Hold
+    // Nagrand
+    3626, // Telaar
+    3613, // Garadar
+    // Netherstorm
+    // Shadowmoon Valley
+    3745, // Wildhammer Stronghold
+    3744, // Shadowmoon Village
+    // Terokkar Forest
+    3684, // Allerian Stronghold
+    3683, // Stonebreaker Hold
+    // Zangamarsh
+    3644, // Telredor
+    3645, // Zabra'jin
+    3718, // Swamprat Post
+    // =================================================
+    // Northrend
+    // =================================================
 };
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
