@@ -187,9 +187,6 @@ public:
 
     static uint32_t IsFieldAgent(Creature* creature)
     {
-        // if already marked, accept it
-        //if (creature->IsPvP()) return 1;
-
         // this will get the area id (as opposed to zone id or map id)
         uint32_t area_id = creature->GetAreaId();
 
@@ -205,6 +202,8 @@ public:
 
         // Below is every other method I tried for flagging horde/alliance
         // and why it didn't work.  I ended up just marking them by the town.
+
+        //if (creature->IsPvP()) return 1; // this messed up capitol guards
 
         // GetTeamId() only works on players.
         // GetFaction() doesn't seem to work at all, and involves sub-factions.
