@@ -12,37 +12,29 @@
 #include "Chat.h"
 #include <unordered_map>
 #include <ctime>
+#include <random>
 
 uint32_t NerfHerder_Enabled = 0;
-
 uint32_t NerfHerder_PlayerLevelEnabled = 0;
 uint32_t NerfHerder_ZoneLevelEnabled = 0;
-
 uint32_t NerfHerder_HidePvPVendorsEnabled = 0;
-
 uint32_t NerfHerder_ForcePvPEnabled = 0;
-
 uint32_t NerfHerder_HonorPvPEnabled = 0;
 float NerfHerder_HonorPvPRate = 0;
-
 uint32_t NerfHerder_HonorGreyEnabled = 0;
 float NerfHerder_HonorGreyRate = 0;
-
-float NerfHerder_ExtraNerfRate = 0;
-
+uint32_t NerfHerder_HonorPlunderEnabled = 0;
+uint32_t NerfHerder_HonorPlunderAmountPerLevel = 0;
 uint32_t NerfHerder_MaxPlayerLevel = 80;
-
 uint32_t NerfHerder_WorldBuff_Enabled = 0;
 uint32_t NerfHerder_WorldBuff_KillCount = 0;
 uint32_t NerfHerder_WorldBuff_Cooldown = 0;
 uint32_t NerfHerder_WorldBuff_SpellId_01 = 0;
 uint32_t NerfHerder_WorldBuff_SpellId_02 = 0;
 uint32_t NerfHerder_WorldBuff_SpellId_03 = 0;
-
 uint32_t NerfHerder_WorldBuff_Alliance_LastKillTime = 0;
 uint32_t NerfHerder_WorldBuff_Alliance_LastBuffTime = 0;
 uint32_t NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
-
 uint32_t NerfHerder_WorldBuff_Horde_LastKillTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillCount = 0;
@@ -64,24 +56,17 @@ public:
     {
         // pull configs
         NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
-
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
-
         NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
-
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
-
         NerfHerder_HonorPvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPEnabled", 0);
         NerfHerder_HonorPvPRate = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPRate", 0);
-
         NerfHerder_HonorGreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyEnabled", 0);
         NerfHerder_HonorGreyRate = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyRate", 0);
-
-        NerfHerder_ExtraNerfRate = sConfigMgr->GetOption<int>("NerfHerder.ExtraNerfRate", 0);
-
+        NerfHerder_HonorPlunderEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPlunderEnabled", 0);
+        NerfHerder_HonorPlunderAmountPerLevel = sConfigMgr->GetOption<int>("NerfHerder.HonorPlunderAmountPerLevel", 0);
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
-
         NerfHerder_WorldBuff_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Enabled", 0);
         NerfHerder_WorldBuff_KillCount = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.KillCount", 0);
         NerfHerder_WorldBuff_Cooldown = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Cooldown", 0);
@@ -92,18 +77,16 @@ public:
 };
 
 struct VendorData {
-    std::string vendorName;
-    uint32_t teamID;
-    uint32_t expansionID; // 0, 1, or 2
-    uint32_t entryID;
+    uint32_t expansionID; // 1=TBC, 2=WOTLK
+};
+
+struct TownData {
+    uint32_t teamID; // 0=neutral, 1=alliance, 2=horde
 };
 
 struct ZoneData {
-    std::string zoneName;
-    uint32_t mapID;
     uint32_t minLevel;
     uint32_t maxLevel;
-    std::string expansion;
 };
 
 class NerfHerderHelper
@@ -291,7 +274,7 @@ public:
 
         // calc negative multiplier
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
-        float multiplier = (-100 * (1 + NerfHerder_ExtraNerfRate)) + (ratio * 100);
+        float multiplier = -100 + (ratio * 100);
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
@@ -314,26 +297,26 @@ public:
 };
 
 std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
-    {34060, {"Doris Volanthius", 2, 2, 34060}},
-    {34078, {"Lieutenant Tristia", 1, 2, 34078}},
-    {34063, {"Blood Guard Zar'shi", 2, 2, 34063}},
-    {34084, {"Knight-Lieutenant Moonstrike", 1, 2, 34084}},
-    {34038, {"Sergeant Thunderhorn", 2, 2, 34038}},
-    {34075, {"Captain Dirgehammer", 1, 2, 34075}},
-    {34043, {"Lady Palanseer", 2, 2, 34043}}, // jewel crafting vendor
-    {34081, {"Captain O'Neal", 1, 2, 34081}}, // jewel crafting vendor
-    //{12796, {"Raider Bork", 2, 2, 12796}}, // honor mount vendor
-    //{12783, {"Lieutenant Karter", 1, 2, 12783}}, // honor mount vendor
-    {12788, {"Legionnaire Teena", 2, 1, 12788}}, // tbc armor honor vendor
-    {12778, {"Lieutenant Rachel Vaccar", 1, 1, 12778}}, // tbc armor honor vendor
-    {33934, {"Ecton Brasstumbler", 3, 2, 33934}}, // arena points vendor gadgetzan
-    {33935, {"Evee Copperspring", 3, 2, 33935}}, // arena points vendor gadgetzan
-    {33939, {"Argex Irongut", 3, 2, 33939}}, // arena points vendor gadgetzan
-    {34093, {"Blazzek the Biter", 3, 2, 34093}} // arena points vendor gadgetzan
+    {34060, {2}}, // Doris Volanthius (Horde)
+    {34078, {2}}, // Lieutenant Tristia (Alliance)
+    {34063, {2}}, // Blood Guard Zar'shi (Horde)
+    {34084, {2}}, // Knight-Lieutenant Moonstrike (Alliance)
+    {34038, {2}}, // Sergeant Thunderhorn (Horde)
+    {34075, {2}}, // Captain Dirgehammer (Alliance)
+    {34043, {2}}, // Lady Palanseer (Horde) - jewel crafting vendor
+    {34081, {2}}, // Captain O'Neal (Alliance) - jewel crafting vendor
+    //{12796, {2}}, // Raider Bork (Horde) - honor mount vendor
+    //{12783, {2}}, // Lieutenant Karter (Alliance) - honor mount vendor
+    {12788, {1}}, // Legionnaire Teena (Horde) - tbc armor honor vendor
+    {12778, {1}}, // Lieutenant Rachel Vaccar (Alliance) - tbc armor honor vendor
+    {33934, {2}}, // Ecton Brasstumbler (Neutral) - arena points vendor gadgetzan
+    {33935, {2}}, // Evee Copperspring (Neutral) - arena points vendor gadgetzan
+    {33939, {2}}, // Argex Irongut (Neutral) - arena points vendor gadgetzan
+    {34093, {2}} // Blazzek the Biter (Neutral) - arena points vendor gadgetzan
 };
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
-std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
+std::unordered_map<uint32_t, TownData> NerfHerderHelper::townDataMap =
 {
     // These are the towns wherein all NPCs will be flagged as PVP,
     // yield honor, and nerfed to zone appropriate levels.
@@ -344,151 +327,157 @@ std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
     // Kalimdor
     // =================================================
     // Ashenvale
-    2897, // Zoram'gar Outpost
-    415, // Astranaar
-    431, // Splintertree Post
-    2358, // Forest Song
+    {2897, {2}}, // Zoram'gar Outpost
+    {415, {1}}, // Astranaar
+    {431, {2}}, // Splintertree Post
+    {2358, {1}}, // Forest Song
     // Azshara
     // Azuremist Isle
-    3576, // Azure Watch
-    3573, // Odesyus' Landing
-    3572, // Stillpine Hold
-    3557, // The Exodar
+    {3576, {1}}, // Azure Watch
+    {3573, {1}}, // Odesyus' Landing
+    {3572, {1}}, // Stillpine Hold
+    {3557, {1}}, // The Exodar
     // Bloodmist Isle
-    3584, // Blood Watch
-    3608, // Vindicator's Rest
+    {3584, {1}}, // Blood Watch
+    {3608, {1}}, // Vindicator's Rest
     // Darkshore
-    442, // Auberdine
+    {442, {1}}, // Auberdine
     // Desolace
-    2408, // Shadowprey Village
-    608, // Nijel's Point
+    {2408, {2}}, // Shadowprey Village
+    {608, {1}}, // Nijel's Point
     // Durotar
-    1637, // Orgrimmar
-    362, // Razor Hill
-    367, // Sen'jin Village
+    {1637, {2}}, // Orgrimmar
+    {362, {2}}, // Razor Hill
+    {367, {2}}, // Sen'jin Village
     // Dustwallow Marsh
-    496, // Brackenwall Village
-    513, // Theramore Isle
+    {496, {2}}, // Brackenwall Village
+    {513, {1}}, // Theramore Isle
     // Felwood
-    1997, // Bloodvenom Post
-    2479, // Emerald Sanctuary
-    1998, // Talonbranch Glade
+    {1997, {2}}, // Bloodvenom Post
+    {2479, {1}}, // Emerald Sanctuary
+    {1998, {1}}, // Talonbranch Glade
     // Feralas
-    1116, // Feathermoon Stronghold
-    1099, // Camp Mojache
+    {1116, {1}}, // Feathermoon Stronghold
+    {1099, {2}}, // Camp Mojache
     // Moonglade
-    // 2361, // Nighthaven -- considered a neutral town
+    // Nighthaven -- considered a neutral town
     // Mulgore
-    1638, 1639, 1640, 1641, // Thunder Bluff
-    222, // Bloodhoof Village
+    {1638, {2}}, // Thunder Bluff
+    {1639, {2}}, // Thunder Bluff
+    {1640, {2}}, // Thunder Bluff
+    {1641, {2}}, // Thunder Bluff
+    {222, {2}}, // Bloodhoof Village
     // Silithus
-    // 3425, // Cenarion Hold -- considered a neutral town
+    // Cenarion Hold -- considered a neutral town
     // Stonetalon Mountains
-    2539, // Malaka'jin
-    460, // Sun Rock Retreat
-    467, // Stonetalon Peak
+    {2539, {2}}, // Malaka'jin
+    {460, {2}}, // Sun Rock Retreat
+    {467, {1}}, // Stonetalon Peak
     // Tanaris
     // Teldrassil
-    1657, // Darnassus
-    186, // Dolanaar
-    256, // Aldrassil
+    {1657, {1}}, // Darnassus
+    {186, {1}}, // Dolanaar
+    {256, {1}}, // Aldrassil
     // The Barrens
-    380, // Crossroads
-    378, // Camp Taurajo
+    {380, {2}}, // Crossroads
+    {378, {2}}, // Camp Taurajo
     // Thousand Needles
-    484, // Freewind Post
-    489, // Thalanaar
+    {484, {2}}, // Freewind Post
+    {489, {1}}, // Thalanaar
     // Un'goro Crater
-    541, // Marshal's Refuge - considered a neutral town
+    //{541, {0}}, // Marshal's Refuge - considered a neutral town
     // Winterspring
     // =================================================
     // Eastern Kingdoms
     // =================================================
     // Alterac Mountains
     // Arathi Highlands
-    320, // Refuge Pointe
-    321, // Hammerfall
+    {320, {1}}, // Refuge Pointe
+    {321, {2}}, // Hammerfall
     // Badlands
-    340, // Kargath
+    {340, {2}}, // Kargath
     // Blasted Lands
-    1438, // Nethergarde Keep
+    {1438, {1}}, // Nethergarde Keep
     // Burning Steppes
-    2418, // Morgan's Vigil
+    {2418, {1}}, // Morgan's Vigil
     // Deadwind Pass
     // Dun Morogh
-    77, // Anvilmar
-    131, // Kharanos
-    1537, // Ironforge
-    189, // Steelgrill's Depot
+    {77, {1}}, // Anvilmar
+    {131, {1}}, // Kharanos
+    {1537, {1}}, // Ironforge
+    {189, {1}}, // Steelgrill's Depot
     // Duskwood
-    42, // Darkshire
+    {42, {1}}, // Darkshire
     // Eastern Plaguelands
     // Light's Hope Chapel - considered a neutral town
     // Elwynn Forest
-    87, // Goldshire
-    1519, // Stormwind
-    4411, // Stormwind Harbor
-    24, // Northshire Abbey
+    {87, {1}}, // Goldshire
+    {1519, {1}}, // Stormwind
+    {4411, {1}}, // Stormwind Harbor
+    {24, {1}}, // Northshire Abbey
     // Eversong Woods
-    3487, // Silvermoon City
-    3665, // Falconwing Square
+    {3487, {1}}, // Silvermoon City
+    {3665, {1}}, // Falconwing Square
     // Ghostlands
-    3488, // Tranquillien
+    {3488, {2}}, // Tranquillien
     // Hillsbrad Foothills
-    271, 2369, // Southshore
-    272, 2368, // Tauren Mill
+    {271, {1}}, // Southshore
+    {2369, {1}}, // Southshore
+    {272, {2}}, // Tauren Mill
+    {2368, {2}}, // Tauren Mill
     // Isle of Quel'Danas
     // Loch Modan
-    144, // Thelsamar
+    {144, {1}}, // Thelsamar
     // Redridge Mountains
-    69, // Lakeshire
+    {69, {1}}, // Lakeshire
     // Searing Gorge
     // Thorium Point - considered a neutral town
     // Silverpine Forest
-    228, // The Sepulcher
+    {228, {2}}, // The Sepulcher
     // Stranglethorn Vale
-    117, // Grom'gol Base Camp
-    99, // Rebel Camp
+    {117, {2}}, // Grom'gol Base Camp
+    {99, {1}}, // Rebel Camp
     // Swamp of Sorrows
-    75, // Stonard
+    {75, {2}}, // Stonard
     // Hinterlands
-    348, // Aerie Peak
-    3317, // Revantusk Village
+    {348, {1}}, // Aerie Peak
+    {3317, {2}}, // Revantusk Village
     // Tirisfal Glades
-    1497, // Undercity
-    159, 2118, // Brill
-    152, 813, // The Bulwark
+    {1497, {2}}, // Undercity
+    {159, {2}}, // Brill
+    {2118, {2}}, // Brill
+    {152, {2}}, // The Bulwark
+    {813, {2}}, // The Bulwark
     // Western Plaguelands
-    3197, // Chillwind Camp
-    152, 813, // The Bulwark
+    {3197, {1}}, // Chillwind Camp
     // Westfall
-    108, // Sentinel Hill
+    {108, {1}}, // Sentinel Hill
     // Wetlands
-    150, // Menethil Harbor
-    269, // Dun Algaz (tunnels?)
+    {150, {1}}, // Menethil Harbor
+    {269, {1}}, // Dun Algaz (tunnels?)
     // =================================================
     // Outland
     // =================================================
     // Blades Edge Mountains
-    3772, // Sylvanaar
-    3769, // Thunderlord Stronghold
+    {3772, {1}}, // Sylvanaar
+    {3769, {2}}, // Thunderlord Stronghold
     // Hellfire Peninsula
-    3536, // Thrallmar
-    3538, // Honor Hold
+    {3536, {2}}, // Thrallmar
+    {3538, {1}}, // Honor Hold
     // Nagrand
-    3626, // Telaar
-    3613, // Garadar
+    {3626, {1}}, // Telaar
+    {3613, {2}}, // Garadar
     // Netherstorm
     // Shadowmoon Valley
-    3745, // Wildhammer Stronghold
-    3744, // Shadowmoon Village
+    {3745, {2}}, // Wildhammer Stronghold
+    {3744, {1}}, // Shadowmoon Village
     // Terokkar Forest
-    3684, // Allerian Stronghold
-    3683, // Stonebreaker Hold
+    {3684, {1}}, // Allerian Stronghold
+    {3683, {2}}, // Stonebreaker Hold
     // Zangamarsh
-    3644, // Telredor
-    3645, // Zabra'jin
-    3718, // Swamprat Post
+    {3644, {1}}, // Telredor
+    {3645, {2}}, // Zabra'jin
+    {3718, {2}}, // Swamprat Post
     // =================================================
     // Northrend
     // =================================================
@@ -499,96 +488,96 @@ std::unordered_set<uint32_t> NerfHerderHelper::townDataMap =
 std::unordered_map<uint32_t, ZoneData> NerfHerderHelper::zoneDataMap =
 {
     // 1-10
-    {3524, {"Azuremyst Isle", 3524, 1, 10, "BC"}},
-    {1, {"Dun Morogh", 1, 1, 10, ""}},
-    {14, {"Durotar", 14, 1, 10, ""}},
-    {12, {"Elwynn Forest", 12, 1, 10, ""}},
-    {3430, {"Eversong Woods", 3430, 1, 10, "BC"}},
-    {215, {"Mulgore", 215, 1, 10, ""}},
-    {141, {"Teldrassil", 141, 1, 10, ""}},
-    {85, {"Tirisfal Glades", 85, 1, 10, ""}},
+    {3524, {1, 10}}, // Azuremyst Isle
+    {1, {1, 10}}, // Dun Morogh
+    {14, {1, 10}}, // Durotar
+    {12, {1, 10}}, // Elwynn Forest
+    {3430, {1, 10}}, // Eversong Woods
+    {215, {1, 10}}, // Mulgore
+    {141, {1, 10}}, // Teldrassil
+    {85, {1, 10}}, // Tirisfal Glades
 
     // 10-20
-    {3525, {"Bloodmyst Isle", 3525, 10, 20, "BC"}},
-    {148, {"Darkshore", 148, 10, 20, ""}},
-    {3433, {"Ghostlands", 3433, 10, 20, "BC"}},
-    {38, {"Loch Modan", 38, 10, 20, ""}},
-    {130, {"Silverpine Forest", 130, 10, 20, ""}},
-    {40, {"Westfall", 40, 10, 20, ""}},
-    {17, {"Barrens", 17, 10, 25, ""}},
+    {3525, {10, 20}}, // Bloodmyst Isle
+    {148, {10, 20}}, // Darkshore
+    {3433, {10, 20}}, // Ghostlands
+    {38, {10, 20}}, // Loch Modan
+    {130, {10, 20}}, // Silverpine Forest
+    {40, {10, 20}}, // Westfall
+    {17, {10, 25}}, // Barrens
 
     // 15-25
-    {44, {"Redridge Mountains", 44, 15, 25, ""}},
-    {406, {"Stonetalon Mountains", 406, 15, 27, ""}},
+    {44, {15, 25}}, // Redridge Mountains
+    {406, {15, 27}}, // Stonetalon Mountains
 
     // 20-30
-    {331, {"Ashenvale", 331, 18, 30, ""}},
-    {10, {"Duskwood", 10, 18, 30, ""}},
-    {267, {"Hillsbrad Foothills", 267, 20, 30, ""}},
-    {11, {"Wetlands", 11, 20, 30, ""}},
+    {331, {18, 30}}, // Ashenvale
+    {10, {18, 30}}, // Duskwood
+    {267, {20, 30}}, // Hillsbrad Foothills
+    {11, {20, 30}}, // Wetlands
 
     // 25-35
-    {400, {"Thousand Needles", 400, 25, 35, ""}},
+    {400, {25, 35}}, // Thousand Needles
 
     // 30-40
-    {36, {"Alterac Mountains", 36, 30, 40, ""}},
-    {45, {"Arathi Highlands", 45, 30, 40, ""}},
-    {405, {"Desolace", 405, 30, 40, ""}},
-    {33, {"Stranglethorn Vale", 33, 30, 45, ""}},
+    {36, {30, 40}}, // Alterac Mountains
+    {45, {30, 40}}, // Arathi Highlands
+    {405, {30, 40}}, // Desolace
+    {33, {30, 45}}, // Stranglethorn Vale
 
     // 35-45
-    {15, {"Dustwallow Marsh", 15, 35, 45, ""}},
-    {3, {"Badlands", 3, 35, 45, ""}},
-    {51, {"Swamp of Sorrows", 51, 35, 45, ""}},
+    {15, {35, 45}}, // Dustwallow Marsh
+    {3, {35, 45}}, // Badlands
+    {51, {35, 45}}, // Swamp of Sorrows
 
     // 40-50
-    {357, {"Feralas", 357, 40, 50, ""}},
-    {47, {"Hinterlands", 47, 40, 50, ""}},
-    {440, {"Tanaris", 440, 40, 50, ""}},
+    {357, {40, 50}}, // Feralas
+    {47, {40, 50}}, // Hinterlands
+    {440, {40, 50}}, // Tanaris
 
     // 45-55
-    {51, {"Searing Gorge", 51, 45, 50, ""}},
-    {16, {"Azshara", 16, 45, 55, ""}},
-    {4, {"Blasted Lands", 4, 45, 55, ""}},
-    {490, {"Un'goro Crater", 490, 48, 55, ""}},
-    {361, {"Felwood", 361, 48, 55, ""}},
+    {51, {45, 50}}, // Searing Gorge
+    {16, {45, 55}}, // Azshara
+    {4, {45, 55}}, // Blasted Lands
+    {490, {48, 55}}, // Un'goro Crater
+    {361, {48, 55}}, // Felwood
 
     // 50-60
-    {38, {"Burning Steppes", 38, 50, 58, ""}},
-    {28, {"Western Plaguelands", 28, 51, 58, ""}},
-    {139, {"Eastern Plaguelands", 139, 53, 60, ""}},
-    {618, {"Winterspring", 618, 53, 60, ""}},
+    {38, {50, 58}}, // Burning Steppes
+    {28, {51, 58}}, // Western Plaguelands
+    {139, {53, 60}}, // Eastern Plaguelands
+    {618, {53, 60}}, // Winterspring
 
     // 55-60
-    {609, {"Plaguelands: The Scarlet Enclave", 609, 55, 58, "WOTLK"}},
-    {41, {"Deadwind Pass", 41, 55, 60, ""}},
-    {80, {"Moonglade", 80, 55, 60, ""}},
-    {261, {"Silithus", 261, 55, 60, ""}},
-    {36, {"Blackrock Mountain", 36, 55, 60, ""}}, // not in official list?
-    {772, {"Ahn'Qiraj", 772, 55, 60, ""}}, // not in official list?
+    {609, {55, 58}}, // Plaguelands: The Scarlet Enclave
+    {41, {55, 60}}, // Deadwind Pass
+    {80, {55, 60}}, // Moonglade
+    {261, {55, 60}}, // Silithus
+    {36, {55, 60}}, // Blackrock Mountain
+    {772, {55, 60}}, // Ahn'Qiraj
 
     // 60-70
-    {3483, {"Hellfire Peninsula", 3483, 58, 63, "BC"}},
-    {3521, {"Zangarmarsh", 3521, 60, 64, "BC"}},
-    {3519, {"Terokkar Forest", 3519, 62, 65, "BC"}},
-    {3518, {"Nagrand", 3518, 64, 67, "BC"}},
-    {3522, {"Blade's Edge Mountains", 3522, 65, 68, "BC"}},
-    {3523, {"Netherstorm", 3523, 67, 70, "BC"}},
-    {3520, {"Shadowmoon Valley", 3520, 67, 70, "BC"}},
-    {4080, {"Isle of Quel'Danas", 4080, 70, 73, "BC"}},
+    {3483, {58, 63}}, // Hellfire Peninsula
+    {3521, {60, 64}}, // Zangarmarsh
+    {3519, {62, 65}}, // Terokkar Forest
+    {3518, {64, 67}}, // Nagrand
+    {3522, {65, 68}}, // Blade's Edge Mountains
+    {3523, {67, 70}}, // Netherstorm
+    {3520, {67, 70}}, // Shadowmoon Valley
+    {4080, {70, 73}}, // Isle of Quel'Danas
 
     // 70-80
-    {3537, {"Borean Tundra", 3537, 68, 72, "WOTLK"}},
-    {495, {"Howling Fjord", 495, 68, 72, "WOTLK"}},
-    {65, {"Dragonblight", 65, 71, 75, "WOTLK"}},
-    {394, {"Grizzly Hills", 394, 73, 75, "WOTLK"}},
-    {66, {"Zul'Drak", 66, 74, 76, "WOTLK"}},
-    {67, {"Sholazar Basin", 67, 76, 78, "WOTLK"}},
-    {2817, {"Crystalsong Forest", 2817, 77, 80, "WOTLK"}},
-    {4742, {"Hrothgar's Landing", 4742, 77, 80, "WOTLK"}},
-    {210, {"Icecrown", 210, 77, 80, "WOTLK"}},
-    {67, {"Storm Peaks", 67, 77, 80, "WOTLK"}},
-    {4197, {"Wintergrasp", 4197, 77, 80, "WOTLK"}}
+    {3537, {68, 72}}, // Borean Tundra
+    {495, {68, 72}}, // Howling Fjord
+    {65, {71, 75}}, // Dragonblight
+    {394, {73, 75}}, // Grizzly Hills
+    {66, {74, 76}}, // Zul'Drak
+    {67, {76, 78}}, // Sholazar Basin
+    {2817, {77, 80}}, // Crystalsong Forest
+    {4742, {77, 80}}, // Hrothgar's Landing
+    {210, {77, 80}}, // Icecrown
+    {67, {77, 80}}, // Storm Peaks
+    {4197, {77, 80}} // Wintergrasp
 };
 
 class NerfHerderCreature : public AllCreatureScript
@@ -787,7 +776,32 @@ public:
                             ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
                         }
 
-                        // apply world buff
+                        // give plunder
+                        if (NerfHerder_HonorPlunderEnabled)
+                        {
+                            uint32_t currentmoney = player->GetMoney();
+                            uint32_t givenmoney = v_level * 100 * NerfHerder_HonorPlunderAmountPerLevel; // the creature's level in silver
+
+                            // Seed the random number generator
+                            std::random_device rd;
+                            std::mt19937 gen(rd());
+
+                            // Define the range for random percentage (±20%)
+                            double minPercentage = 0.8; // 80%
+                            double maxPercentage = 1.2; // 120%
+
+                            // Generate a random percentage
+                            std::uniform_real_distribution<> dis(minPercentage, maxPercentage);
+                            double randomPercentage = dis(gen);
+
+                            // Apply the random percentage to modify givenmoney
+                            uint32_t modifiedmoney = static_cast<uint32_t>(givenmoney * randomPercentage);
+
+                            // give them reward
+                            player->SetMoney(currentmoney + modifiedmoney);
+                        }
+
+                        // apply world buff (if applicable)
                         NerfHerderHelper::ApplyWorldBuff(player);
                     }
                 }

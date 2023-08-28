@@ -1,6 +1,6 @@
 # Nerf Herder
 
-An AzerothCore module for nerfing faction NPCs to promote world PvM.
+An AzerothCore module for nerfing faction NPCs.
 
 This mod was initially intended for private servers limited to Vanilla or TBC as an easy fix for NPCs over the maximum player level, such as town guards in capitol cities.
 

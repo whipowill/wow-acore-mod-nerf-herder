@@ -27,9 +27,11 @@ NerfHerder.HonorGreyEnabled = 0
 # rate of honor on every grey pvp flagged kill, 1=100% 2=200%
 NerfHerder.HonorGreyRate = 0.5
 
-# rate of additional debuff, 0=0% 0.1=10% 0.2=20%
-NerfHerder.ExtraNerfRate = 0.1
-# (how much more do you want to nerf em?)
+# give money on honor kills? 0=off 1=on
+NerfHerder.HonorPlunderEnabled = 0;
+
+# how much money per level of creature on honor kill? (in copper)
+NerfHerder.HonorPlunderAmountPerLevel = 100;
 
 # give world buff on kills, 0=off 1=on
 NerfHerder.WorldBuff.Enabled = 0
