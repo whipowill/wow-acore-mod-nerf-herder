@@ -4,7 +4,7 @@ An AzerothCore module for nerfing faction NPCs.
 
 This mod was initially intended for private servers limited to Vanilla or TBC as an easy fix for NPCs over the maximum player level, such as town guards in capitol cities.
 
-But it also includes features for adding factional warfare to the game by flagging all NPCs of both factions as PvP and granting honor and world buffs for killing them.
+But it also includes features for promoting factional warfare to the game by flagging all NPCs of both factions as PvP and granting honor, plunder, and world buffs for killing them.
 
 Does not affect world database.  Does not affect dungeons or raids.
 

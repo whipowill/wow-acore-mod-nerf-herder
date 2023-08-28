@@ -780,7 +780,7 @@ public:
                         if (NerfHerder_HonorPlunderEnabled)
                         {
                             uint32_t currentmoney = player->GetMoney();
-                            uint32_t givenmoney = v_level * 100 * NerfHerder_HonorPlunderAmountPerLevel; // the creature's level in silver
+                            uint32_t givenmoney = v_level * NerfHerder_HonorPlunderAmountPerLevel; // the creature's level in silver
 
                             // Seed the random number generator
                             std::random_device rd;

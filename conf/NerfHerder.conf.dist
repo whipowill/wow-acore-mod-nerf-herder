@@ -28,10 +28,10 @@ NerfHerder.HonorGreyEnabled = 0
 NerfHerder.HonorGreyRate = 0.5
 
 # give money on honor kills? 0=off 1=on
-NerfHerder.HonorPlunderEnabled = 0;
+NerfHerder.HonorPlunderEnabled = 0
 
 # how much money per level of creature on honor kill? (in copper)
-NerfHerder.HonorPlunderAmountPerLevel = 100;
+NerfHerder.HonorPlunderAmountPerLevel = 100
 
 # give world buff on kills, 0=off 1=on
 NerfHerder.WorldBuff.Enabled = 0
