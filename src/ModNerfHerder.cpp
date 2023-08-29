@@ -58,14 +58,14 @@ public:
         // pull configs
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
         NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
-        NerfHerder_NerfRate = sConfigMgr->GetOption<int>("NerfHerder.NerfRate", 1);
+        NerfHerder_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.NerfRate", 1);
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
         NerfHerder_Honor_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.Enabled", 0);
-        NerfHerder_Honor_Rate = sConfigMgr->GetOption<int>("NerfHerder.Honor.Rate", 0);
+        NerfHerder_Honor_Rate = sConfigMgr->GetOption<float>("NerfHerder.Honor.Rate", 0);
         NerfHerder_Honor_GreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.GreyEnabled", 0);
-        NerfHerder_Honor_GreyRate = sConfigMgr->GetOption<int>("NerfHerder.Honor.GreyRate", 0);
+        NerfHerder_Honor_GreyRate = sConfigMgr->GetOption<float>("NerfHerder.Honor.GreyRate", 0);
         NerfHerder_Honor_PlunderEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderEnabled", 0);
         NerfHerder_Honor_PlunderAmountPerLevel = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderAmountPerLevel", 0);
         NerfHerder_WorldBuff_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Enabled", 0);

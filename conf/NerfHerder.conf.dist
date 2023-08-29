@@ -7,7 +7,7 @@ NerfHerder.Enabled = 1
 # 1=proportional
 # 1.2=20% more than proportional
 # 0.8=20% less than proportional
-NerfHerder.NerfRate = 0.8
+NerfHerder.NerfRate = 0.7
 
 # nerf any creature over max player level, 0=off 1=on
 NerfHerder.PlayerLevelEnabled = 1

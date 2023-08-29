@@ -17,19 +17,21 @@ Does not affect world database.  Does not affect dungeons or raids.
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
 - ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as PvP
+- ``NerfHerder.HidePvPVendorsEnabled`` - hide PvP vendors who don't belong
+
 - ``NerfHerder.Honor.Enabled`` - grant honor rewards on PvP flagged NPC kills
 - ``NerfHerder.Honor.Rate`` - adjust the rate of honor gain
 - ``NerfHerder.Honor.GreyEnabled`` - grey PvP flagged NPCs give honor
 - ``NerfHerder.Honor.GreyRate`` - adjust the rate of grey honor gain
 - ``NerfHerder.Honor.PlunderEnabled`` - give plunder reward on honor kill
 - ``NerfHerder.Honor.PlunderAmountPerLevel`` - amount of money per level of creature
+
 - ``NerfHerder.WorldBuff.Enabled`` - give world buff on kills
 - ``NerfHerder.WorldBuff.KillCount`` - number of kills to accumulate to get world buff
 - ``NerfHerder.WorldBuff.Cooldown`` - time cooldown between world buffs (minutes)
 - ``NerfHerder.WorldBuff.SpellId.01`` - world buff to give option 1
 - ``NerfHerder.WorldBuff.SpellId.02`` - world buff to give option 2
 - ``NerfHerder.WorldBuff.SpellId.03`` - world buff to give option 3
-- ``NerfHerder.HidePvPVendorsEnabled`` - hide PvP vendors who don't belong
 
 ## The Vision
 
