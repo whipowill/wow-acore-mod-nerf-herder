@@ -724,43 +724,39 @@ public:
 
             // is the player in a town?
             uint32_t area_id = player->GetAreaId();
-            if (NerfHerderHelper::townDataMap.find(area_id) == NerfHerderHelper::townDataMap.end())
+            if (NerfHerderHelper::townDataMap.find(area_id) != NerfHerderHelper::townDataMap.end())
             {
-                // not in a town, bail
-                return 0;
-            }
-
-            // is the player in a capitol city?
-            uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
-            if (is_capitol_city)
-            {
-                // if player isn't buffed...
-                if (!player->HasAura(DamageDoneTakenSpell))
+                // is the player in a capitol city?
+                uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
+                if (is_capitol_city)
                 {
-                    uint32_t groupsize = GetNumInGroup(player);
-                    if ($groupsize < 20)
+                    // if player isn't buffed...
+                    if (!player->HasAura(DamageDoneTakenSpell))
                     {
-                        uint32_t damageDone = 100 * (20 / groupsize);
-                        uint32_t damageTaken = -1 * damageDone;
+                        uint32_t groupsize = GetNumInGroup(player);
+                        if ($groupsize < 20)
+                        {
+                            uint32_t damageDone = 100 * (20 / groupsize);
+                            uint32_t damageTaken = -1 * damageDone;
 
-                        // this buff will nerf/buff the damage taken/done by a ratio
-                        // of how many players are in your group out of an ideal
-                        // group of 20 players.
+                            // this buff will nerf/buff the damage taken/done by a ratio
+                            // of how many players are in your group out of an ideal
+                            // group of 20 players.
 
-                        player->CastCustomSpell(player, DamageDoneTakenSpell, &damageTaken, &damageDone, NULL, true, NULL, NULL, player->GetGUID());
+                            player->CastCustomSpell(player, DamageDoneTakenSpell, &damageTaken, &damageDone, NULL, true, NULL, NULL, player->GetGUID());
+                        }
+                    }
+                }
+                else
+                {
+                    // if player is buffed...
+                    if (player->HasAura(DamageDoneTakenSpell))
+                    {
+                        //
+                        player->RemoveAura(DamageDoneTakenSpell);
                     }
                 }
             }
-            else
-            {
-                // if player is buffed...
-                if (player->HasAura(DamageDoneTakenSpell))
-                {
-                    //
-                    player->RemoveAura(DamageDoneTakenSpell);
-                }
-            }
-
         }
     }
 
