@@ -41,7 +41,7 @@ World Buffs
 
 For The Faction
 
-- ``NerfHerder.ForTheFactionEnabled`` - buff players assulting capitol city w/out raid group (experimental)
+- ``NerfHerder.ForTheFactionEnabled`` - buff players assaulting capitol city w/out raid group (experimental)
 
 ## The Vision
 
