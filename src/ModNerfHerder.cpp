@@ -20,12 +20,12 @@ uint32_t NerfHerder_PlayerLevelEnabled = 0;
 uint32_t NerfHerder_ZoneLevelEnabled = 0;
 uint32_t NerfHerder_HidePvPVendorsEnabled = 0;
 uint32_t NerfHerder_ForcePvPEnabled = 0;
-uint32_t NerfHerder_HonorEnabled = 0;
-float NerfHerder_HonorRate = 0;
-uint32_t NerfHerder_HonorGreyEnabled = 0;
-float NerfHerder_HonorGreyRate = 0;
-uint32_t NerfHerder_HonorPlunderEnabled = 0;
-uint32_t NerfHerder_HonorPlunderAmountPerLevel = 0;
+uint32_t NerfHerder_Honor_Enabled = 0;
+float NerfHerder_Honor_Rate = 0;
+uint32_t NerfHerder_Honor_GreyEnabled = 0;
+float NerfHerder_Honor_GreyRate = 0;
+uint32_t NerfHerder_Honor_PlunderEnabled = 0;
+uint32_t NerfHerder_Honor_PlunderAmountPerLevel = 0;
 uint32_t NerfHerder_MaxPlayerLevel = 80;
 uint32_t NerfHerder_WorldBuff_Enabled = 0;
 uint32_t NerfHerder_WorldBuff_KillCount = 0;
@@ -56,18 +56,18 @@ public:
     void SetInitialWorldSettings()
     {
         // pull configs
+        NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
         NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
         NerfHerder_NerfRate = sConfigMgr->GetOption<int>("NerfHerder.NerfRate", 1);
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
-        NerfHerder_HonorEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.Enabled", 0);
-        NerfHerder_HonorRate = sConfigMgr->GetOption<int>("NerfHerder.Honor.Rate", 0);
-        NerfHerder_HonorGreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.GreyEnabled", 0);
-        NerfHerder_HonorGreyRate = sConfigMgr->GetOption<int>("NerfHerder.Honor.GreyRate", 0);
-        NerfHerder_HonorPlunderEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderEnabled", 0);
-        NerfHerder_HonorPlunderAmountPerLevel = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderAmountPerLevel", 0);
-        NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
+        NerfHerder_Honor_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.Enabled", 0);
+        NerfHerder_Honor_Rate = sConfigMgr->GetOption<int>("NerfHerder.Honor.Rate", 0);
+        NerfHerder_Honor_GreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.GreyEnabled", 0);
+        NerfHerder_Honor_GreyRate = sConfigMgr->GetOption<int>("NerfHerder.Honor.GreyRate", 0);
+        NerfHerder_Honor_PlunderEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderEnabled", 0);
+        NerfHerder_Honor_PlunderAmountPerLevel = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderAmountPerLevel", 0);
         NerfHerder_WorldBuff_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Enabled", 0);
         NerfHerder_WorldBuff_KillCount = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.KillCount", 0);
         NerfHerder_WorldBuff_Cooldown = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Cooldown", 0);
@@ -692,11 +692,11 @@ public:
 
     void RewardHonor(Player* player, Creature* killed)
     {
-        if (NerfHerder_HonorEnabled && player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
+        if (NerfHerder_Honor_Enabled && player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
         {
             if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
             {
-                if ((NerfHerder_HonorEnabled && killed->ToCreature()->IsPvP()))
+                if ((NerfHerder_Honor_Enabled && killed->ToCreature()->IsPvP()))
                 {
                     std::ostringstream ss;
                     int honor = -1; //Honor is added as an int
@@ -711,13 +711,13 @@ public:
                     uint8 v_level = killed->getLevel();
 
                     // handle grey override setting
-                    float honor_multiplier = NerfHerder_HonorRate;
+                    float honor_multiplier = NerfHerder_Honor_Rate;
                     if (v_level <= k_grey) // if npc was too low
                     {
-                        if (NerfHerder_HonorGreyEnabled)
+                        if (NerfHerder_Honor_GreyEnabled)
                         {
                             v_level = k_grey + 1; // treat npc as just above limit
-                            honor_multiplier = NerfHerder_HonorGreyRate;
+                            honor_multiplier = NerfHerder_Honor_GreyRate;
                         }
                     }
 
@@ -779,10 +779,10 @@ public:
                         }
 
                         // give plunder
-                        if (NerfHerder_HonorPlunderEnabled)
+                        if (NerfHerder_Honor_PlunderEnabled)
                         {
                             uint32_t currentmoney = player->GetMoney();
-                            uint32_t givenmoney = (v_level * NerfHerder_HonorPlunderAmountPerLevel) / groupsize; // the creature's level in silver
+                            uint32_t givenmoney = (v_level * NerfHerder_Honor_PlunderAmountPerLevel) / groupsize; // the creature's level in silver
 
                             // Seed the random number generator
                             std::random_device rd;
