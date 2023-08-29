@@ -13,8 +13,8 @@ Does not affect world database.  Does not affect dungeons or raids.
 ## Configuration
 
 - ``NerfHerder.Enabled`` - enable this module
-- ``NerfHerder.NerfRate`` - do you want to nerf proportionally or more/less
-- ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
+- ``NerfHerder.NerfRate`` - nerf proportionally or more/less
+- ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
 - ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as PvP
 - ``NerfHerder.Honor.Enabled`` - grant honor rewards on PvP flagged NPC kills

@@ -276,7 +276,7 @@ public:
 
         // calc negative multiplier
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
-        float multiplier = -100 + ((ratio * 100) * NerfHerder_NerfRate);
+        float multiplier = (-100 + (ratio * 100)) * NerfHerder_NerfRate;
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
