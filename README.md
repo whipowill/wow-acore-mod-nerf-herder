@@ -12,6 +12,8 @@ Does not affect world database.  Does not affect dungeons or raids.
 
 ## Configuration
 
+Base Features
+
 - ``NerfHerder.Enabled`` - enable this module
 - ``NerfHerder.NerfRate`` - nerf proportionally or more/less
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level
@@ -19,12 +21,16 @@ Does not affect world database.  Does not affect dungeons or raids.
 - ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as PvP
 - ``NerfHerder.HidePvPVendorsEnabled`` - hide PvP vendors who don't belong
 
+Honor Rewards
+
 - ``NerfHerder.Honor.Enabled`` - grant honor rewards on PvP flagged NPC kills
 - ``NerfHerder.Honor.Rate`` - adjust the rate of honor gain
 - ``NerfHerder.Honor.GreyEnabled`` - grey PvP flagged NPCs give honor
 - ``NerfHerder.Honor.GreyRate`` - adjust the rate of grey honor gain
 - ``NerfHerder.Honor.PlunderEnabled`` - give plunder reward on honor kill
 - ``NerfHerder.Honor.PlunderAmountPerLevel`` - amount of money per level of creature
+
+World Buffs
 
 - ``NerfHerder.WorldBuff.Enabled`` - give world buff on kills
 - ``NerfHerder.WorldBuff.KillCount`` - number of kills to accumulate to get world buff
