@@ -734,7 +734,7 @@ public:
                     if (!player->HasAura(DamageDoneTakenSpell))
                     {
                         uint32_t groupsize = GetNumInGroup(player);
-                        if ($groupsize < 20)
+                        if (groupsize < 20)
                         {
                             uint32_t damageDone = 100 * (20 / groupsize);
                             uint32_t damageTaken = -1 * damageDone;
