@@ -22,13 +22,13 @@ NerfHerder.ForcePvPEnabled = 1
 NerfHerder.Honor.Enabled = 1
 
 # rate of honor on every pvp flagged kill, 1=100% 2=200%
-NerfHerder.Honor.Rate = 3
+NerfHerder.Honor.Rate = 2
 
 # grey NPCs still give honor, 0=off 1=on
 NerfHerder.Honor.GreyEnabled = 1
 
 # rate of honor on every grey pvp flagged kill, 1=100% 2=200%
-NerfHerder.Honor.GreyRate = 3
+NerfHerder.Honor.GreyRate = 2
 
 # give money on honor kills? 0=off 1=on
 NerfHerder.Honor.PlunderEnabled = 1
