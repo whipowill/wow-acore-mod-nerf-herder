@@ -39,6 +39,7 @@ uint32_t NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillCount = 0;
+uint32_t NerfHerder_ForTheFactionEnabled = 0;
 
 class NerfHerderConfig : public WorldScript
 {
@@ -75,6 +76,7 @@ public:
         NerfHerder_WorldBuff_SpellId_02 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.02", 0);
         NerfHerder_WorldBuff_SpellId_03 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.03", 0);
         NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
+        NerfHerder_ForTheFactionEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForTheFactionEnabled", 0);
     }
 };
 
@@ -84,6 +86,7 @@ struct VendorData {
 
 struct TownData {
     uint32_t teamID; // 0=neutral, 1=alliance, 2=horde
+    uint32_t isCapitolCity; // 0=false, 1=true
 };
 
 struct ZoneData {
@@ -329,160 +332,197 @@ std::unordered_map<uint32_t, TownData> NerfHerderHelper::townDataMap =
     // Kalimdor
     // =================================================
     // Ashenvale
-    {2897, {2}}, // Zoram'gar Outpost
-    {415, {1}}, // Astranaar
-    {431, {2}}, // Splintertree Post
-    {2358, {1}}, // Forest Song
+    {2897, {2, 0}}, // Zoram'gar Outpost
+    {415, {1, 0}}, // Astranaar
+    {431, {2, 0}}, // Splintertree Post
+    {2358, {1, 0}}, // Forest Song
     // Azshara
     // Azuremist Isle
-    {3576, {1}}, // Azure Watch
-    {3573, {1}}, // Odesyus' Landing
-    {3572, {1}}, // Stillpine Hold
-    {3557, {1}}, // The Exodar
+    {3576, {1, 0}}, // Azure Watch
+    {3573, {1, 0}}, // Odesyus' Landing
+    {3572, {1, 0}}, // Stillpine Hold
+    {3557, {1, 1}}, // The Exodar
     // Bloodmist Isle
-    {3584, {1}}, // Blood Watch
-    {3608, {1}}, // Vindicator's Rest
+    {3584, {1, 0}}, // Blood Watch
+    {3608, {1, 0}}, // Vindicator's Rest
     // Darkshore
-    {442, {1}}, // Auberdine
+    {442, {1, 0}}, // Auberdine
     // Desolace
-    {2408, {2}}, // Shadowprey Village
-    {608, {1}}, // Nijel's Point
+    {2408, {2, 0}}, // Shadowprey Village
+    {608, {1, 0}}, // Nijel's Point
     // Durotar
-    {1637, {2}}, // Orgrimmar
-    {362, {2}}, // Razor Hill
-    {367, {2}}, // Sen'jin Village
+    {1637, {2, 1}}, // Orgrimmar
+    {362, {2, 0}}, // Razor Hill
+    {367, {2, 0}}, // Sen'jin Village
     // Dustwallow Marsh
-    {496, {2}}, // Brackenwall Village
-    {513, {1}}, // Theramore Isle
+    {496, {2, 0}}, // Brackenwall Village
+    {513, {1, 0}}, // Theramore Isle
     // Felwood
-    {1997, {2}}, // Bloodvenom Post
-    {2479, {1}}, // Emerald Sanctuary
-    {1998, {1}}, // Talonbranch Glade
+    {1997, {2, 0}}, // Bloodvenom Post
+    {2479, {1, 0}}, // Emerald Sanctuary
+    {1998, {1, 0}}, // Talonbranch Glade
     // Feralas
-    {1116, {1}}, // Feathermoon Stronghold
-    {1099, {2}}, // Camp Mojache
+    {1116, {1, 0}}, // Feathermoon Stronghold
+    {1099, {2, 0}}, // Camp Mojache
     // Moonglade
     // Nighthaven -- considered a neutral town
     // Mulgore
-    {1638, {2}}, // Thunder Bluff
-    {1639, {2}}, // Thunder Bluff
-    {1640, {2}}, // Thunder Bluff
-    {1641, {2}}, // Thunder Bluff
-    {222, {2}}, // Bloodhoof Village
+    {1638, {2, 1}}, // Thunder Bluff
+    {1639, {2, 1}}, // Thunder Bluff
+    {1640, {2, 1}}, // Thunder Bluff
+    {1641, {2, 1}}, // Thunder Bluff
+    {222, {2, 0}}, // Bloodhoof Village
     // Silithus
     // Cenarion Hold -- considered a neutral town
     // Stonetalon Mountains
-    {2539, {2}}, // Malaka'jin
-    {460, {2}}, // Sun Rock Retreat
-    {467, {1}}, // Stonetalon Peak
+    {2539, {2, 0}}, // Malaka'jin
+    {460, {2, 0}}, // Sun Rock Retreat
+    {467, {1, 0}}, // Stonetalon Peak
     // Tanaris
     // Teldrassil
-    {1657, {1}}, // Darnassus
-    {186, {1}}, // Dolanaar
-    {256, {1}}, // Aldrassil
+    {1657, {1, 1}}, // Darnassus
+    {186, {1, 0}}, // Dolanaar
+    {256, {1, 0}}, // Aldrassil
     // The Barrens
-    {380, {2}}, // Crossroads
-    {378, {2}}, // Camp Taurajo
+    {380, {2, 0}}, // Crossroads
+    {378, {2, 0}}, // Camp Taurajo
     // Thousand Needles
-    {484, {2}}, // Freewind Post
-    {489, {1}}, // Thalanaar
+    {484, {2, 0}}, // Freewind Post
+    {489, {1, 0}}, // Thalanaar
     // Un'goro Crater
-    //{541, {0}}, // Marshal's Refuge - considered a neutral town
+    //{541, {0, 0}}, // Marshal's Refuge - considered a neutral town
     // Winterspring
     // =================================================
     // Eastern Kingdoms
     // =================================================
     // Alterac Mountains
     // Arathi Highlands
-    {320, {1}}, // Refuge Pointe
-    {321, {2}}, // Hammerfall
+    {320, {1, 0}}, // Refuge Pointe
+    {321, {2, 0}}, // Hammerfall
     // Badlands
-    {340, {2}}, // Kargath
+    {340, {2, 0}}, // Kargath
     // Blasted Lands
-    {1438, {1}}, // Nethergarde Keep
+    {1438, {1, 0}}, // Nethergarde Keep
     // Burning Steppes
-    {2418, {1}}, // Morgan's Vigil
+    {2418, {1, 0}}, // Morgan's Vigil
     // Deadwind Pass
     // Dun Morogh
-    {77, {1}}, // Anvilmar
-    {131, {1}}, // Kharanos
-    {1537, {1}}, // Ironforge
-    {189, {1}}, // Steelgrill's Depot
+    {77, {1, 0}}, // Anvilmar
+    {131, {1, 0}}, // Kharanos
+    {1537, {1, 1}}, // Ironforge
+    {189, {1, 0}}, // Steelgrill's Depot
     // Duskwood
-    {42, {1}}, // Darkshire
+    {42, {1, 0}}, // Darkshire
     // Eastern Plaguelands
     // Light's Hope Chapel - considered a neutral town
     // Elwynn Forest
-    {87, {1}}, // Goldshire
-    {1519, {1}}, // Stormwind
-    {4411, {1}}, // Stormwind Harbor
-    {24, {1}}, // Northshire Abbey
+    {87, {1, 0}}, // Goldshire
+    {1519, {1, 1}}, // Stormwind
+    {4411, {1, 1}}, // Stormwind Harbor
+    {24, {1, 0}}, // Northshire Abbey
     // Eversong Woods
-    {3487, {1}}, // Silvermoon City
-    {3665, {1}}, // Falconwing Square
+    {3487, {1, 1}}, // Silvermoon City
+    {3665, {1, 0}}, // Falconwing Square
     // Ghostlands
-    {3488, {2}}, // Tranquillien
+    {3488, {2, 0}}, // Tranquillien
     // Hillsbrad Foothills
-    {271, {1}}, // Southshore
-    {2369, {1}}, // Southshore
-    {272, {2}}, // Tauren Mill
-    {2368, {2}}, // Tauren Mill
+    {271, {1, 0}}, // Southshore
+    {2369, {1, 0}}, // Southshore
+    {272, {2, 0}}, // Tauren Mill
+    {2368, {2, 0}}, // Tauren Mill
     // Isle of Quel'Danas
     // Loch Modan
-    {144, {1}}, // Thelsamar
+    {144, {1, 0}}, // Thelsamar
     // Redridge Mountains
-    {69, {1}}, // Lakeshire
+    {69, {1, 0}}, // Lakeshire
     // Searing Gorge
     // Thorium Point - considered a neutral town
     // Silverpine Forest
-    {228, {2}}, // The Sepulcher
+    {228, {2, 0}}, // The Sepulcher
     // Stranglethorn Vale
-    {117, {2}}, // Grom'gol Base Camp
-    {99, {1}}, // Rebel Camp
+    {117, {2, 0}}, // Grom'gol Base Camp
+    {99, {1, 0}}, // Rebel Camp
     // Swamp of Sorrows
-    {75, {2}}, // Stonard
+    {75, {2, 0}}, // Stonard
     // Hinterlands
-    {348, {1}}, // Aerie Peak
-    {3317, {2}}, // Revantusk Village
+    {348, {1, 0}}, // Aerie Peak
+    {3317, {2, 0}}, // Revantusk Village
     // Tirisfal Glades
-    {1497, {2}}, // Undercity
-    {159, {2}}, // Brill
-    {2118, {2}}, // Brill
-    {152, {2}}, // The Bulwark
-    {813, {2}}, // The Bulwark
+    {1497, {2, 1}}, // Undercity
+    {159, {2, 0}}, // Brill
+    {2118, {2, 0}}, // Brill
+    {152, {2, 0}}, // The Bulwark
+    {813, {2, 0}}, // The Bulwark
     // Western Plaguelands
-    {3197, {1}}, // Chillwind Camp
+    {3197, {1, 0}}, // Chillwind Camp
     // Westfall
-    {108, {1}}, // Sentinel Hill
+    {108, {1, 0}}, // Sentinel Hill
     // Wetlands
-    {150, {1}}, // Menethil Harbor
-    {269, {1}}, // Dun Algaz (tunnels?)
+    {150, {1, 0}}, // Menethil Harbor
+    {269, {1, 0}}, // Dun Algaz (tunnels?)
     // =================================================
     // Outland
     // =================================================
     // Blades Edge Mountains
-    {3772, {1}}, // Sylvanaar
-    {3769, {2}}, // Thunderlord Stronghold
+    {3772, {1, 0}}, // Sylvanaar
+    {3769, {2, 0}}, // Thunderlord Stronghold
     // Hellfire Peninsula
-    {3536, {2}}, // Thrallmar
-    {3538, {1}}, // Honor Hold
+    {3536, {2, 0}}, // Thrallmar
+    {3538, {1, 0}}, // Honor Hold
     // Nagrand
-    {3626, {1}}, // Telaar
-    {3613, {2}}, // Garadar
+    {3626, {1, 0}}, // Telaar
+    {3613, {2, 0}}, // Garadar
     // Netherstorm
     // Shadowmoon Valley
-    {3745, {2}}, // Wildhammer Stronghold
-    {3744, {1}}, // Shadowmoon Village
+    {3745, {2, 0}}, // Wildhammer Stronghold
+    {3744, {1, 0}}, // Shadowmoon Village
     // Terokkar Forest
-    {3684, {1}}, // Allerian Stronghold
-    {3683, {2}}, // Stonebreaker Hold
+    {3684, {1, 0}}, // Allerian Stronghold
+    {3683, {2, 0}}, // Stonebreaker Hold
     // Zangamarsh
-    {3644, {1}}, // Telredor
-    {3645, {2}}, // Zabra'jin
-    {3718, {2}}, // Swamprat Post
+    {3644, {1, 0}}, // Telredor
+    {3645, {2, 0}}, // Zabra'jin
+    {3718, {2, 0}}, // Swamprat Post
     // =================================================
     // Northrend
     // =================================================
+    // Borean Tundra
+    {4122, {2, 0}}, // Bor'gorok Outpost
+    {4129, {2, 0}}, // Warsong Hold
+    {4037, {2, 0}}, // Taunka'le Village
+    {4032, {1, 0}}, // Valiance Keep
+    {4108, {1, 0}}, // Fizzcrank Airstrip
+    // ?? // Valiance Landing Camp
+    // Howling Fjord
+    {3981, {1, 0}}, // Valgarde
+    {4379, {1, 0}}, // Valgarde
+    {3998, {1, 0}}, // Westguard Keep
+    {4000, {2, 0}}, // Vengeance Landing
+    {4532, {2, 0}}, // Vengeance Landing Inn
+    {3991, {2, 0}}, // New Agamand
+    {4404, {2, 0}}, // New Agamand Inn
+    // Dragonblight
+    {4177, {1, 0}}, // Wintergarde Keep
+    {4165, {2, 0}}, // Agmar's Hammer
+    {14339, {2, 0}}, // Agmar's Hammer (Wintergrasp)
+    // Grizzly Hills
+    {4204, {1, 0}}, // Amberpine Lodge
+    {4159, {1, 0}}, // Westfall Brigade Encampment
+    {4206, {2, 0}}, // Conquest Hold
+    {4211, {2, 0}}, // Camp Oneqwah
+    // Zul'Drak
+    // The Argent Stand - considered a neutral town
+    // Sholazar Basin
+    // Crystalsong Forest
+    // Hrothgar's Landing
+    // Icecrown
+    {4427, {1, 0}}, // Argent Vanguard
+    {4501, {1, 0}}, // The Argent Vanguard ??
+    {4580, {1, 0}}, // Crusaders' Pinnacle
+    {4512, {2, 0}}, // Orgrim's Hammer
+    {4477, {2, 0}}, // The Shadow Vault
+    // Storm Peaks
+    // Wintergrasp
 };
 
 // https://github.com/Questie/Questie/blob/master/ExternalScripts(DONOTINCLUDEINRELEASE)/DBC%20-%20WoW.tools/areatable_wotlk.csv
@@ -675,6 +715,54 @@ class NerfHerderPlayer : public PlayerScript
 {
 public:
     NerfHerderPlayer() : PlayerScript("NerfHerderPlayer") {}
+
+    void OnUpdate(Player* player, uint32 p_time)
+    {
+        if (NerfHerder_ForTheFactionEnabled)
+        {
+            uint32_t DamageDoneTakenSpell = 89502;
+
+            // is the player in a town?
+            uint32_t area_id = player->GetAreaId();
+            if (NerfHerderHelper::townDataMap.find(area_id) == NerfHerderHelper::townDataMap.end())
+            {
+                // not in a town, bail
+                return 0;
+            }
+
+            // is the player in a capitol city?
+            uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
+            if (is_capitol_city)
+            {
+                // if player isn't buffed...
+                if (!player->HasAura(DamageDoneTakenSpell))
+                {
+                    uint32_t groupsize = GetNumInGroup(player);
+                    if ($groupsize < 20)
+                    {
+                        uint32_t damageDone = 100 * (20 / groupsize);
+                        uint32_t damageTaken = -1 * damageDone;
+
+                        // this buff will nerf/buff the damage taken/done by a ratio
+                        // of how many players are in your group out of an ideal
+                        // group of 20 players.
+
+                        player->CastCustomSpell(player, DamageDoneTakenSpell, &damageTaken, &damageDone, NULL, true, NULL, NULL, player->GetGUID());
+                    }
+                }
+            }
+            else
+            {
+                // if player is buffed...
+                if (player->HasAura(DamageDoneTakenSpell))
+                {
+                    //
+                    player->RemoveAura(DamageDoneTakenSpell);
+                }
+            }
+
+        }
+    }
 
     // This was all taken straight from HonorGuard mod, but tweaked to
     // give honor on any pvp flagged creature.

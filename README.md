@@ -35,9 +35,13 @@ World Buffs
 - ``NerfHerder.WorldBuff.Enabled`` - give world buff on kills
 - ``NerfHerder.WorldBuff.KillCount`` - number of kills to accumulate to get world buff
 - ``NerfHerder.WorldBuff.Cooldown`` - time cooldown between world buffs (minutes)
-- ``NerfHerder.WorldBuff.SpellId.01`` - world buff to give option 1
-- ``NerfHerder.WorldBuff.SpellId.02`` - world buff to give option 2
-- ``NerfHerder.WorldBuff.SpellId.03`` - world buff to give option 3
+- ``NerfHerder.WorldBuff.SpellId.01`` - world buff to give #1
+- ``NerfHerder.WorldBuff.SpellId.02`` - world buff to give #2
+- ``NerfHerder.WorldBuff.SpellId.03`` - world buff to give #3
+
+For The Faction
+
+- ``NerfHerder.ForTheFactionEnabled`` - buff players attempting faction leader assassination w/out raid group
 
 ## The Vision
 
