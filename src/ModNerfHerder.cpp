@@ -15,12 +15,13 @@
 #include <random>
 
 uint32_t NerfHerder_Enabled = 0;
+float NerfHerder_NerfRate = 0;
 uint32_t NerfHerder_PlayerLevelEnabled = 0;
 uint32_t NerfHerder_ZoneLevelEnabled = 0;
 uint32_t NerfHerder_HidePvPVendorsEnabled = 0;
 uint32_t NerfHerder_ForcePvPEnabled = 0;
-uint32_t NerfHerder_HonorPvPEnabled = 0;
-float NerfHerder_HonorPvPRate = 0;
+uint32_t NerfHerder_HonorEnabled = 0;
+float NerfHerder_HonorRate = 0;
 uint32_t NerfHerder_HonorGreyEnabled = 0;
 float NerfHerder_HonorGreyRate = 0;
 uint32_t NerfHerder_HonorPlunderEnabled = 0;
@@ -56,12 +57,12 @@ public:
     {
         // pull configs
         NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
+        NerfHerder_NerfRate = sConfigMgr->GetOption<int>("NerfHerder.NerfRate", 1);
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
-        NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
-        NerfHerder_HonorPvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPEnabled", 0);
-        NerfHerder_HonorPvPRate = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPRate", 0);
+        NerfHerder_HonorEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPEnabled", 0);
+        NerfHerder_HonorRate = sConfigMgr->GetOption<int>("NerfHerder.HonorPvPRate", 0);
         NerfHerder_HonorGreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyEnabled", 0);
         NerfHerder_HonorGreyRate = sConfigMgr->GetOption<int>("NerfHerder.HonorGreyRate", 0);
         NerfHerder_HonorPlunderEnabled = sConfigMgr->GetOption<int>("NerfHerder.HonorPlunderEnabled", 0);
@@ -73,6 +74,7 @@ public:
         NerfHerder_WorldBuff_SpellId_01 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.01", 0);
         NerfHerder_WorldBuff_SpellId_02 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.02", 0);
         NerfHerder_WorldBuff_SpellId_03 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.03", 0);
+        NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
     }
 };
 
@@ -274,7 +276,7 @@ public:
 
         // calc negative multiplier
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
-        float multiplier = -100 + (ratio * 100);
+        float multiplier = -100 + ((ratio * 100) * NerfHerder_NerfRate);
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
@@ -283,7 +285,7 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
 
         // nerf their abilities proportionately
-        //creature->CastCustomSpell(creature, HpAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HpAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
@@ -690,11 +692,11 @@ public:
 
     void RewardHonor(Player* player, Creature* killed)
     {
-        if (NerfHerder_HonorPvPEnabled && player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
+        if (NerfHerder_HonorEnabled && player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
         {
             if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
             {
-                if ((NerfHerder_HonorPvPEnabled && killed->ToCreature()->IsPvP()))
+                if ((NerfHerder_HonorEnabled && killed->ToCreature()->IsPvP()))
                 {
                     std::ostringstream ss;
                     int honor = -1; //Honor is added as an int
@@ -709,7 +711,7 @@ public:
                     uint8 v_level = killed->getLevel();
 
                     // handle grey override setting
-                    float honor_multiplier = NerfHerder_HonorPvPRate;
+                    float honor_multiplier = NerfHerder_HonorRate;
                     if (v_level <= k_grey) // if npc was too low
                     {
                         if (NerfHerder_HonorGreyEnabled)

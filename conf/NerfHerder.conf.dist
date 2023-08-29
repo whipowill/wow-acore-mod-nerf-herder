@@ -3,23 +3,26 @@
 # 0=off 1=on
 NerfHerder.Enabled = 1
 
+# how do you want to nerf NPCs?
+# 1=proportional
+# 1.2=20% more than proportional
+# 0.8=20% less than proportional
+NerfHerder.NerfRate = 0.8
+
 # nerf any creature over max player level, 0=off 1=on
 NerfHerder.PlayerLevelEnabled = 1
 
 # nerf any alliance/horde NPCs over max zone level, 0=off 1=on
 NerfHerder.ZoneLevelEnabled = 0
 
-# hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
-NerfHerder.HidePvPVendorsEnabled = 1
-
 # force any alliance/horde NPCs to PVP, 0=off 1=on
 NerfHerder.ForcePvPEnabled = 0
 
 # give honor on every pvp flagged kill, 0=off 1=on
-NerfHerder.HonorPvPEnabled = 0
+NerfHerder.HonorEnabled = 0
 
 # rate of honor on every pvp flagged kill, 1=100% 2=200%
-NerfHerder.HonorPvPRate = 3
+NerfHerder.HonorRate = 3
 
 # grey NPCs still give honor, 0=off 1=on
 NerfHerder.HonorGreyEnabled = 0
@@ -49,3 +52,6 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 # Warchief's Blessing (16609)
 # Rallying Cry of the Dragonslayer (22888)
 # Spirit of Zandalar (24425)
+
+# hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
+NerfHerder.HidePvPVendorsEnabled = 1

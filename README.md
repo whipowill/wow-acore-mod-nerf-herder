@@ -13,12 +13,12 @@ Does not affect world database.  Does not affect dungeons or raids.
 ## Configuration
 
 - ``NerfHerder.Enabled`` - enable this module
+- ``NerfHerder.NerfRate`` - do you want to nerf proportionally or more/less
 - ``NerfHerder.PlayerLevelEnabled`` - nerf all NPCs over the max player level (from ``worldserver.conf``)
 - ``NerfHerder.ZoneLevelEnabled`` - nerf faction NPCs over the zone recommended level
-- ``NerfHerder.HidePvPVendorsEnabled`` - hide PvP vendors who don't belong
 - ``NerfHerder.ForcePvPEnabled`` - force all faction NPCs to be flagged as PvP
-- ``NerfHerder.HonorPvPEnabled`` - grant honor rewards on PvP flagged NPC kills
-- ``NerfHerder.HonorPvPRate`` - adjust the rate of honor gain
+- ``NerfHerder.HonorEnabled`` - grant honor rewards on PvP flagged NPC kills
+- ``NerfHerder.HonorRate`` - adjust the rate of honor gain
 - ``NerfHerder.HonorGreyEnabled`` - grey PvP flagged NPCs give honor
 - ``NerfHerder.HonorGreyRate`` - adjust the rate of grey honor gain
 - ``NerfHerder.HonorPlunderEnabled`` - give plunder reward on honor kill
@@ -29,6 +29,7 @@ Does not affect world database.  Does not affect dungeons or raids.
 - ``NerfHerder.WorldBuff.SpellId.01`` - world buff to give option 1
 - ``NerfHerder.WorldBuff.SpellId.02`` - world buff to give option 2
 - ``NerfHerder.WorldBuff.SpellId.03`` - world buff to give option 3
+- ``NerfHerder.HidePvPVendorsEnabled`` - hide PvP vendors who don't belong
 
 ## The Vision
 
