@@ -13,31 +13,31 @@ NerfHerder.NerfRate = 0.8
 NerfHerder.PlayerLevelEnabled = 1
 
 # nerf any alliance/horde NPCs over max zone level, 0=off 1=on
-NerfHerder.ZoneLevelEnabled = 0
+NerfHerder.ZoneLevelEnabled = 1
 
 # force any alliance/horde NPCs to PVP, 0=off 1=on
-NerfHerder.ForcePvPEnabled = 0
+NerfHerder.ForcePvPEnabled = 1
 
 # give honor on every pvp flagged kill, 0=off 1=on
-NerfHerder.HonorEnabled = 0
+NerfHerder.Honor.Enabled = 1
 
 # rate of honor on every pvp flagged kill, 1=100% 2=200%
-NerfHerder.HonorRate = 3
+NerfHerder.Honor.Rate = 3
 
 # grey NPCs still give honor, 0=off 1=on
-NerfHerder.HonorGreyEnabled = 0
+NerfHerder.Honor.GreyEnabled = 1
 
 # rate of honor on every grey pvp flagged kill, 1=100% 2=200%
-NerfHerder.HonorGreyRate = 3
+NerfHerder.Honor.GreyRate = 3
 
 # give money on honor kills? 0=off 1=on
-NerfHerder.HonorPlunderEnabled = 0
+NerfHerder.Honor.PlunderEnabled = 1
 
 # how much money per creature level on honor kill? (in copper)
-NerfHerder.HonorPlunderAmountPerLevel = 50
+NerfHerder.Honor.PlunderAmountPerLevel = 50
 
 # give world buff on kills, 0=off 1=on
-NerfHerder.WorldBuff.Enabled = 0
+NerfHerder.WorldBuff.Enabled = 1
 
 # number of kills to accumulate to get world buff
 NerfHerder.WorldBuff.KillCount = 12
