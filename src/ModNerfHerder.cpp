@@ -736,8 +736,8 @@ public:
                         uint32_t groupsize = GetNumInGroup(player);
                         if (groupsize < 20)
                         {
-                            uint32_t damageDone = 100 * (20 / groupsize);
-                            uint32_t damageTaken = -1 * damageDone;
+                            int32_t damageDone = 100 * (20 / groupsize);
+                            int32_t damageTaken = -1 * damageDone;
 
                             // this buff will nerf/buff the damage taken/done by a ratio
                             // of how many players are in your group out of an ideal
