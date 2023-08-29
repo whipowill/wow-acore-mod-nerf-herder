@@ -726,9 +726,11 @@ public:
             uint32_t area_id = player->GetAreaId();
             if (NerfHerderHelper::townDataMap.find(area_id) != NerfHerderHelper::townDataMap.end())
             {
-                // is the player in a capitol city?
                 uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
-                if (is_capitol_city)
+                uint32_t city_faction_id = NerfHerderHelper::townDataMap[area_id].teamID;
+
+                // if player in capitol city not their own?
+                if (is_capitol_city && city_faction_id != player->GetTeamID())
                 {
                     // if player isn't buffed...
                     if (!player->HasAura(DamageDoneTakenSpell))

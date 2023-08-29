@@ -54,7 +54,7 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 # Spirit of Zandalar (24425)
 
 # allow buffing for assassinating faction leaders w/out raid group, 0=off 1=on
-NerfHerder.ForTheFactionEnabled = 1;
+NerfHerder.ForTheFactionEnabled = 1
 
 # hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1
