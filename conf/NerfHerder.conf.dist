@@ -63,5 +63,5 @@ NerfHerder.WorldEvent.HealthThreshold = 100000
 # 0.2=npcs are 20% weaker
 NerfHerder.WorldEvent.NerfRate = 0.9
 
-# hide TBC and WOTLK pvp vendors depending on max player level (autodetected which ones to hide), 0=off 1=on
+# hide TBC and WOTLK pvp vendors if appropriate (based on max player level), 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1

@@ -4,7 +4,7 @@ An AzerothCore module for nerfing NPCs en masse for various purposes.
 
 - Nerf capitol guards to match max player level
 - Nerf town guards to match zone recommended level
-- Nerf high health npcs to make world events easier
+- Nerf high health NPCs to make world events easier
 - Flag faction NPCs as PvP who grant honor on kill
 - Enable world buff and money rewards for faction raids
 - Hide PvP vendors who don't belong in the game
