@@ -286,13 +286,13 @@ public:
 
         // calc nerf multiplier (negative)
         float multiplier = (-100 + (ratio * 100));
+
+        // calc custom hp nerf (extra nerfs only apply to health, not damage)
+        float hp_multiplier = multiplier;
         if (NerfHerder_NerfRate > 0)
         {
-            multiplier = multiplier - (NerfHerder_NerfRate * (100 + multiplier));
+            hp_multiplier = hp_multiplier - (NerfHerder_NerfRate * (100 + hp_multiplier));
         }
-
-        // calc custom hp nerf (this is only to high health npcs)
-        float hp_multiplier = multiplier;
         if (additional_nerf_rate > 0)
         {
             hp_multiplier = hp_multiplier - (additional_nerf_rate * (100 + hp_multiplier));
