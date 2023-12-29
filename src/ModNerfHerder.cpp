@@ -267,7 +267,7 @@ public:
         return NerfHerderHelper::zoneDataMap[zone_id].maxLevel;
     }
 
-    static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 1)
+    static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
         // nerf auras
         uint32_t HpAura = 89501;
@@ -660,6 +660,19 @@ public:
         // determine alliance / horde npcs in the world
         uint32_t is_field_agent = NerfHerderHelper::IsFieldAgent(creature);
 
+        // if nerfing high health npcs...
+        if (NerfHerder_WorldEvent_Enabled)
+        {
+            // if npc has high health...
+            if (creature->GetHealth() > NerfHerder_WorldEvent_HealthThreshold)
+            {
+                max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
+
+                // nerf them even harder
+                NerfHerderHelper::UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate); // add additional nerfing
+            }
+        }
+
         // if max zone level is enabled...
         if (NerfHerder_ZoneLevelEnabled)
         {
@@ -722,17 +735,6 @@ public:
 
                 // hide them
                 creature->SetVisible(false);
-            }
-        }
-
-        // if nerfing capitol city guards...
-        if (NerfHerder_WorldEvent_Enabled)
-        {
-            // if npc has over 100k health...
-            if (creature->GetHealth() > NerfHerder_WorldEvent_HealthThreshold)
-            {
-                // nerf them even harder
-                NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_WorldEvent_NerfRate); // add additional nerfing
             }
         }
     }
