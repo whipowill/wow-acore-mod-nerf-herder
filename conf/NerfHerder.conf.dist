@@ -3,10 +3,10 @@
 # 0=off 1=on
 NerfHerder.Enabled = 1
 
-# how do you want to nerf NPCs?
+# how hard do you want to nerf NPCs?
 # 1=proportional
-# 1.2=20% more than proportional
-# 0.8=20% less than proportional
+# 1.2=npcs are 20% easier than normal
+# 0.8=npcs are 20% harder than normal
 NerfHerder.NerfRate = 1
 
 # nerf any creature over max player level, 0=off 1=on
@@ -56,9 +56,9 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 # allow nerfing capitol city guards, 0=off 1=on
 NerfHerder.ForTheFaction.Enabled = 1
 
-# how do you want to nerf capitol guards?
+# how hard do you want to nerf capitol guards? (combines with previous nerf rate)
 # 1=no nerf
-# 2=guards are half as hard as normal
+# 2=guards are 1/2 as hard as normal
 NerfHerder.ForTheFaction.NerfRate = 2
 
 # hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on

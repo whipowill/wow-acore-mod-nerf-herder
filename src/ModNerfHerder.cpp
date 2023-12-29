@@ -187,7 +187,7 @@ public:
             return 0;
         }
 
-        // mark as pvp
+        // yes, this npc is in a faction town
         return 1;
 
         // Below is every other method I tried for flagging horde/alliance
@@ -289,14 +289,18 @@ public:
         // just in case something goes wrong
         if (negative_multiplier > 0) negative_multiplier = 0;
 
-        // nerf their abilities proportionately
-        creature->CastCustomSpell(creature, HpAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        // if we are making any change at all...
+        if (negative_multiplier < 0)
+        {
+            // nerf their abilities proportionately
+            creature->CastCustomSpell(creature, HpAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+            creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
+            creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
+            //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+            creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+            creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+            //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        }
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
@@ -711,20 +715,23 @@ public:
             }
         }
 
-        // if no more nerfing...
-        if (!NerfHerder_ForTheFaction_Enabled) return;
-
-        // is the npc in a capitol city?
-        uint32_t area_id = creature->GetAreaId();
-        if (NerfHerderHelper::townDataMap.find(area_id) != NerfHerderHelper::townDataMap.end())
+        // if nerfing capitol city guards...
+        if (NerfHerder_ForTheFaction_Enabled)
         {
-            uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
-            if (is_capitol_city)
+            // is the npc in an area we know of?
+            uint32_t area_id = creature->GetAreaId();
+            if (NerfHerderHelper::townDataMap.find(area_id) != NerfHerderHelper::townDataMap.end())
             {
-                // if npc has over 10k health...
-                if (creature->GetHealth() > 10000)
+                // if the npc in a capitol city?
+                uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
+                if (is_capitol_city)
                 {
-                    NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_ForTheFaction_NerfRate); // add additional nerfing
+                    // if npc has over 10k health...
+                    if (creature->GetHealth() > 10000)
+                    {
+                        // nerf them even harder
+                        NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_ForTheFaction_NerfRate); // add additional nerfing
+                    }
                 }
             }
         }
