@@ -60,7 +60,7 @@ public:
         // pull configs
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
         NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
-        NerfHerder_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.NerfRate", 1);
+        NerfHerder_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.NerfRate", 0);
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
@@ -78,7 +78,7 @@ public:
         NerfHerder_WorldBuff_SpellId_03 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.03", 0);
         NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
         NerfHerder_ForTheFaction_Enabled = sConfigMgr->GetOption<int>("NerfHerder.ForTheFaction.Enabled", 0);
-        NerfHerder_ForTheFaction_NerfRate = sConfigMgr->GetOption<int>("NerfHerder.ForTheFaction.NerfRate", 1);
+        NerfHerder_ForTheFaction_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.ForTheFaction.NerfRate", 0);
     }
 };
 
@@ -282,11 +282,11 @@ public:
         // calc negative multiplier
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
         float multiplier = (-100 + (ratio * 100));
-        if (NerfHerder_NerfRate)
+        if (NerfHerder_NerfRate > 0)
         {
             multiplier = multiplier - (NerfHerder_NerfRate * (100 + multiplier));
         }
-        if (additional_nerf_rate)
+        if (additional_nerf_rate > 0)
         {
             multiplier = multiplier - (additional_nerf_rate * (100 + multiplier));
         }
