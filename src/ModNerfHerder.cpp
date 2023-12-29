@@ -39,8 +39,9 @@ uint32_t NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillCount = 0;
-uint32_t NerfHerder_ForTheFaction_Enabled = 0;
-float NerfHerder_ForTheFaction_NerfRate = 0;
+uint32_t NerfHerder_WorldEvent_Enabled = 0;
+uint32_t NerfHerder_WorldEvent_HealthThreshold = 0;
+float NerfHerder_WorldEvent_NerfRate = 0;
 
 class NerfHerderConfig : public WorldScript
 {
@@ -77,8 +78,9 @@ public:
         NerfHerder_WorldBuff_SpellId_02 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.02", 0);
         NerfHerder_WorldBuff_SpellId_03 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.03", 0);
         NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
-        NerfHerder_ForTheFaction_Enabled = sConfigMgr->GetOption<int>("NerfHerder.ForTheFaction.Enabled", 0);
-        NerfHerder_ForTheFaction_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.ForTheFaction.NerfRate", 0);
+        NerfHerder_WorldEvent_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.Enabled", 0);
+        NerfHerder_WorldEvent_HealthThreshold = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.HealthThreshold", 100000);
+        NerfHerder_WorldEvent_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.WorldEvent.NerfRate", 0);
     }
 };
 
@@ -724,13 +726,13 @@ public:
         }
 
         // if nerfing capitol city guards...
-        if (NerfHerder_ForTheFaction_Enabled)
+        if (NerfHerder_WorldEvent_Enabled)
         {
-            // if npc has over 10k health...
-            if (creature->GetHealth() > 100000)
+            // if npc has over 100k health...
+            if (creature->GetHealth() > NerfHerder_WorldEvent_HealthThreshold)
             {
                 // nerf them even harder
-                NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_ForTheFaction_NerfRate); // add additional nerfing
+                NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_WorldEvent_NerfRate); // add additional nerfing
             }
         }
     }

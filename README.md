@@ -6,6 +6,8 @@ This mod was initially intended for private servers limited to Vanilla or TBC as
 
 But it also includes features for promoting factional warfare in the game by flagging all NPCs of both factions as PvP and granting honor, plunder, and world buffs for killing them.
 
+Finally, it allows you to nerf high health NPCs, allowing you to solo faction leaders and complete events that you otherwise would need a full raid group to complete.
+
 Does not affect world database.  Does not affect dungeons or raids.
 
 ![Nerf Herder](https://i.imgur.com/gbW2964.jpg)
@@ -39,10 +41,11 @@ World Buffs
 - ``NerfHerder.WorldBuff.SpellId.02`` - world buff to give #2
 - ``NerfHerder.WorldBuff.SpellId.03`` - world buff to give #3
 
-For The Faction
+World Events
 
-- ``NerfHerder.ForTheFaction.Enabled`` - enable nerfing capitol city guards extra hard
-- ``NerfHerder.ForTheFaction.NerfRate`` - how hard do you want to nerf them?
+- ``NerfHerder.WorldEvent.Enabled`` - enable nerfing high health npcs
+- ``NerfHerder.WorldEvent.HealthThreshold`` - how much health is triggering this nerf
+- ``NerfHerder.WorldEvent.NerfRate`` - how hard do you want to nerf them?
 
 ## The Vision
 

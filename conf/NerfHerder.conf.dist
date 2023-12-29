@@ -53,12 +53,15 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 # Spirit of Zandalar (24425)
 
 # allow nerfing of any super high health NPC, 0=off 1=on
-NerfHerder.ForTheFaction.Enabled = 1
+NerfHerder.WorldEvent.Enabled = 1
+
+# what constitutes a "high health" npc
+NerfHerder.WorldEvent.HealthThreshold = 100000
 
 # how hard do you want to nerf high health NPCs? (combines with previous nerf rate)
 # 0=no additional nerf
 # 0.2=npcs are 20% weaker
-NerfHerder.ForTheFaction.NerfRate = 0.9
+NerfHerder.WorldEvent.NerfRate = 0.9
 
 # hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1
