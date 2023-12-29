@@ -682,7 +682,7 @@ public:
                 }
 
                 // nerf them harder than normal
-                NerfHerderHelper::UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate); // add additional nerfing
+                NerfHerderHelper::UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate);
             }
         }
 
