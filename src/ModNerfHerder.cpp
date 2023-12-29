@@ -657,6 +657,8 @@ public:
         // catch errors
         if (!NerfHerder_Enabled) return;
 
+        // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
+
         // init
         uint32_t max_level;
 
@@ -669,10 +671,17 @@ public:
             // if npc has high health...
             if (creature->GetHealth() > NerfHerder_WorldEvent_HealthThreshold)
             {
-                // set to appropriate level
-                max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
+                // start off w/ no level change
+                max_level = creature->GetLevel();
 
-                // nerf them even harder
+                // if we are enforcing level limits...
+                if (NerfHerder_PlayerLevelEnabled)
+                {
+                    // set appropriate level
+                    max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
+                }
+
+                // nerf them harder than normal
                 NerfHerderHelper::UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate); // add additional nerfing
             }
         }
@@ -701,6 +710,7 @@ public:
         // if max player level is enabled...
         if (NerfHerder_PlayerLevelEnabled)
         {
+            // what is max level allowed
             max_level = NerfHerder_MaxPlayerLevel;
 
             // if valid

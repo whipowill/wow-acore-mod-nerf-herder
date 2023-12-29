@@ -3,36 +3,36 @@
 # 0=off 1=on
 NerfHerder.Enabled = 1
 
-# any extra nerfs to NPCs besides level change?
+# any extra punishment to nerfed npcs besides level change? (effects health only)
 # 0=no additional nerf
 # 0.2=npcs are 20% weaker
-NerfHerder.NerfRate = 0
+NerfHerder.NerfRate = 0.5
 
 # nerf any creature over max player level, 0=off 1=on
 NerfHerder.PlayerLevelEnabled = 1
 
-# nerf any alliance/horde NPCs over max zone level, 0=off 1=on
+# nerf any alliance/horde npc over max zone level, 0=off 1=on
 NerfHerder.ZoneLevelEnabled = 1
 
-# force any alliance/horde NPCs to PVP, 0=off 1=on
+# force any alliance/horde npc to pvp, 0=off 1=on
 NerfHerder.ForcePvPEnabled = 1
 
 # give honor on every pvp flagged kill, 0=off 1=on
 NerfHerder.Honor.Enabled = 1
 
 # rate of honor on every pvp flagged kill, 1=100% 2=200%
-NerfHerder.Honor.Rate = 1
+NerfHerder.Honor.Rate = 1.0
 
-# grey NPCs still give honor, 0=off 1=on
-NerfHerder.Honor.GreyEnabled = 1
+# grey pvp flagged npc still give honor, 0=off 1=on
+NerfHerder.Honor.GreyEnabled = 0
 
 # rate of honor on every grey pvp flagged kill, 1=100% 2=200%
-NerfHerder.Honor.GreyRate = 1
+NerfHerder.Honor.GreyRate = 1.0
 
 # give money on honor kills? 0=off 1=on
 NerfHerder.Honor.PlunderEnabled = 1
 
-# how much money per creature level on honor kill? (in copper)
+# how much money per creature level on honor kill? (in copper, some randomness is applied)
 NerfHerder.Honor.PlunderAmountPerLevel = 50
 
 # give world buff on kills, 0=off 1=on
@@ -41,7 +41,7 @@ NerfHerder.WorldBuff.Enabled = 1
 # number of kills to accumulate to get world buff
 NerfHerder.WorldBuff.KillCount = 12
 
-# time cooldown before world buff can be gained again (minutes)
+# time cooldown before world buff can be gained again (in minutes, should apply to entire server)
 NerfHerder.WorldBuff.Cooldown = 60
 
 # which world bufff to give (can give up to 3)
@@ -52,16 +52,16 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 # Rallying Cry of the Dragonslayer (22888)
 # Spirit of Zandalar (24425)
 
-# allow nerfing of any super high health NPC, 0=off 1=on
+# allow nerfing of any super high health npc, 0=off 1=on
 NerfHerder.WorldEvent.Enabled = 1
 
-# what constitutes a "high health" npc
+# what constitutes a "high health" npc?
 NerfHerder.WorldEvent.HealthThreshold = 100000
 
-# how hard do you want to nerf high health NPCs? (combines with previous nerf rate)
+# how much health punishment to high health npcs? (stacks with previous nerf rate at top of this config)
 # 0=no additional nerf
 # 0.2=npcs are 20% weaker
 NerfHerder.WorldEvent.NerfRate = 0.9
 
-# hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
+# hide TBC and WOTLK pvp vendors depending on max player level (autodetected which ones to hide), 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1
