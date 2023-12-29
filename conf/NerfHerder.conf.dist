@@ -3,11 +3,11 @@
 # 0=off 1=on
 NerfHerder.Enabled = 1
 
-# how hard do you want to nerf NPCs?
-# 1=proportional
-# 1.2=npcs are 20% easier than normal
-# 0.8=npcs are 20% harder than normal
-NerfHerder.NerfRate = 1
+# any extra nerfs to NPCs besides level change?
+# 0=no additional nerf
+# 0.2=npcs are 20% easier
+# -0.2=npcs are 20% harder
+NerfHerder.NerfRate = 0
 
 # nerf any creature over max player level, 0=off 1=on
 NerfHerder.PlayerLevelEnabled = 1
@@ -57,9 +57,10 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 NerfHerder.ForTheFaction.Enabled = 1
 
 # how hard do you want to nerf capitol guards? (combines with previous nerf rate)
-# 1=no nerf
-# 2=guards are 1/2 as hard as normal
-NerfHerder.ForTheFaction.NerfRate = 2
+# 0=no additional nerf
+# 0.2=npcs are 20% easier
+# -0.2=npcs are 20% harder
+NerfHerder.ForTheFaction.NerfRate = .66
 
 # hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1

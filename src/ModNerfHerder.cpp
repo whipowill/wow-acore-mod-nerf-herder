@@ -281,7 +281,15 @@ public:
 
         // calc negative multiplier
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
-        float multiplier = (-100 + (ratio * 100)) * NerfHerder_NerfRate * additional_nerf_rate;
+        float multiplier = (-100 + (ratio * 100));
+        if (NerfHerder_NerfRate)
+        {
+            multiplier = multiplier - (NerfHerder_NerfRate * (100 + multiplier));
+        }
+        if (additional_nerf_rate)
+        {
+            multiplier = multiplier - (additional_nerf_rate * (100 + multiplier));
+        }
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
@@ -879,6 +887,19 @@ public:
                 }
             }
         }
+    }
+
+    // Get the player's group size
+    int GetNumInGroup(Player* player)
+    {
+        int numInGroup = 1;
+        Group *group = player->GetGroup();
+        if (group)
+        {
+            Group::MemberSlotList const& groupMembers = group->GetMemberSlots();
+            numInGroup = groupMembers.size();
+        }
+        return numInGroup;
     }
 };
 
