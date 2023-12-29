@@ -41,19 +41,20 @@ World Buffs
 
 For The Faction
 
-- ``NerfHerder.ForTheFactionEnabled`` - buff players assaulting capitol city w/out raid group (experimental)
+- ``NerfHerder.ForTheFaction.Enabled`` - enable nerfing capitol city guards extra hard
+- ``NerfHerder.ForTheFaction.NerfRate`` - how hard do you want to nerf them?
 
 ## The Vision
 
-On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I want to make raiding enemy villages and towns a fun thing to do on a quiet evening.
+On a server with only a few players, and no chance to do battlegrounds to accumulate honor, I wanted to make raiding enemy villages and towns a fun thing to do on a quiet evening.
 
 Some of the villages, even in starter zones, have super high level NPCs that were originally meant to discourage players on PvP servers from ruining things for the other faction.
 
 These guards will be nerfed to a level appropriate for their respective zones.  You'll be able to burn and pillage any town you have the strength to conquer, and you will be rewarded.
 
-Finally, the coveted achievement of assassinating the enemy faction leaders is totally undoable without some significant tweaking.  I'm not sure how I will crack this nut yet but I will make an attempt.
+Finally, the coveted achievement of assassinating the enemy faction leaders is totally undoable in a normal server environment.  This mod will enable special nerfs to capitol guards to make this possible.
 
-This is the ultimate plan.
+Additional nerfs may be added over time to allow for a totally solo experience.
 
 ## Notes To Self
 
