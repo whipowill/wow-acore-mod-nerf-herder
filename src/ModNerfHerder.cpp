@@ -726,21 +726,11 @@ public:
         // if nerfing capitol city guards...
         if (NerfHerder_ForTheFaction_Enabled)
         {
-            // is the npc in an area we know of?
-            uint32_t area_id = creature->GetAreaId();
-            if (NerfHerderHelper::townDataMap.find(area_id) != NerfHerderHelper::townDataMap.end())
+            // if npc has over 10k health...
+            if (creature->GetHealth() > 100000)
             {
-                // if the npc in a capitol city?
-                uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
-                if (is_capitol_city)
-                {
-                    // if npc has over 10k health...
-                    if (creature->GetHealth() > 10000)
-                    {
-                        // nerf them even harder
-                        NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_ForTheFaction_NerfRate); // add additional nerfing
-                    }
-                }
+                // nerf them even harder
+                NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_ForTheFaction_NerfRate); // add additional nerfing
             }
         }
     }

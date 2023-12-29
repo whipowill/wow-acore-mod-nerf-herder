@@ -52,13 +52,13 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 # Rallying Cry of the Dragonslayer (22888)
 # Spirit of Zandalar (24425)
 
-# allow nerfing capitol city guards, 0=off 1=on
+# allow nerfing of any super high health NPC, 0=off 1=on
 NerfHerder.ForTheFaction.Enabled = 1
 
-# how hard do you want to nerf capitol guards? (combines with previous nerf rate)
+# how hard do you want to nerf high health NPCs? (combines with previous nerf rate)
 # 0=no additional nerf
 # 0.2=npcs are 20% weaker
-NerfHerder.ForTheFaction.NerfRate = .66
+NerfHerder.ForTheFaction.NerfRate = 0.9
 
 # hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1
