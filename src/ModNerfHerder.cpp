@@ -39,7 +39,8 @@ uint32_t NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillCount = 0;
-uint32_t NerfHerder_ForTheFactionEnabled = 0;
+uint32_t NerfHerder_ForTheFaction_Enabled = 0;
+float NerfHerder_ForTheFaction_NerfRate = 0;
 
 class NerfHerderConfig : public WorldScript
 {
@@ -64,9 +65,9 @@ public:
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
         NerfHerder_Honor_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.Enabled", 0);
-        NerfHerder_Honor_Rate = sConfigMgr->GetOption<float>("NerfHerder.Honor.Rate", 0);
+        NerfHerder_Honor_Rate = sConfigMgr->GetOption<float>("NerfHerder.Honor.Rate", 1);
         NerfHerder_Honor_GreyEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.GreyEnabled", 0);
-        NerfHerder_Honor_GreyRate = sConfigMgr->GetOption<float>("NerfHerder.Honor.GreyRate", 0);
+        NerfHerder_Honor_GreyRate = sConfigMgr->GetOption<float>("NerfHerder.Honor.GreyRate", 1);
         NerfHerder_Honor_PlunderEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderEnabled", 0);
         NerfHerder_Honor_PlunderAmountPerLevel = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderAmountPerLevel", 0);
         NerfHerder_WorldBuff_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Enabled", 0);
@@ -76,7 +77,8 @@ public:
         NerfHerder_WorldBuff_SpellId_02 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.02", 0);
         NerfHerder_WorldBuff_SpellId_03 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.03", 0);
         NerfHerder_HidePvPVendorsEnabled = sConfigMgr->GetOption<int>("NerfHerder.HidePvPVendorsEnabled", 0);
-        NerfHerder_ForTheFactionEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForTheFactionEnabled", 0);
+        NerfHerder_ForTheFaction_Enabled = sConfigMgr->GetOption<int>("NerfHerder.ForTheFaction.Enabled", 0);
+        NerfHerder_ForTheFaction_NerfRate = sConfigMgr->GetOption<int>("NerfHerder.ForTheFaction.NerfRate", 1);
     }
 };
 
@@ -263,7 +265,7 @@ public:
         return NerfHerderHelper::zoneDataMap[zone_id].maxLevel;
     }
 
-    static void UpdateCreature(Creature* creature, uint32_t new_level)
+    static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 1)
     {
         // nerf auras
         uint32_t HpAura = 89501;
@@ -279,7 +281,7 @@ public:
 
         // calc negative multiplier
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
-        float multiplier = (-100 + (ratio * 100)) * NerfHerder_NerfRate;
+        float multiplier = (-100 + (ratio * 100)) * NerfHerder_NerfRate * additional_nerf_rate;
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
@@ -708,6 +710,24 @@ public:
                 creature->SetVisible(false);
             }
         }
+
+        // if no more nerfing...
+        if (!NerfHerder_ForTheFaction_Enabled) return;
+
+        // is the npc in a capitol city?
+        uint32_t area_id = creature->GetAreaId();
+        if (NerfHerderHelper::townDataMap.find(area_id) != NerfHerderHelper::townDataMap.end())
+        {
+            uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
+            if (is_capitol_city)
+            {
+                // if npc has over 10k health...
+                if (creature->GetHealth() > 10000)
+                {
+                    NerfHerderHelper::UpdateCreature(creature, creature->GetLevel(), NerfHerder_ForTheFaction_NerfRate); // add additional nerfing
+                }
+            }
+        }
     }
 };
 
@@ -715,52 +735,6 @@ class NerfHerderPlayer : public PlayerScript
 {
 public:
     NerfHerderPlayer() : PlayerScript("NerfHerderPlayer") {}
-
-    void OnUpdate(Player* player, uint32 p_time)
-    {
-        if (NerfHerder_ForTheFactionEnabled)
-        {
-            uint32_t DamageDoneTakenSpell = 89502;
-
-            // is the player in a town?
-            uint32_t area_id = player->GetAreaId();
-            if (NerfHerderHelper::townDataMap.find(area_id) != NerfHerderHelper::townDataMap.end())
-            {
-                uint32_t is_capitol_city = NerfHerderHelper::townDataMap[area_id].isCapitolCity;
-                uint32_t city_faction_id = NerfHerderHelper::townDataMap[area_id].teamID;
-
-                // if player in capitol city not their own?
-                if (is_capitol_city && city_faction_id != (player->GetTeamId() + 1))
-                {
-                    // if player isn't buffed...
-                    if (!player->HasAura(DamageDoneTakenSpell))
-                    {
-                        uint32_t groupsize = GetNumInGroup(player);
-                        if (groupsize < 20)
-                        {
-                            int32_t damageDone = 100 * (20 / groupsize);
-                            int32_t damageTaken = -1 * damageDone;
-
-                            // this buff will nerf/buff the damage taken/done by a ratio
-                            // of how many players are in your group out of an ideal
-                            // group of 20 players.
-
-                            player->CastCustomSpell(player, DamageDoneTakenSpell, &damageTaken, &damageDone, NULL, true, NULL, NULL, player->GetGUID());
-                        }
-                    }
-                }
-                else
-                {
-                    // if player is buffed...
-                    if (player->HasAura(DamageDoneTakenSpell))
-                    {
-                        //
-                        player->RemoveAura(DamageDoneTakenSpell);
-                    }
-                }
-            }
-        }
-    }
 
     // This was all taken straight from HonorGuard mod, but tweaked to
     // give honor on any pvp flagged creature.
@@ -778,7 +752,10 @@ public:
 
     void RewardHonor(Player* player, Creature* killed)
     {
-        if (NerfHerder_Honor_Enabled && player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
+        if (!NerfHerder_Enabled) return;
+        if (!NerfHerder_Honor_Enabled) return;
+
+        if (player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
         {
             if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
             {
@@ -895,19 +872,6 @@ public:
                 }
             }
         }
-    }
-
-    // Get the player's group size
-    int GetNumInGroup(Player* player)
-    {
-        int numInGroup = 1;
-        Group *group = player->GetGroup();
-        if (group)
-        {
-            Group::MemberSlotList const& groupMembers = group->GetMemberSlots();
-            numInGroup = groupMembers.size();
-        }
-        return numInGroup;
     }
 };
 

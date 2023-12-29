@@ -7,7 +7,7 @@ NerfHerder.Enabled = 1
 # 1=proportional
 # 1.2=20% more than proportional
 # 0.8=20% less than proportional
-NerfHerder.NerfRate = 0.7
+NerfHerder.NerfRate = 1
 
 # nerf any creature over max player level, 0=off 1=on
 NerfHerder.PlayerLevelEnabled = 1
@@ -45,7 +45,7 @@ NerfHerder.WorldBuff.KillCount = 12
 # time cooldown before world buff can be gained again (minutes)
 NerfHerder.WorldBuff.Cooldown = 60
 
-# which world bufff to give
+# which world bufff to give (can give up to 3)
 NerfHerder.WorldBuff.SpellId.01 = 16609
 NerfHerder.WorldBuff.SpellId.02 = 0
 NerfHerder.WorldBuff.SpellId.03 = 0
@@ -53,8 +53,13 @@ NerfHerder.WorldBuff.SpellId.03 = 0
 # Rallying Cry of the Dragonslayer (22888)
 # Spirit of Zandalar (24425)
 
-# allow buffing for assassinating faction leaders w/out raid group, 0=off 1=on
-NerfHerder.ForTheFactionEnabled = 1
+# allow nerfing capitol city guards, 0=off 1=on
+NerfHerder.ForTheFaction.Enabled = 1
+
+# how do you want to nerf capitol guards?
+# 1=no nerf
+# 2=guards are half as hard as normal
+NerfHerder.ForTheFaction.NerfRate = 2
 
 # hide TBC and WOTLK pvp vendors depending on max player level, 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1
