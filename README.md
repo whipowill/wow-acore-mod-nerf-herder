@@ -6,7 +6,7 @@ This mod was initially intended for private servers limited to Vanilla or TBC as
 
 But it also includes features for promoting factional warfare in the game by flagging all NPCs of both factions as PvP and granting honor, plunder, and world buffs for killing them.
 
-Finally, it allows you to nerf high health NPCs, allowing you to solo faction leaders and complete events that you otherwise would need a full raid group to complete.
+Finally, it allows you to nerf high health NPCs, enabling you to solo faction leaders and complete events that you otherwise would need a full raid group to accomplish.
 
 Does not affect world database.  Does not affect dungeons or raids.
 
@@ -54,7 +54,7 @@ Some of the villages, even in starter zones, have super high level NPCs that wer
 
 These guards will be nerfed to a level appropriate for their respective zones.  You'll be able to burn and pillage any town you have the strength to conquer, and you will be rewarded.
 
-Finally, the coveted achievement of assassinating the enemy faction leaders is totally undoable in a normal server environment.  This mod will enable special nerfs to capitol guards to make this possible.
+Finally, the coveted achievement of assassinating the enemy faction leaders is totally undoable in a normal server environment.  This mod will enable special nerfs to high health npcs to make this possible.
 
 Additional nerfs may be added over time to allow for a totally solo experience.
 

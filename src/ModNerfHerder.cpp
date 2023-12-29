@@ -281,36 +281,39 @@ public:
         // if creature already modified, bail
         if (creature->HasAura(DamageDoneTakenAura)) return;
 
-        // calc negative multiplier
+        // calc proportional level change
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
+
+        // calc nerf multiplier (negative)
         float multiplier = (-100 + (ratio * 100));
         if (NerfHerder_NerfRate > 0)
         {
             multiplier = multiplier - (NerfHerder_NerfRate * (100 + multiplier));
         }
+
+        // calc custom hp nerf (this is only to high health npcs)
+        float hp_multiplier = multiplier;
         if (additional_nerf_rate > 0)
         {
-            multiplier = multiplier - (additional_nerf_rate * (100 + multiplier));
+            hp_multiplier = hp_multiplier - (additional_nerf_rate * (100 + hp_multiplier));
         }
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
+        int32_t negative_hp_multiplier = static_cast<int>(hp_multiplier);
 
         // just in case something goes wrong
         if (negative_multiplier > 0) negative_multiplier = 0;
+        if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
-        // if we are making any change at all...
-        if (negative_multiplier < 0)
-        {
-            // nerf their abilities proportionately
-            creature->CastCustomSpell(creature, HpAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-            creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
-            creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
-            //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-            creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-            creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-            //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        }
+        // nerf their abilities proportionately
+        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
@@ -666,6 +669,7 @@ public:
             // if npc has high health...
             if (creature->GetHealth() > NerfHerder_WorldEvent_HealthThreshold)
             {
+                // set to appropriate level
                 max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
 
                 // nerf them even harder
