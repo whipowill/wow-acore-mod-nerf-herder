@@ -287,7 +287,7 @@ public:
 
         // if creature is already altered, bail...
         //if (creatureInfo->is_altered) return;
-        if (player->HasAura(89501)) return; // if has HP nerf already
+        if (creature->HasAura(89501)) return; // if has HP nerf already
 
         // if first time...
         if (!creatureInfo->is_altered)
