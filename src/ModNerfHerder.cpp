@@ -286,12 +286,16 @@ public:
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
         // if creature is already altered, bail...
-        if (creatureInfo->is_altered) return;
+        //if (creatureInfo->is_altered) return;
 
-        // log original numbers
-        creatureInfo->original_level = creature->GetLevel();
-        creatureInfo->original_health = creature->GetMaxHealth();
-        creatureInfo->original_armor = creature->GetArmor();
+        // if first time...
+        if (!creatureInfo->is_altered)
+        {
+            // log original numbers
+            creatureInfo->original_level = creature->GetLevel();
+            creatureInfo->original_health = creature->GetMaxHealth();
+            creatureInfo->original_armor = creature->GetArmor();
+        }
 
         // calc proportional level change
         float ratio = static_cast<float>(new_level) / static_cast<float>(creatureInfo->original_level);
@@ -327,6 +331,7 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
+        /*
         // calc proper health and armor
         uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
         uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
@@ -343,6 +348,7 @@ public:
         // armor
         creature->SetArmor(new_armor);
         creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
+        */
 
         // nerf auras
         //uint32_t HpAura = 89501;
@@ -353,15 +359,15 @@ public:
         //uint32_t PhysicalDamageTakenAura = 89507;
 
         // nerf their damage done, base stats, absorbsion, and healing done
-        //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
+        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
-        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
+        //creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
         // log that changes were made
         creatureInfo->is_altered = 1;
