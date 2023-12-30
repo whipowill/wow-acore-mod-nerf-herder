@@ -90,9 +90,14 @@ public:
     NerfHerderCreatureInfo() {}
 
     uint32_t is_altered = 0;
+
     uint32_t original_level = 0;
     uint32_t original_health = 0;
     uint32_t original_armor = 0;
+
+    uint32_t new_level = 0;
+    uint32_t new_health = 0;
+    uint32_t new_armor = 0;
 };
 
 struct VendorData {
@@ -623,7 +628,7 @@ public:
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
         // if creature is already altered, bail...
-        if (creatureInfo->is_altered) return;
+        if (creatureInfo->is_altered && creature->GetMaxHealth() == creatureInfo->new_health) return;
         //if (creature->HasAura(89501)) return; // if has HP nerf already
 
         // if first time...
@@ -669,11 +674,16 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
-        /*
         // calc proper health and armor
         uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
         uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
+        // log
+        creatureInfo->new_level = new_level;
+        creatureInfo->new_health = new_health;
+        creatureInfo->new_armor = new_armor;
+
+        /*
         // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
 
         // health
@@ -687,14 +697,6 @@ public:
         creature->SetArmor(new_armor);
         creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
         */
-
-        // nerf auras
-        uint32_t HpAura = 89501;
-        uint32_t DamageDoneTakenAura = 89502;
-        uint32_t BaseStatAPAura = 89503;
-        uint32_t AbsorbAura = 89505;
-        uint32_t HealingDoneAura = 89506;
-        uint32_t PhysicalDamageTakenAura = 89507;
 
         // nerf their damage done, base stats, absorbsion, and healing done
         creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
