@@ -329,6 +329,7 @@ public:
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
+        int32_t positive_multiplier = static_cast<int>(negative_multiplier * -1);
         int32_t negative_hp_multiplier = static_cast<int>(hp_multiplier);
 
         // just in case something goes wrong
@@ -361,7 +362,7 @@ public:
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &negative_multiplier * -1, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
