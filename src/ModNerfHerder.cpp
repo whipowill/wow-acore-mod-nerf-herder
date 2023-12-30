@@ -276,7 +276,7 @@ public:
         //uint32_t RageFromDamageAura = 89504;
         uint32_t AbsorbAura = 89505;
         uint32_t HealingDoneAura = 89506;
-        //uint32_t PhysicalDamageTakenAura = 89507;
+        uint32_t PhysicalDamageTakenAura = 89507;
 
         // if creature already modified, bail
         if (creature->HasAura(DamageDoneTakenAura)) return;
@@ -315,18 +315,18 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // set new health
-        //int32_t new_max_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
-        //creature->SetMaxHealth(new_max_health); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
-        //creature->SetHealth(new_max_health);
+        int32_t new_max_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
+        creature->SetMaxHealth(new_max_health); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
+        creature->SetFullHealth(); // this is needed for some reason?
 
         // nerf their abilities proportionately
-        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &PhysicalDamageTakenModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &negative_multiplier * -1, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
