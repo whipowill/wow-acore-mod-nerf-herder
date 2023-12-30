@@ -278,56 +278,20 @@ public:
         return NerfHerderHelper::zoneDataMap[zone_id].maxLevel;
     }
 
-    static void ResetCreature(Creature* creature)
-    {
-        if (!creature) return;
-
-        // nerf auras
-        uint32_t HpAura = 89501;
-        uint32_t DamageDoneTakenAura = 89502;
-        uint32_t BaseStatAPAura = 89503;
-        uint32_t AbsorbAura = 89505;
-        uint32_t HealingDoneAura = 89506;
-        uint32_t PhysicalDamageTakenAura = 89507;
-
-        if (!creature->HasAura(DamageDoneTakenSpell)) return;
-
-        // remove all auras
-        creature->RemoveAura(HpAura);
-        creature->RemoveAura(DamageDoneTakenAura);
-        creature->RemoveAura(BaseStatAPAura);
-        creature->RemoveAura(AbsorbAura);
-        creature->RemoveAura(HealingDoneAura);
-        creature->RemoveAura(PhysicalDamageTakenAura);
-
-        // reset level
-        creature->SetLevel(creatureInfo->original_level);
-    }
-
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
         if (!creature) return;
 
-        // nerf auras
-        uint32_t HpAura = 89501;
-        uint32_t DamageDoneTakenAura = 89502;
-        uint32_t BaseStatAPAura = 89503;
-        uint32_t AbsorbAura = 89505;
-        uint32_t HealingDoneAura = 89506;
-        uint32_t PhysicalDamageTakenAura = 89507;
-
         // load info
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
-        // if creature is new...
-        if (!creatureInfo->is_altered)
-        {
-            // log original numbers
-            creatureInfo->original_level = creature->GetLevel();
-            creatureInfo->original_health = creature->GetMaxHealth();
-            creatureInfo->original_armor = creature->GetArmor();
-        }
-        // assume this saves automatically?
+        // if creature is already altered, bail...
+        if (creatureInfo->is_altered) return;
+
+        // log original numbers
+        creatureInfo->original_level = creature->GetLevel();
+        creatureInfo->original_health = creature->GetMaxHealth();
+        creatureInfo->original_armor = creature->GetArmor();
 
         // calc proportional level change
         float ratio = static_cast<float>(new_level) / static_cast<float>(creatureInfo->original_level);
@@ -364,12 +328,10 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // calc proper health and armor
-        //uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
-        //uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
+        uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
+        uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
-        /*
         // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
-        // this never worked for me -- had no effect on the creature.  probably have to respawn the creature for it to work?
 
         // health
         creature->SetCreateHealth(new_health);
@@ -381,20 +343,24 @@ public:
         creature->SetArmor(new_armor);
         creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
 
-        // save
-        creature->UpdateAllStats();
-        */
+        // nerf auras
+        //uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        //uint32_t PhysicalDamageTakenAura = 89507;
 
         // nerf their damage done, base stats, absorbsion, and healing done
-        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
+        //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
-        //creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
+        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
         // log that changes were made
         creatureInfo->is_altered = 1;
@@ -727,20 +693,8 @@ class NerfHerderCreature : public AllCreatureScript
 public:
     NerfHerderCreature() : AllCreatureScript("NerfHerderCreature") {}
 
-    void OnBeforeCreatureSelectLevel(const CreatureTemplate* /*creatureTemplate*/, Creature* creature, uint8 &level) override
-    {
-    }
-
-    void Creature_SelectLevel(const CreatureTemplate* /* cinfo */, Creature* creature) override
-    {
-    }
-
-    void OnCreatureAddWorld(Creature* creature) override
-    {
-    }
-
-    // Note to self, OnCreatureAddWorld doesn't work.
-    void OnAllCreatureUpdate(Creature* creature, uint32 /*diff*/) override
+    // Note to self, OnCreatureAddWorld doesn't work. OnAllCreatureUpdate
+    void OnCreatureAddWorld(Creature* creature, uint32 /*diff*/) override
     {
         // catch errors
         if (!creature) return;
@@ -749,9 +703,6 @@ public:
 
         // catch errors
         if (!NerfHerder_Enabled) return;
-
-        // check for creature reset
-        //NerfHerderHelper::ResetCreature(creature);
 
         // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
 
