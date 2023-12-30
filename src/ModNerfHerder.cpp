@@ -285,7 +285,7 @@ public:
         float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
 
         // calc nerf multiplier (negative)
-        float multiplier = (-100 + (ratio * 100));
+        float multiplier = -100 + (ratio * 100);
 
         // some assumptions here:
         // the proportional difference between a lvl 80 and lvl 60 is 25%, but
@@ -293,9 +293,10 @@ public:
         // probably closer to 3x as much!  so our nerf needs to not be a linear
         // or proportional nerf, it needs to curve.
         // AT THE PRESENT TIME I WILL DO NOTHING
+        // https://us.forums.blizzard.com/en/wow/t/a-look-back-at-health-values/587645
 
         // calc custom hp nerf (extra nerfs only apply to health, not damage)
-        float hp_multiplier = (-100 + (ratio * 100));
+        float hp_multiplier = -100 + (ratio * 100);
         if (NerfHerder_NerfRate > 0)
         {
             hp_multiplier = hp_multiplier - (NerfHerder_NerfRate * (100 + hp_multiplier));
@@ -313,9 +314,11 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
+        // set new health
+        creature->SetMaxHealth(creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100))); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
+
         // nerf their abilities proportionately
         //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->SetMaxHealth(creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100))); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
