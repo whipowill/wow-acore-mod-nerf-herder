@@ -280,6 +280,8 @@ public:
 
     static void ResetCreature(Creature* creature)
     {
+        if (!creature) return;
+
         // nerf auras
         uint32_t HpAura = 89501;
         uint32_t DamageDoneTakenAura = 89502;
@@ -289,40 +291,39 @@ public:
         uint32_t HealingDoneAura = 89506;
         uint32_t PhysicalDamageTakenAura = 89507;
 
+        // if creature is untouched...
+        if (!creature->HasAura(DamageDoneTakenAura)) return;
+
         // load info
         NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
-        // if this npc is untouched...
-        if (!creatureInfo->is_altered) return;
-
         // if this npc has been touched...
-        if (creatureInfo->is_altered == 1 && creatureInfo->original_health > 0)
+        if (creatureInfo->is_altered == 1)
         {
-            // if the health has not been reset...
-            if (creature->GetMaxHealth() < creatureInfo->original_health)
+            // if the health was reset (due to combat)...
+            if (creature->GetMaxHealth() == creatureInfo->original_health)
             {
-                // bail
-                return;
+                // remove all auras
+                creature->RemoveAura(HpAura);
+                creature->RemoveAura(DamageDoneTakenAura);
+                creature->RemoveAura(BaseStatAPAura);
+                creature->RemoveAura(AbsorbAura);
+                creature->RemoveAura(HealingDoneAura);
+                creature->RemoveAura(PhysicalDamageTakenAura);
+
+                // reset level
+                creature->SetLevel(creatureInfo->original_level);
+
+                // reset log
+                //creatureInfo->is_altered = 0;
             }
         }
-
-        // reapply auras
-        creature->RemoveAura(HpAura);
-        creature->RemoveAura(DamageDoneTakenAura);
-        creature->RemoveAura(BaseStatAPAura);
-        creature->RemoveAura(AbsorbAura);
-        creature->RemoveAura(HealingDoneAura);
-        creature->RemoveAura(PhysicalDamageTakenAura);
-
-        // reset level
-        creature->SetLevel(creatureInfo->original_level);
-
-        // reset
-        //creatureInfo->is_altered = 0;
     }
 
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
+        if (!creature) return;
+
         // nerf auras
         uint32_t HpAura = 89501;
         uint32_t DamageDoneTakenAura = 89502;
@@ -336,7 +337,7 @@ public:
         NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
         // if creature is new...
-        if (creatureInfo->is_altered == 0)
+        if (!creatureInfo->is_altered)
         {
             // log original numbers
             creatureInfo->original_level = creature->GetLevel();
