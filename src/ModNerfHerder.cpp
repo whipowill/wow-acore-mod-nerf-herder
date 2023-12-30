@@ -296,7 +296,7 @@ public:
         if (!creatureInfo->is_altered) return;
 
         // if this npc has been touched...
-        if (creatureInfo->is_altered == 1)
+        if (creatureInfo->is_altered == 1 && creatureInfo->original_health > 0)
         {
             // if the health has not been reset...
             if (creature->GetMaxHealth() < creatureInfo->original_health)
