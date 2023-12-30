@@ -292,7 +292,7 @@ public:
         // load info
         NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
-        // if we don't need to do anything
+        // if we don't need to do anything, bail...
         if (creatureInfo->is_altered == 1 && creature->GetMaxHealth() < creatureInfo->original_health) return;
 
         // reapply auras
@@ -302,6 +302,9 @@ public:
         creature->RemoveAura(AbsorbAura);
         creature->RemoveAura(HealingDoneAura);
         creature->RemoveAura(PhysicalDamageTakenAura);
+
+        // reset level
+        creature->SetLevel(creatureInfo->original_level);
     }
 
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
@@ -363,8 +366,8 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // calc proper health and armor
-        uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
-        uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
+        //uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
+        //uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
         /*
         // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
