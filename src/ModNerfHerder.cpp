@@ -339,8 +339,8 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // calc proper health and armor
-        int32_t new_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
-        int32_t new_armor = creature->GetArmor() * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
+        int32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
+        int32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
         // if health is over the limit...
         if (creature->GetMaxHealth() > max_health)
