@@ -276,7 +276,7 @@ public:
         //uint32_t RageFromDamageAura = 89504;
         uint32_t AbsorbAura = 89505;
         uint32_t HealingDoneAura = 89506;
-        uint32_t PhysicalDamageTakenAura = 89507;
+        //uint32_t PhysicalDamageTakenAura = 89507;
 
         // if creature already modified, bail
         if (creature->HasAura(DamageDoneTakenAura)) return;
@@ -314,12 +314,19 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
-        // set new health & armor
-        creature->SetMaxHealth(creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100))); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
-        creature->SetFullHealth(); // this is needed for some reason?
-        creature->SetArmor(creature->GetArmor() * (1 - ((-1 * negative_hp_multiplier) / 100)));
+        // armor
+        int32_t new_armor = creature->GetArmor() * (1 - ((-1 * negative_hp_multiplier) / 100));
+        creature->SetArmor(new_armor);
+        creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
 
-        // nerf their damage done, base stats, absorb, and healing done
+        // health
+        int32_t new_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
+        creature->SetCreateHealth(new_health);
+        creature->SetMaxHealth(new_health);
+        creature->ResetPlayerDamageReq();
+        creature->SetModifierValue(UNIT_MOD_HEALTH, BASE_VALUE, (float)new_health);
+
+        // nerf their damage done, base stats, absorbsion, and healing done
         //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
