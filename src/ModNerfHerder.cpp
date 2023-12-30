@@ -287,10 +287,12 @@ public:
         //if (creatureInfo->is_altered) return;
 
         // save log on creature
-        creatureInfo->is_altered = 1;
-        creatureInfo->original_level = creature->GetLevel();
-        creatureInfo->original_health = creature->GetMaxHealth();
-        creatureInfo->original_armor = creature->GetArmor();
+        if (!creatureInfo->is_altered)
+        {
+            creatureInfo->original_level = creature->GetLevel();
+            creatureInfo->original_health = creature->GetMaxHealth();
+            creatureInfo->original_armor = creature->GetArmor();
+        }
         // assume this saves automatically?
 
         // nerf auras
@@ -336,18 +338,27 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
+        // calc proper health and armor
+        int32_t new_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
+        int32_t new_armor = creature->GetArmor() * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
+
+        // if health is over the limit...
+        if (creature->GetMaxHealth() > max_health)
+        {
+            // reapply aura
+            creature->RemoveAura(HpAura);
+        }
+
         /*
         // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
 
         // health
-        int32_t new_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
         creature->SetCreateHealth(new_health);
         creature->SetMaxHealth(new_health);
         creature->ResetPlayerDamageReq();
         creature->SetModifierValue(UNIT_MOD_HEALTH, BASE_VALUE, (float)new_health);
 
         // armor
-        int32_t new_armor = creature->GetArmor() * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
         creature->SetArmor(new_armor);
         creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
 
@@ -366,6 +377,9 @@ public:
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
+
+        // log that changes were made
+        creatureInfo->is_altered = 1;
     }
 };
 
