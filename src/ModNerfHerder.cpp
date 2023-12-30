@@ -314,6 +314,8 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
+        // the following health and armor technique comes from autobalance mod
+
         // health
         int32_t new_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
         creature->SetCreateHealth(new_health);
@@ -325,6 +327,9 @@ public:
         int32_t new_armor = creature->GetArmor() * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
         creature->SetArmor(new_armor);
         creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
+
+        // save
+        creature->UpdateAllStats();
 
         // nerf their damage done, base stats, absorbsion, and healing done
         //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());

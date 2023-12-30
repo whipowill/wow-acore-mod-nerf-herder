@@ -25,14 +25,9 @@ Finally, the coveted achievement of assassinating the enemy faction leaders is t
 
 Additional nerfs may be added over time to allow for a low population experience.
 
-## Credits
-
-- ChatGPT
-- 55Honey
-- HonorGuard
-
 ## External Links
 
 - [AzerothCore](https://github.com/azerothcore/azerothcore-wotlk)
 - [ZoneDebuff](https://github.com/55Honey/Acore_ZoneDebuff/blob/master/zoneDebuff.lua)
 - [HonorGuard](https://github.com/azerothcore/mod-gain-honor-guard)
+- [AutoBalance](https://github.com/kjack9/mod-autobalance)
