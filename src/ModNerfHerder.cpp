@@ -368,7 +368,7 @@ public:
         creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
-        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
+        //creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
         // log that changes were made
         creatureInfo->is_altered = 1;
