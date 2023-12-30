@@ -365,6 +365,112 @@ public:
         // log that changes were made
         creatureInfo->is_altered = 1;
     }
+
+    static void ProcessCreature(Creature* creature)
+    {
+        // catch errors
+        if (!creature) return;
+        if (creature->IsPlayer()) return;
+        if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground()) return;
+
+        // catch errors
+        if (!NerfHerder_Enabled) return;
+
+        // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
+
+        // init
+        uint32_t max_level;
+
+        // determine alliance / horde npcs in the world
+        uint32_t is_field_agent = NerfHerderHelper::IsFieldAgent(creature);
+
+        // if nerfing high health npcs...
+        if (NerfHerder_WorldEvent_Enabled)
+        {
+            // if npc has high health...
+            if (creature->GetMaxHealth() > NerfHerder_WorldEvent_HealthThreshold)
+            {
+                // start off w/ no level change
+                max_level = creature->GetLevel();
+
+                // if we are enforcing level limits...
+                if (NerfHerder_PlayerLevelEnabled)
+                {
+                    // set appropriate level
+                    max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
+                }
+
+                // nerf them harder than normal
+                NerfHerderHelper::UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate);
+            }
+        }
+
+        // if max player level is enabled...
+        if (NerfHerder_PlayerLevelEnabled)
+        {
+            // what is max level allowed
+            max_level = NerfHerder_MaxPlayerLevel;
+
+            // if valid
+            if (max_level && max_level >= 10)
+            {
+                // if creature is too high...
+                if (creature->GetLevel() > max_level)
+                {
+                    // calc new max level
+                    max_level = creature->isElite() ? max_level : max_level - 5;
+
+                    // nerf em
+                    NerfHerderHelper::UpdateCreature(creature, max_level);
+                }
+            }
+        }
+
+        // if max zone level is enabled...
+        if (NerfHerder_ZoneLevelEnabled)
+        {
+            if (is_field_agent)
+            {
+                // get max level for zone
+                max_level = NerfHerderHelper::GetZoneLevel(creature);
+
+                // if valid
+                if (max_level && max_level >= 10)
+                {
+                    // if creature is too high...
+                    if (creature->GetLevel() > max_level)
+                    {
+                        // nerf em
+                        NerfHerderHelper::UpdateCreature(creature, max_level);
+                    }
+                }
+            }
+        }
+
+        // if force pvp is enabled...
+        if (NerfHerder_ForcePvPEnabled)
+        {
+            if (is_field_agent)
+            {
+                // force them to be pvp
+                creature->SetPvP(true);
+            }
+        }
+
+        // if hiding pvp vendors...
+        if (NerfHerder_HidePvPVendorsEnabled)
+        {
+            if (NerfHerderHelper::IsPvPVendor(creature))
+            {
+                // This "hiding" method works, but not if you are a GM.
+                // That means the characters aren't really removed from the game?
+                // Also not sure how this might effect world PvP.
+
+                // hide them
+                creature->SetVisible(false);
+            }
+        }
+    }
 };
 
 std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
@@ -693,111 +799,14 @@ class NerfHerderCreature : public AllCreatureScript
 public:
     NerfHerderCreature() : AllCreatureScript("NerfHerderCreature") {}
 
-    // Note to self, OnCreatureAddWorld doesn't work. OnAllCreatureUpdate
-    void OnCreatureAddWorld(Creature* creature, uint32 /*diff*/) override
+    void OnCreatureAddWorld(Creature* creature) override
     {
-        // catch errors
-        if (!creature) return;
-        if (creature->IsPlayer()) return;
-        if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground()) return;
+        NerfHerderHelper::ProcessCreature(creature);
+    }
 
-        // catch errors
-        if (!NerfHerder_Enabled) return;
-
-        // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
-
-        // init
-        uint32_t max_level;
-
-        // determine alliance / horde npcs in the world
-        uint32_t is_field_agent = NerfHerderHelper::IsFieldAgent(creature);
-
-        // if nerfing high health npcs...
-        if (NerfHerder_WorldEvent_Enabled)
-        {
-            // if npc has high health...
-            if (creature->GetMaxHealth() > NerfHerder_WorldEvent_HealthThreshold)
-            {
-                // start off w/ no level change
-                max_level = creature->GetLevel();
-
-                // if we are enforcing level limits...
-                if (NerfHerder_PlayerLevelEnabled)
-                {
-                    // set appropriate level
-                    max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
-                }
-
-                // nerf them harder than normal
-                NerfHerderHelper::UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate);
-            }
-        }
-
-        // if max player level is enabled...
-        if (NerfHerder_PlayerLevelEnabled)
-        {
-            // what is max level allowed
-            max_level = NerfHerder_MaxPlayerLevel;
-
-            // if valid
-            if (max_level && max_level >= 10)
-            {
-                // if creature is too high...
-                if (creature->GetLevel() > max_level)
-                {
-                    // calc new max level
-                    max_level = creature->isElite() ? max_level : max_level - 5;
-
-                    // nerf em
-                    NerfHerderHelper::UpdateCreature(creature, max_level);
-                }
-            }
-        }
-
-        // if max zone level is enabled...
-        if (NerfHerder_ZoneLevelEnabled)
-        {
-            if (is_field_agent)
-            {
-                // get max level for zone
-                max_level = NerfHerderHelper::GetZoneLevel(creature);
-
-                // if valid
-                if (max_level && max_level >= 10)
-                {
-                    // if creature is too high...
-                    if (creature->GetLevel() > max_level)
-                    {
-                        // nerf em
-                        NerfHerderHelper::UpdateCreature(creature, max_level);
-                    }
-                }
-            }
-        }
-
-        // if force pvp is enabled...
-        if (NerfHerder_ForcePvPEnabled)
-        {
-            if (is_field_agent)
-            {
-                // force them to be pvp
-                creature->SetPvP(true);
-            }
-        }
-
-        // if hiding pvp vendors...
-        if (NerfHerder_HidePvPVendorsEnabled)
-        {
-            if (NerfHerderHelper::IsPvPVendor(creature))
-            {
-                // This "hiding" method works, but not if you are a GM.
-                // That means the characters aren't really removed from the game?
-                // Also not sure how this might effect world PvP.
-
-                // hide them
-                creature->SetVisible(false);
-            }
-        }
+    void OnAllCreatureUpdate(Creature* creature, uint32 /*diff*/) override
+    {
+        //NerfHerderHelper::ProcessCreature(creature);
     }
 };
 
