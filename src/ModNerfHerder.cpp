@@ -280,22 +280,7 @@ public:
 
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
-        // load info
-        NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
-
-        // if already altered, bail...
-        //if (creatureInfo->is_altered) return;
-
-        // save log on creature
-        if (!creatureInfo->is_altered)
-        {
-            creatureInfo->original_level = creature->GetLevel();
-            creatureInfo->original_health = creature->GetMaxHealth();
-            creatureInfo->original_armor = creature->GetArmor();
-        }
-        // assume this saves automatically?
-
-        // nerf auras
+                // nerf auras
         uint32_t HpAura = 89501;
         uint32_t DamageDoneTakenAura = 89502;
         uint32_t BaseStatAPAura = 89503;
@@ -303,6 +288,19 @@ public:
         uint32_t AbsorbAura = 89505;
         uint32_t HealingDoneAura = 89506;
         uint32_t PhysicalDamageTakenAura = 89507;
+
+        // load info
+        NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
+
+        // if creature is new...
+        if (creatureInfo->is_altered == 0)
+        {
+            // log original numbers
+            creatureInfo->original_level = creature->GetLevel();
+            creatureInfo->original_health = creature->GetMaxHealth();
+            creatureInfo->original_armor = creature->GetArmor();
+        }
+        // assume this saves automatically?
 
         // calc proportional level change
         float ratio = static_cast<float>(new_level) / static_cast<float>(creatureInfo->original_level);
@@ -342,12 +340,16 @@ public:
         int32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
         int32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
-        // if health is over the limit...
-        if (creature->GetMaxHealth() > max_health)
-        {
-            // reapply aura
-            creature->RemoveAura(HpAura);
-        }
+        // if we don't need to do anything
+        if (creatureInfo->is_altered == 1 && new_health < creatureInfo->original_health) return;
+
+        // reapply auras
+        creature->RemoveAura(HpAura);
+        creature->RemoveAura(DamageDoneTakenAura);
+        creature->RemoveAura(BaseStatAPAura);
+        creature->RemoveAura(AbsorbAura);
+        creature->RemoveAura(HealingDoneAura);
+        creature->RemoveAura(PhysicalDamageTakenAura);
 
         /*
         // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
