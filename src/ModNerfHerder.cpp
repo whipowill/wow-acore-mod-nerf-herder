@@ -287,8 +287,15 @@ public:
         // calc nerf multiplier (negative)
         float multiplier = (-100 + (ratio * 100));
 
+        // some assumptions here:
+        // the proportional difference between a lvl 80 and lvl 60 is 25%, but
+        // the dmg done by a lvl 80 is not only 25% higher than a lvl 60, it's
+        // probably closer to 3x as much!  so our nerf needs to not be a linear
+        // or proportional nerf, it needs to curve.
+        // AT THE PRESENT TIME I WILL DO NOTHING
+
         // calc custom hp nerf (extra nerfs only apply to health, not damage)
-        float hp_multiplier = multiplier;
+        float hp_multiplier = (-100 + (ratio * 100));
         if (NerfHerder_NerfRate > 0)
         {
             hp_multiplier = hp_multiplier - (NerfHerder_NerfRate * (100 + hp_multiplier));
@@ -307,7 +314,8 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // nerf their abilities proportionately
-        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->SetMaxHealth(creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100))); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
@@ -669,7 +677,7 @@ public:
         if (NerfHerder_WorldEvent_Enabled)
         {
             // if npc has high health...
-            if (creature->GetHealth() > NerfHerder_WorldEvent_HealthThreshold)
+            if (creature->GetMaxHealth() > NerfHerder_WorldEvent_HealthThreshold)
             {
                 // start off w/ no level change
                 max_level = creature->GetLevel();
@@ -683,27 +691,6 @@ public:
 
                 // nerf them harder than normal
                 NerfHerderHelper::UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate);
-            }
-        }
-
-        // if max zone level is enabled...
-        if (NerfHerder_ZoneLevelEnabled)
-        {
-            if (is_field_agent)
-            {
-                // get max level for zone
-                max_level = NerfHerderHelper::GetZoneLevel(creature);
-
-                // if valid
-                if (max_level && max_level >= 10)
-                {
-                    // if creature is too high...
-                    if (creature->GetLevel() > max_level)
-                    {
-                        // nerf em
-                        NerfHerderHelper::UpdateCreature(creature, max_level);
-                    }
-                }
             }
         }
 
@@ -724,6 +711,27 @@ public:
 
                     // nerf em
                     NerfHerderHelper::UpdateCreature(creature, max_level);
+                }
+            }
+        }
+
+        // if max zone level is enabled...
+        if (NerfHerder_ZoneLevelEnabled)
+        {
+            if (is_field_agent)
+            {
+                // get max level for zone
+                max_level = NerfHerderHelper::GetZoneLevel(creature);
+
+                // if valid
+                if (max_level && max_level >= 10)
+                {
+                    // if creature is too high...
+                    if (creature->GetLevel() > max_level)
+                    {
+                        // nerf em
+                        NerfHerderHelper::UpdateCreature(creature, max_level);
+                    }
                 }
             }
         }
