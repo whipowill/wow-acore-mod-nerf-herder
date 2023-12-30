@@ -292,8 +292,19 @@ public:
         // load info
         NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
-        // if we don't need to do anything, bail...
-        if (creatureInfo->is_altered == 1 && creature->GetMaxHealth() < creatureInfo->original_health) return;
+        // if this npc is untouched...
+        if (!creatureInfo->is_altered) return;
+
+        // if this npc has been touched...
+        if (creatureInfo->is_altered == 1)
+        {
+            // if the health has not been reset...
+            if (creature->GetMaxHealth() < creatureInfo->original_health)
+            {
+                // bail
+                return;
+            }
+        }
 
         // reapply auras
         creature->RemoveAura(HpAura);
