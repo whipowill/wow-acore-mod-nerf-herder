@@ -84,6 +84,17 @@ public:
     }
 };
 
+class NerfHerderCreatureInfo : public DataMap::Base
+{
+public:
+    NerfHerderCreatureInfo() {}
+
+    uint32_t is_altered = 0;
+    uint32_t original_level = 0;
+    uint32_t original_health = 0;
+    uint32_t original_armor = 0;
+};
+
 struct VendorData {
     uint32_t expansionID; // 1=TBC, 2=WOTLK
 };
@@ -269,6 +280,19 @@ public:
 
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
+        // load info
+        NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
+
+        // if already altered, bail...
+        //if (creatureInfo->is_altered) return;
+
+        // save log on creature
+        creatureInfo->is_altered = 1;
+        creatureInfo->original_level = creature->GetLevel();
+        creatureInfo->original_health = creature->GetMaxHealth();
+        creatureInfo->original_armor = creature->GetArmor();
+        // assume this saves automatically?
+
         // nerf auras
         uint32_t HpAura = 89501;
         uint32_t DamageDoneTakenAura = 89502;
@@ -276,13 +300,10 @@ public:
         //uint32_t RageFromDamageAura = 89504;
         uint32_t AbsorbAura = 89505;
         uint32_t HealingDoneAura = 89506;
-        //uint32_t PhysicalDamageTakenAura = 89507;
-
-        // if creature already modified, bail
-        if (creature->HasAura(DamageDoneTakenAura)) return;
+        uint32_t PhysicalDamageTakenAura = 89507;
 
         // calc proportional level change
-        float ratio = static_cast<float>(new_level) / static_cast<float>(creature->GetLevel());
+        float ratio = static_cast<float>(new_level) / static_cast<float>(creatureInfo->original_level);
 
         // calc nerf multiplier (negative)
         float multiplier = -100 + (ratio * 100);
@@ -314,7 +335,8 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
-        // the following health and armor technique comes from autobalance mod
+        /*
+        // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
 
         // health
         int32_t new_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
@@ -330,15 +352,16 @@ public:
 
         // save
         creature->UpdateAllStats();
+        */
 
         // nerf their damage done, base stats, absorbsion, and healing done
-        //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &negative_multiplier * -1, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &negative_multiplier * -1, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
@@ -672,7 +695,7 @@ public:
     NerfHerderCreature() : AllCreatureScript("NerfHerderCreature") {}
 
     // Note to self, OnCreatureAddWorld doesn't work.
-    void OnAllCreatureUpdate(Creature* creature, uint32 diff) override
+    void OnAllCreatureUpdate(Creature* creature, uint32 /*diff*/) override
     {
         // catch errors
         if (!creature) return;
