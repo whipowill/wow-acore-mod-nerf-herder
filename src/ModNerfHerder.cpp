@@ -278,9 +278,35 @@ public:
         return NerfHerderHelper::zoneDataMap[zone_id].maxLevel;
     }
 
+    static void ResetCreature()
+    {
+        // nerf auras
+        uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        //uint32_t RageFromDamageAura = 89504;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        uint32_t PhysicalDamageTakenAura = 89507;
+
+        // load info
+        NerfHerderCreatureInfo *creatureInfo=creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
+
+        // if we don't need to do anything
+        if (creatureInfo->is_altered == 1 && creature->GetMaxHealth() < creatureInfo->original_health) return;
+
+        // reapply auras
+        creature->RemoveAura(HpAura);
+        creature->RemoveAura(DamageDoneTakenAura);
+        creature->RemoveAura(BaseStatAPAura);
+        creature->RemoveAura(AbsorbAura);
+        creature->RemoveAura(HealingDoneAura);
+        creature->RemoveAura(PhysicalDamageTakenAura);
+    }
+
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
-                // nerf auras
+        // nerf auras
         uint32_t HpAura = 89501;
         uint32_t DamageDoneTakenAura = 89502;
         uint32_t BaseStatAPAura = 89503;
@@ -337,22 +363,12 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // calc proper health and armor
-        int32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
-        int32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
-
-        // if we don't need to do anything
-        if (creatureInfo->is_altered == 1 && new_health < creatureInfo->original_health) return;
-
-        // reapply auras
-        creature->RemoveAura(HpAura);
-        creature->RemoveAura(DamageDoneTakenAura);
-        creature->RemoveAura(BaseStatAPAura);
-        creature->RemoveAura(AbsorbAura);
-        creature->RemoveAura(HealingDoneAura);
-        creature->RemoveAura(PhysicalDamageTakenAura);
+        uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
+        uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
         /*
         // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
+        // this never worked for me -- had no effect on the creature.  probably have to respawn the creature for it to work?
 
         // health
         creature->SetCreateHealth(new_health);
@@ -721,6 +737,9 @@ public:
 
         // catch errors
         if (!NerfHerder_Enabled) return;
+
+        // check for creature reset
+        NerfHerderHelper::ResetCreature(creature);
 
         // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
 
