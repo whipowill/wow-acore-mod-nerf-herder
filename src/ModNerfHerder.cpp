@@ -270,7 +270,7 @@ public:
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
         // nerf auras
-        //uint32_t HpAura = 89501;
+        uint32_t HpAura = 89501;
         uint32_t DamageDoneTakenAura = 89502;
         uint32_t BaseStatAPAura = 89503;
         //uint32_t RageFromDamageAura = 89504;
@@ -315,12 +315,12 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // set new health
-        int32_t new_max_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
-        creature->SetMaxHealth(new_max_health); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
-        creature->SetHealth(new_max_health);
+        //int32_t new_max_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
+        //creature->SetMaxHealth(new_max_health); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
+        //creature->SetHealth(new_max_health);
 
         // nerf their abilities proportionately
-        //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
