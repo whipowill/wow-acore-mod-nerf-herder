@@ -317,6 +317,7 @@ public:
         // set new health
         int32_t new_max_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
         creature->SetMaxHealth(new_max_health); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
+        creature->SetHealth(new_max_health);
 
         // nerf their abilities proportionately
         //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
