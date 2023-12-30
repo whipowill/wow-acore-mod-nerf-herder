@@ -351,12 +351,12 @@ public:
         */
 
         // nerf auras
-        //uint32_t HpAura = 89501;
+        uint32_t HpAura = 89501;
         uint32_t DamageDoneTakenAura = 89502;
         uint32_t BaseStatAPAura = 89503;
         uint32_t AbsorbAura = 89505;
         uint32_t HealingDoneAura = 89506;
-        //uint32_t PhysicalDamageTakenAura = 89507;
+        uint32_t PhysicalDamageTakenAura = 89507;
 
         // nerf their damage done, base stats, absorbsion, and healing done
         creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
