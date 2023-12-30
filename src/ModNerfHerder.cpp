@@ -314,19 +314,19 @@ public:
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
-        // set new health
-        int32_t new_max_health = creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100));
-        creature->SetMaxHealth(new_max_health); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
+        // set new health & armor
+        creature->SetMaxHealth(creature->GetMaxHealth() * (1 - ((-1 * negative_hp_multiplier) / 100))); // do it this way from now on bc Creature::RegenerateHealth() ignores aura
         creature->SetFullHealth(); // this is needed for some reason?
+        creature->SetArmor(creature->GetArmor() * (1 - ((-1 * negative_hp_multiplier) / 100)));
 
-        // nerf their abilities proportionately
+        // nerf their damage done, base stats, absorb, and healing done
         //creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         //creature->CastCustomSpell(creature, RageFromDamageAura, &RageFromDamageModifier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &negative_multiplier * -1, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &negative_multiplier * -1, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
