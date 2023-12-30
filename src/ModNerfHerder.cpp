@@ -278,7 +278,7 @@ public:
         return NerfHerderHelper::zoneDataMap[zone_id].maxLevel;
     }
 
-    static void ResetCreature()
+    static void ResetCreature(Creature* creature)
     {
         // nerf auras
         uint32_t HpAura = 89501;
@@ -305,6 +305,9 @@ public:
 
         // reset level
         creature->SetLevel(creatureInfo->original_level);
+
+        // reset
+        //creatureInfo->is_altered = 0;
     }
 
     static void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
