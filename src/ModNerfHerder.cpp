@@ -336,6 +336,7 @@ public:
         // health
         creature->SetCreateHealth(new_health);
         creature->SetMaxHealth(new_health);
+        creature->SetHealth(new_health);
         creature->ResetPlayerDamageReq();
         creature->SetModifierValue(UNIT_MOD_HEALTH, BASE_VALUE, (float)new_health);
 
@@ -801,12 +802,12 @@ public:
 
     void OnCreatureAddWorld(Creature* creature) override
     {
-        NerfHerderHelper::ProcessCreature(creature);
+        //NerfHerderHelper::ProcessCreature(creature);
     }
 
     void OnAllCreatureUpdate(Creature* creature, uint32 /*diff*/) override
     {
-        //NerfHerderHelper::ProcessCreature(creature);
+        NerfHerderHelper::ProcessCreature(creature);
     }
 };
 
