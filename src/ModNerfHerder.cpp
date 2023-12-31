@@ -91,6 +91,7 @@ public:
 
     uint32_t is_brand_new = 1;
     uint32_t is_altered = 0;
+    uint32_t is_evading = 0;
 
     uint32_t original_level = 0;
     uint32_t original_health = 0;
@@ -635,11 +636,8 @@ public:
         // if this creature is untouched...
         if (!creatureInfo->is_altered) return;
 
-        // if this creature has no new health value...
-        //if (!creatureInfo->original_health) return;
-
-        // if this creature doesn't have wrong health...
-        //if (creature->GetMaxHealth() < creatureInfo->original_health) return;
+        // if this creatire is already evading (we already reset them)...
+        if (creatureInfo->is_evading) return;
 
         // The reason we even check for a necessary reset on the nerf is bc
         // when a guard exits combat and he lived, he resets his own health
@@ -664,8 +662,9 @@ public:
         // reset level
         //creature->SetLevel(creatureInfo->original_level); // happens so fast you never see it
 
-        // unmark as having been touched
+        // amend logs
         creatureInfo->is_altered = 0;
+        creatureInfo->is_evading = 1;
 
         // force rechange
         UpdateCreature(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
@@ -775,8 +774,9 @@ public:
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
-        // log that changes were made
+        // amend logs
         creatureInfo->is_altered = 1;
+        creatureInfo->is_evading = 0;
     }
 
     void ProcessCreature(Creature* creature)
