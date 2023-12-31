@@ -89,6 +89,7 @@ class NerfHerderCreatureInfo : public DataMap::Base
 public:
     NerfHerderCreatureInfo() {}
 
+    uint32_t is_brand_new = 1;
     uint32_t is_altered = 0;
 
     uint32_t original_level = 0;
@@ -98,6 +99,9 @@ public:
     uint32_t new_level = 0;
     uint32_t new_health = 0;
     uint32_t new_armor = 0;
+
+    float nerf_rate = 0;
+    float additional_nerf_rate = 0;
 };
 
 struct VendorData {
@@ -651,14 +655,17 @@ public:
                     // reset level
                     creature->SetLevel(creatureInfo->original_level);
 
-                    // unmark
+                    // unmark as having been touched
                     creatureInfo->is_altered = 0;
+
+                    // force rechange
+                    UpdateCreature(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
                 }
             }
         }
     }
 
-    void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
+    void UpdateCreature(Creature* creature, uint32_t new_level, float nerf_rate = 0, float additional_nerf_rate = 0)
     {
         if (!creature) return;
 
@@ -670,12 +677,19 @@ public:
         //if (creature->HasAura(89501)) return; // if has HP nerf already
 
         // if first time...
-        if (!creatureInfo->is_altered)
+        if (creatureInfo->is_brand_new)
         {
             // log original numbers
             creatureInfo->original_level = creature->GetLevel();
             creatureInfo->original_health = creature->GetMaxHealth();
             creatureInfo->original_armor = creature->GetArmor();
+
+            // log nerf rates
+            creatureInfo->nerf_rate = nerf_rate;
+            creatureInfo->additional_nerf_rate = additional_nerf_rate;
+
+            // mark as not new anymore
+            creatureInfo->is_brand_new = 0;
         }
 
         // calc proportional level change
@@ -694,13 +708,13 @@ public:
 
         // calc custom hp nerf (extra nerfs only apply to health, not damage)
         float hp_multiplier = -100 + (ratio * 100);
-        if (NerfHerder_NerfRate > 0)
+        if (creatureInfo->nerf_rate > 0)
         {
-            hp_multiplier = hp_multiplier - (NerfHerder_NerfRate * (100 + hp_multiplier));
+            hp_multiplier = hp_multiplier - (creatureInfo->nerf_rate * (100 + hp_multiplier));
         }
-        if (additional_nerf_rate > 0)
+        if (creatureInfo->additional_nerf_rate > 0)
         {
-            hp_multiplier = hp_multiplier - (additional_nerf_rate * (100 + hp_multiplier));
+            hp_multiplier = hp_multiplier - (creatureInfo->additional_nerf_rate * (100 + hp_multiplier));
         }
 
         // convert to int
@@ -716,7 +730,7 @@ public:
         uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
         uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
-        // log
+        // log calculations
         creatureInfo->new_level = new_level;
         creatureInfo->new_health = new_health;
         creatureInfo->new_armor = new_armor;
@@ -797,7 +811,7 @@ public:
                 }
 
                 // nerf them harder than normal
-                UpdateCreature(creature, max_level, NerfHerder_WorldEvent_NerfRate);
+                UpdateCreature(creature, max_level, NerfHerder_NerfRate, NerfHerder_WorldEvent_NerfRate);
             }
         }
 
@@ -817,7 +831,7 @@ public:
                     max_level = creature->isElite() ? max_level : max_level - 5;
 
                     // nerf em
-                    UpdateCreature(creature, max_level);
+                    UpdateCreature(creature, max_level, NerfHerder_NerfRate);
                 }
             }
         }
@@ -837,7 +851,7 @@ public:
                     if (creature->GetLevel() > max_level)
                     {
                         // nerf em
-                        UpdateCreature(creature, max_level);
+                        UpdateCreature(creature, max_level, NerfHerder_NerfRate);
                     }
                 }
             }
