@@ -626,6 +626,9 @@ public:
 
     void ResetCreature(Creature* creature)
     {
+        // only reset after a fight
+        if (!creature->IsInEvadeMode()) return;
+
         // load info
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
@@ -659,7 +662,7 @@ public:
         creature->RemoveAura(PhysicalDamageTakenAura);
 
         // reset level
-        //creature->SetLevel(creatureInfo->original_level);
+        creature->SetLevel(creatureInfo->original_level);
 
         // unmark as having been touched
         creatureInfo->is_altered = 0;
@@ -762,7 +765,7 @@ public:
         uint32_t PhysicalDamageTakenAura = 89507;
 
         // nerf their damage done, base stats, absorbsion, and healing done
-        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
+        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
