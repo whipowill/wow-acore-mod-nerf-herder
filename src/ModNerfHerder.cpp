@@ -620,6 +620,44 @@ public:
         ProcessCreature(creature);
     }
 
+    void ResetCreature(Creature* creature)
+    {
+        // load info
+        NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
+
+        // if health is whack...
+        if (creatureInfo->is_altered)
+        {
+            if (creatureInfo->new_health)
+            {
+                if (creature->GetMaxHealth() > creatureInfo->new_health)
+                {
+                    // nerf auras
+                    uint32_t HpAura = 89501;
+                    uint32_t DamageDoneTakenAura = 89502;
+                    uint32_t BaseStatAPAura = 89503;
+                    uint32_t AbsorbAura = 89505;
+                    uint32_t HealingDoneAura = 89506;
+                    uint32_t PhysicalDamageTakenAura = 89507;
+
+                    // remove auras
+                    player->RemoveAura(HpAura);
+                    player->RemoveAura(DamageDoneTakenAura);
+                    player->RemoveAura(BaseStatAPAura);
+                    player->RemoveAura(AbsorbAura);
+                    player->RemoveAura(HealingDoneAura);
+                    player->RemoveAura(PhysicalDamageTakenAura);
+
+                    // reset level
+                    creature->SetLevel(creatureInfo->original_level);
+
+                    // unmark
+                    creatureInfo->is_altered = 0;
+                }
+            }
+        }
+    }
+
     void UpdateCreature(Creature* creature, uint32_t new_level, float additional_nerf_rate = 0)
     {
         if (!creature) return;
@@ -698,6 +736,14 @@ public:
         creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
         */
 
+        // nerf auras
+        uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        uint32_t PhysicalDamageTakenAura = 89507;
+
         // nerf their damage done, base stats, absorbsion, and healing done
         creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID()); // this doesn't work bc after a fight the creature resets and igonres this limit on HP
         creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
@@ -723,21 +769,8 @@ public:
         // catch errors
         if (!NerfHerder_Enabled) return;
 
-        // load info
-        NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
-
-        // if health is whack...
-        if (creatureInfo->is_altered)
-        {
-            if (creature->GetMaxHealth() > creatureInfo->new_health)
-            {
-                // unmark
-                creatureInfo->is_altered = 0;
-
-                // reset level
-                creature->SetLevel(creatureInfo->original_level);
-            }
-        }
+        // reset
+        ResetCreature(creature);
 
         // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
 
