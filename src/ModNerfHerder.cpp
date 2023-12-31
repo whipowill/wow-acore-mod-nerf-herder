@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <ctime>
 #include <random>
+#include <chrono>
 
 uint32_t NerfHerder_Enabled = 0;
 float NerfHerder_NerfRate = 0;
@@ -91,7 +92,8 @@ public:
 
     uint32_t is_brand_new = 1;
     uint32_t is_altered = 0;
-    uint32_t is_evading = 0;
+
+    uint64_t last_reset = 0;
 
     uint32_t original_level = 0;
     uint32_t original_health = 0;
@@ -286,6 +288,12 @@ public:
             return 0;
 
         return NerfHerderHelper::zoneDataMap[zone_id].maxLevel;
+    }
+
+    static uint64_t GetTime()
+    {
+        // number of seconds
+        return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
 };
 
@@ -627,17 +635,17 @@ public:
 
     void ResetCreature(Creature* creature)
     {
-        // only reset after a fight
+        // if not evading, bail... (we only reset after a fight)
         if (!creature->IsInEvadeMode()) return;
 
         // load info
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
-        // if this creature is untouched...
+        // if not a modified creature, bail...
         if (!creatureInfo->is_altered) return;
 
-        // if this creatire is already evading (we already reset them)...
-        if (creatureInfo->is_evading) return;
+        // if it's been less than 10 seconds since last reset, bail...
+        if (NerfHerderHelper::GetTime() - creatureInfo->last_reset < 10) return;
 
         // The reason we even check for a necessary reset on the nerf is bc
         // when a guard exits combat and he lived, he resets his own health
@@ -660,11 +668,11 @@ public:
         creature->RemoveAura(PhysicalDamageTakenAura);
 
         // reset level
-        //creature->SetLevel(creatureInfo->original_level); // happens so fast you never see it
+        creature->SetLevel(creatureInfo->original_level); // happens so fast you never see it
 
         // amend logs
         creatureInfo->is_altered = 0;
-        creatureInfo->is_evading = 1;
+        creatureInfo->last_reset = NerfHerderHelper::GetTime();
 
         // force rechange
         UpdateCreature(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
@@ -776,7 +784,6 @@ public:
 
         // amend logs
         creatureInfo->is_altered = 1;
-        creatureInfo->is_evading = 0;
     }
 
     void ProcessCreature(Creature* creature)
