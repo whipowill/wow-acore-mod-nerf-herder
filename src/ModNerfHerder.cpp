@@ -629,40 +629,39 @@ public:
         // load info
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
-        // if health is whack...
-        if (creatureInfo->is_altered)
-        {
-            if (creatureInfo->new_health)
-            {
-                if (creature->GetHealth() > creatureInfo->new_health)
-                {
-                    // nerf auras
-                    uint32_t HpAura = 89501;
-                    uint32_t DamageDoneTakenAura = 89502;
-                    uint32_t BaseStatAPAura = 89503;
-                    uint32_t AbsorbAura = 89505;
-                    uint32_t HealingDoneAura = 89506;
-                    uint32_t PhysicalDamageTakenAura = 89507;
+        // if this creature is untouched...
+        if (!creatureInfo->is_altered) return;
 
-                    // remove auras
-                    creature->RemoveAura(HpAura);
-                    creature->RemoveAura(DamageDoneTakenAura);
-                    creature->RemoveAura(BaseStatAPAura);
-                    creature->RemoveAura(AbsorbAura);
-                    creature->RemoveAura(HealingDoneAura);
-                    creature->RemoveAura(PhysicalDamageTakenAura);
+        // if this creature has no new health value...
+        if (!creatureInfo->new_health) return;
 
-                    // reset level
-                    creature->SetLevel(creatureInfo->original_level);
+        // if this creature doesn't have wrong health...
+        if (creature->GetMaxHealth() < creatureInfo->original_health) return;
 
-                    // unmark as having been touched
-                    creatureInfo->is_altered = 0;
+        // nerf auras
+        uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        uint32_t PhysicalDamageTakenAura = 89507;
 
-                    // force rechange
-                    UpdateCreature(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
-                }
-            }
-        }
+        // remove auras
+        creature->RemoveAura(HpAura);
+        creature->RemoveAura(DamageDoneTakenAura);
+        creature->RemoveAura(BaseStatAPAura);
+        creature->RemoveAura(AbsorbAura);
+        creature->RemoveAura(HealingDoneAura);
+        creature->RemoveAura(PhysicalDamageTakenAura);
+
+        // reset level
+        creature->SetLevel(creatureInfo->original_level);
+
+        // unmark as having been touched
+        creatureInfo->is_altered = 0;
+
+        // force rechange
+        UpdateCreature(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
     }
 
     void UpdateCreature(Creature* creature, uint32_t new_level, float nerf_rate = 0, float additional_nerf_rate = 0)
@@ -684,7 +683,8 @@ public:
             creatureInfo->original_health = creature->GetMaxHealth();
             creatureInfo->original_armor = creature->GetArmor();
 
-            // log nerf rates
+            // log changes
+            creatureInfo->new_level = new_level;
             creatureInfo->nerf_rate = nerf_rate;
             creatureInfo->additional_nerf_rate = additional_nerf_rate;
 
@@ -727,13 +727,12 @@ public:
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
 
         // calc proper health and armor
-        uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
-        uint32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
+        //uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
+        //int32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
 
         // log calculations
-        creatureInfo->new_level = new_level;
-        creatureInfo->new_health = new_health;
-        creatureInfo->new_armor = new_armor;
+        //creatureInfo->new_health = new_health;
+        //creatureInfo->new_armor = new_armor;
 
         /*
         // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
