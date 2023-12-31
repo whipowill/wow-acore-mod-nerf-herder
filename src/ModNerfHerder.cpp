@@ -628,7 +628,7 @@ public:
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
 
         // if creature is already altered, bail...
-        if (creatureInfo->is_altered && creature->GetMaxHealth() == creatureInfo->new_health) return;
+        if (creatureInfo->is_altered) return;
         //if (creature->HasAura(89501)) return; // if has HP nerf already
 
         // if first time...
@@ -707,7 +707,7 @@ public:
         creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
-        //creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
+        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
 
         // log that changes were made
         creatureInfo->is_altered = 1;
@@ -722,6 +722,22 @@ public:
 
         // catch errors
         if (!NerfHerder_Enabled) return;
+
+        // load info
+        NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
+
+        // if health is whack...
+        if (creatureInfo->is_altered)
+        {
+            if (creature->GetMaxHealth() > creatureInfo->new_health)
+            {
+                // unmark
+                creatureInfo->is_altered = 0;
+
+                // reset level
+                creature->SetLevel(creatureInfo->original_level);
+            }
+        }
 
         // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
 
