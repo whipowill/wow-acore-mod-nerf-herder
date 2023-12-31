@@ -632,11 +632,12 @@ public:
         // if this creature is untouched...
         if (!creatureInfo->is_altered) return;
 
-        // if this creature has no new health value...
-        if (!creatureInfo->new_health) return;
-
         // if this creature doesn't have wrong health...
         if (creature->GetMaxHealth() < creatureInfo->original_health) return;
+
+        // The reason we even check for a necessary reset on the nerf is bc
+        // when a guard exits combat and he lived, he resets his own health
+        // and he ignores the nerf limitation completely.
 
         // nerf auras
         uint32_t HpAura = 89501;
@@ -655,7 +656,7 @@ public:
         creature->RemoveAura(PhysicalDamageTakenAura);
 
         // reset level
-        creature->SetLevel(creatureInfo->original_level);
+        //creature->SetLevel(creatureInfo->original_level);
 
         // unmark as having been touched
         creatureInfo->is_altered = 0;
