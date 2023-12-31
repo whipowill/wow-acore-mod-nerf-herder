@@ -623,11 +623,6 @@ class NerfHerderCreature : public AllCreatureScript
 public:
     NerfHerderCreature() : AllCreatureScript("NerfHerderCreature") {}
 
-    void OnCreatureRemoveWorld(Creature* creature) override
-    {
-        creature->CustomData.Erase("NerfHerderCreatureInfo");
-    }
-
     void OnAllCreatureUpdate(Creature* creature, uint32 /*diff*/) override
     {
         ProcessCreature(creature);
@@ -636,7 +631,7 @@ public:
     void ResetCreature(Creature* creature)
     {
         // if not evading, bail... (we only reset after a fight)
-        if (!creature->IsInEvadeMode()) return;
+        if (!creature->IsInEvadeMode() && !creature->isDead()) return;
 
         // load info
         NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
@@ -646,6 +641,16 @@ public:
 
         // if it's been less than 10 seconds since last reset, bail...
         if (NerfHerderHelper::GetTime() - creatureInfo->last_reset < 10) return;
+
+        // amend logs
+        creatureInfo->is_altered = 0;
+        creatureInfo->last_reset = NerfHerderHelper::GetTime();
+
+        // if this is a dead creature situation...
+        if (creature->isDead())
+        {
+            return; // go no further
+        }
 
         // The reason we even check for a necessary reset on the nerf is bc
         // when a guard exits combat and he lived, he resets his own health
@@ -669,10 +674,6 @@ public:
 
         // reset level
         creature->SetLevel(creatureInfo->original_level); // happens so fast you never see it
-
-        // amend logs
-        creatureInfo->is_altered = 0;
-        creatureInfo->last_reset = NerfHerderHelper::GetTime();
 
         // force rechange
         UpdateCreature(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
@@ -735,13 +736,13 @@ public:
         int32_t negative_multiplier = static_cast<int>(multiplier);
         int32_t negative_hp_multiplier = static_cast<int>(hp_multiplier);
 
-        // some armor calculations
-        int32_t armor_reduction = static_cast<int>(negative_multiplier * -1);
-        //int32_t armor_reduction = static_cast<int>((creatureInfo->original_armor / ([467.5 * new_level] + creatureInfo->original_armor - 22167.5)) * 100);
-
         // just in case something goes wrong
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
+
+        // some armor calculations
+        int32_t armor_reduction = static_cast<int>(negative_multiplier * -1);
+        //int32_t armor_reduction = static_cast<int>((creatureInfo->original_armor / ([467.5 * new_level] + creatureInfo->original_armor - 22167.5)) * 100);
 
         // calc proper health and armor
         //uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
@@ -772,7 +773,7 @@ public:
         uint32_t BaseStatAPAura = 89503;
         uint32_t AbsorbAura = 89505;
         uint32_t HealingDoneAura = 89506;
-        uint32_t PhysicalDamageTakenAura = 89507;
+        //uint32_t PhysicalDamageTakenAura = 89507;
 
         // nerf their damage done, base stats, absorbsion, and healing done
         creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
@@ -780,7 +781,7 @@ public:
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &armor_reduction, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &armor_reduction, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
