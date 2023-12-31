@@ -634,7 +634,7 @@ public:
         {
             if (creatureInfo->new_health)
             {
-                if (creature->GetMaxHealth() > creatureInfo->new_health)
+                if (creature->GetHealth() > creatureInfo->new_health)
                 {
                     // nerf auras
                     uint32_t HpAura = 89501;
