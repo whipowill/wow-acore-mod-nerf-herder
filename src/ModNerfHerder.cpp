@@ -641,12 +641,12 @@ public:
                     uint32_t PhysicalDamageTakenAura = 89507;
 
                     // remove auras
-                    player->RemoveAura(HpAura);
-                    player->RemoveAura(DamageDoneTakenAura);
-                    player->RemoveAura(BaseStatAPAura);
-                    player->RemoveAura(AbsorbAura);
-                    player->RemoveAura(HealingDoneAura);
-                    player->RemoveAura(PhysicalDamageTakenAura);
+                    creature->RemoveAura(HpAura);
+                    creature->RemoveAura(DamageDoneTakenAura);
+                    creature->RemoveAura(BaseStatAPAura);
+                    creature->RemoveAura(AbsorbAura);
+                    creature->RemoveAura(HealingDoneAura);
+                    creature->RemoveAura(PhysicalDamageTakenAura);
 
                     // reset level
                     creature->SetLevel(creatureInfo->original_level);
