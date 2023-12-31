@@ -632,6 +632,9 @@ public:
         // if this creature is untouched...
         if (!creatureInfo->is_altered) return;
 
+        // if this creature has no new health value...
+        if (!creatureInfo->original_health) return;
+
         // if this creature doesn't have wrong health...
         if (creature->GetMaxHealth() < creatureInfo->original_health) return;
 
