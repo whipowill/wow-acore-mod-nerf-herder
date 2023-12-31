@@ -623,9 +623,9 @@ class NerfHerderCreature : public AllCreatureScript
 public:
     NerfHerderCreature() : AllCreatureScript("NerfHerderCreature") {}
 
-    void OnCreatureAddWorld(Creature* creature) override
+    void OnCreatureRemoveWorld(Creature* creature) override
     {
-        //NerfHerderHelper::ProcessCreature(creature);
+        creature->CustomData.Erase("NerfHerderCreatureInfo");
     }
 
     void OnAllCreatureUpdate(Creature* creature, uint32 /*diff*/) override
@@ -733,8 +733,11 @@ public:
 
         // convert to int
         int32_t negative_multiplier = static_cast<int>(multiplier);
-        int32_t positive_multiplier = static_cast<int>(negative_multiplier * -1);
         int32_t negative_hp_multiplier = static_cast<int>(hp_multiplier);
+
+        // some armor calculations
+        int32_t armor_reduction = static_cast<int>(negative_multiplier * -1);
+        //int32_t armor_reduction = static_cast<int>((creatureInfo->original_armor / ([467.5 * new_level] + creatureInfo->original_armor - 22167.5)) * 100);
 
         // just in case something goes wrong
         if (negative_multiplier > 0) negative_multiplier = 0;
@@ -777,7 +780,7 @@ public:
         creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
         creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &positive_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &armor_reduction, NULL, NULL, true, NULL, NULL, creature->GetGUID());
 
         // set new level
         creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
