@@ -868,7 +868,7 @@ public:
                     if (creature->GetLevel() > max_level)
                     {
                         // nerf em
-                        UpdateCreature(creature, max_level, NerfHerder_NerfRate);
+                        UpdateCreature(creature, max_level); // don't add additional nerf to these guys
                     }
                 }
             }
