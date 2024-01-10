@@ -919,7 +919,7 @@ public:
             for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
             {
                 Player* target = itr->GetSource();
-                if (target && target->IsInMap(player) && group->SameSubGroup(player, target))
+                if (target && $target != player && target->IsInMap(player) && group->SameSubGroup(player, target))
                     RewardHonor(player, killed);
             }
         }
@@ -935,7 +935,7 @@ public:
             for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
             {
                 Player* target = itr->GetSource();
-                if (target && target->IsInMap(player) && group->SameSubGroup(player, target))
+                if (target && $target != player && target->IsInMap(player) && group->SameSubGroup(player, target))
                     RewardHonor(player, killed);
             }
         }
