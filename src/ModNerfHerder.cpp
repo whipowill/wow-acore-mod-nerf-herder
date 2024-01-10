@@ -8,7 +8,6 @@
 #include "Creature.h"
 #include "Player.h"
 #include "Pet.h"
-#include "Group.h"
 #include "Chat.h"
 #include <unordered_map>
 #include <ctime>
@@ -935,8 +934,6 @@ public:
                     float honor_f = (float)honor; //Convert honor to float for calculations
                     player->UpdateHonorFields();
 
-                    int groupsize = GetNumInGroup(player); //Determine if it was a gang beatdown
-
                     //Determine level that is gray
                     uint8 k_level = player->getLevel();
                     uint8 k_grey = Acore::XP::GetGrayLevel(k_level);
@@ -970,10 +967,6 @@ public:
 
                         if (killed != nullptr)
                         {
-                            //A Gang beatdown of an enemy rewards less honor
-                            if (groupsize > 1)
-                                honor_f /= groupsize;
-
                             // apply honor multiplier from aura (not stacking-get highest)
                             AddPct(honor_f, player->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HONOR_GAIN_PCT));
                         }
@@ -1014,7 +1007,7 @@ public:
                         if (NerfHerder_Honor_PlunderEnabled)
                         {
                             uint32_t currentmoney = player->GetMoney();
-                            uint32_t givenmoney = (v_level * NerfHerder_Honor_PlunderAmountPerLevel) / groupsize; // the creature's level in silver
+                            uint32_t givenmoney = (v_level * NerfHerder_Honor_PlunderAmountPerLevel); // the creature's level in silver
 
                             // Seed the random number generator
                             std::random_device rd;
@@ -1041,19 +1034,6 @@ public:
                 }
             }
         }
-    }
-
-    // Get the player's group size
-    int GetNumInGroup(Player* player)
-    {
-        int numInGroup = 1;
-        Group *group = player->GetGroup();
-        if (group)
-        {
-            Group::MemberSlotList const& groupMembers = group->GetMemberSlots();
-            numInGroup = groupMembers.size();
-        }
-        return numInGroup;
     }
 };
 
