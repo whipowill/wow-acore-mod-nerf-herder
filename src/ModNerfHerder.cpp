@@ -8,6 +8,7 @@
 #include "Creature.h"
 #include "Player.h"
 #include "Pet.h"
+#include "Group.h"
 #include "Chat.h"
 #include <unordered_map>
 #include <ctime>
@@ -911,11 +912,33 @@ public:
     void OnCreatureKill(Player* player, Creature* killed)  //override
     {
         RewardHonor(player, killed);
+
+        // add honor to teammates
+        if (Group* group = player->GetGroup())
+        {
+            for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+            {
+                Player* target = itr->GetSource();
+                if (target && target->IsInMap(player) && group->SameSubGroup(player, target))
+                    RewardHonor(player, killed);
+            }
+        }
     }
 
     void OnCreatureKilledByPet(Player* player, Creature* killed) //override
     {
         RewardHonor(player, killed);
+
+        // add honor to teammates
+        if (Group* group = player->GetGroup())
+        {
+            for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+            {
+                Player* target = itr->GetSource();
+                if (target && target->IsInMap(player) && group->SameSubGroup(player, target))
+                    RewardHonor(player, killed);
+            }
+        }
     }
 
     void RewardHonor(Player* player, Creature* killed)
