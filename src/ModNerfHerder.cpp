@@ -142,7 +142,7 @@ public:
         double maxPercentage = 1.0;
 
         // Generate a random percentage
-        std::uniform_real_distribution<> dis(minPercentage, maxPercentage);
+        std::uniform_real_distribution<double> dis(minPercentage, maxPercentage);
         double randomNumber = dis(gen);
 
         // if we don't roll to trigger world buff, bail
@@ -1008,7 +1008,7 @@ public:
                             double maxPercentage = 1.2; // 120%
 
                             // Generate a random percentage
-                            std::uniform_real_distribution<> dis(minPercentage, maxPercentage);
+                            std::uniform_real_distribution<double> dis(minPercentage, maxPercentage);
                             double randomPercentage = dis(gen);
 
                             // Apply the random percentage to modify givenmoney

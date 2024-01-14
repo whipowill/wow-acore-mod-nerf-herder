@@ -38,7 +38,7 @@ NerfHerder.Honor.PlunderAmountPerLevel = 50
 # give world buff on kills, 0=off 1=on
 NerfHerder.WorldBuff.Enabled = 1
 
-# number of kills to accumulate to get world buff (1.0=100% chance)
+# change on kill to get world buff (1.0=100% chance)
 NerfHerder.WorldBuff.KillChance = 0.01
 
 # time cooldown before world buff can be gained again (in minutes, should apply to entire server)
