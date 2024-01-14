@@ -16,6 +16,7 @@
 
 uint32_t NerfHerder_Enabled = 0;
 float NerfHerder_NerfRate = 0;
+float NerfHerder_EliteNerfRate = 0;
 uint32_t NerfHerder_PlayerLevelEnabled = 0;
 uint32_t NerfHerder_ZoneLevelEnabled = 0;
 uint32_t NerfHerder_HidePvPVendorsEnabled = 0;
@@ -60,6 +61,7 @@ public:
         NerfHerder_MaxPlayerLevel = sConfigMgr->GetOption<int>("MaxPlayerLevel", 80); // <-- from worldserver.conf
         NerfHerder_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Enabled", 0);
         NerfHerder_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.NerfRate", 0);
+        NerfHerder_EliteNerfRate = sConfigMgr->GetOption<float>("NerfHerder.EliteNerfRate", 0);
         NerfHerder_PlayerLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.PlayerLevelEnabled", 0);
         NerfHerder_ZoneLevelEnabled = sConfigMgr->GetOption<int>("NerfHerder.ZoneLevelEnabled", 0);
         NerfHerder_ForcePvPEnabled = sConfigMgr->GetOption<int>("NerfHerder.ForcePvPEnabled", 0);
@@ -702,6 +704,12 @@ public:
         // calc nerf multiplier (negative)
         float multiplier = -100 + (ratio * 100);
 
+        // if elite...
+        if (creature->isElite())
+        {
+            multiplier = multiplier - (NerfHerder_EliteNerfRate * (100 + multiplier)); // elites get nerfed harder
+        }
+
         // some assumptions here:
         // the proportional difference between a lvl 80 and lvl 60 is 25%, but
         // the dmg done by a lvl 80 is not only 25% higher than a lvl 60, it's
@@ -728,6 +736,8 @@ public:
         // just in case something goes wrong
         if (negative_multiplier > 0) negative_multiplier = 0;
         if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
+        if (negative_multiplier < -100) negative_multiplier = -100;
+        if (negative_hp_multiplier < -100) negative_hp_multiplier = -100;
 
         // some armor calculations
         int32_t armor_reduction = static_cast<int>(negative_multiplier * -1);

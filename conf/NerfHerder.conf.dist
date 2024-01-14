@@ -8,6 +8,12 @@ NerfHerder.Enabled = 1
 # 0.2=npcs are 20% weaker
 NerfHerder.NerfRate = 0.5
 
+# any extra punishment for elites?  (effects dmg done and not health)
+# 0=no additional nerf
+# 0.2=npcs do 20% less dmg
+# 0.2=npcs do 50% less dmg
+NerfHerder.EliteNerfRate = 0.5
+
 # nerf any creature over max player level, 0=off 1=on
 NerfHerder.PlayerLevelEnabled = 1
 
@@ -38,8 +44,8 @@ NerfHerder.Honor.PlunderAmountPerLevel = 50
 # give world buff on kills, 0=off 1=on
 NerfHerder.WorldBuff.Enabled = 1
 
-# change on kill to get world buff (1.0=100% chance)
-NerfHerder.WorldBuff.KillChance = 0.01
+# chance on kill to get world buff (1.0=100% chance)
+NerfHerder.WorldBuff.KillChance = 0.1
 
 # time cooldown before world buff can be gained again (in minutes, should apply to entire server)
 NerfHerder.WorldBuff.Cooldown = 60
