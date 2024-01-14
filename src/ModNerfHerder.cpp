@@ -28,17 +28,15 @@ uint32_t NerfHerder_Honor_PlunderEnabled = 0;
 uint32_t NerfHerder_Honor_PlunderAmountPerLevel = 0;
 uint32_t NerfHerder_MaxPlayerLevel = 80;
 uint32_t NerfHerder_WorldBuff_Enabled = 0;
-uint32_t NerfHerder_WorldBuff_KillCount = 0;
+float NerfHerder_WorldBuff_KillChance = 0;
 uint32_t NerfHerder_WorldBuff_Cooldown = 0;
 uint32_t NerfHerder_WorldBuff_SpellId_01 = 0;
 uint32_t NerfHerder_WorldBuff_SpellId_02 = 0;
 uint32_t NerfHerder_WorldBuff_SpellId_03 = 0;
 uint32_t NerfHerder_WorldBuff_Alliance_LastKillTime = 0;
 uint32_t NerfHerder_WorldBuff_Alliance_LastBuffTime = 0;
-uint32_t NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastKillTime = 0;
 uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
-uint32_t NerfHerder_WorldBuff_Horde_LastKillCount = 0;
 uint32_t NerfHerder_WorldEvent_Enabled = 0;
 uint32_t NerfHerder_WorldEvent_HealthThreshold = 0;
 float NerfHerder_WorldEvent_NerfRate = 0;
@@ -72,7 +70,7 @@ public:
         NerfHerder_Honor_PlunderEnabled = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderEnabled", 0);
         NerfHerder_Honor_PlunderAmountPerLevel = sConfigMgr->GetOption<int>("NerfHerder.Honor.PlunderAmountPerLevel", 0);
         NerfHerder_WorldBuff_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Enabled", 0);
-        NerfHerder_WorldBuff_KillCount = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.KillCount", 0);
+        NerfHerder_WorldBuff_KillChance = sConfigMgr->GetOption<float>("NerfHerder.WorldBuff.KillChance", 0);
         NerfHerder_WorldBuff_Cooldown = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.Cooldown", 0);
         NerfHerder_WorldBuff_SpellId_01 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.01", 0);
         NerfHerder_WorldBuff_SpellId_02 = sConfigMgr->GetOption<int>("NerfHerder.WorldBuff.SpellId.02", 0);
@@ -135,23 +133,27 @@ public:
         // log the time
         uint32_t timestamp = std::time(nullptr);
 
+        // Seed the random number generator
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        // Define the range for random percentage
+        double minPercentage = 0.0;
+        double maxPercentage = 1.0;
+
+        // Generate a random percentage
+        std::uniform_real_distribution<> dis(minPercentage, maxPercentage);
+        double randomNumber = dis(gen);
+
+        // if we don't roll to trigger world buff, bail
+        if (randomNumber > NerfHerder_WorldBuff_KillChance)
+            return;
+
         // flight checks
         if (player->GetTeamId() == TEAM_ALLIANCE)
         {
             // has it been enough time since last world buff?  if not, bail
             if ((timestamp - NerfHerder_WorldBuff_Alliance_LastBuffTime) < (NerfHerder_WorldBuff_Cooldown * 60))
-                return;
-
-            // do we need to reset the faction kill count?
-            if ((timestamp - NerfHerder_WorldBuff_Alliance_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
-                NerfHerder_WorldBuff_Alliance_LastKillCount = 0;
-
-            // update faction kill count
-            NerfHerder_WorldBuff_Alliance_LastKillTime = timestamp;
-            NerfHerder_WorldBuff_Alliance_LastKillCount++;
-
-            // have we achieved enough kills?  if not, bail
-            if (NerfHerder_WorldBuff_Alliance_LastKillCount < NerfHerder_WorldBuff_KillCount)
                 return;
 
             // at this point, we are going to world buff so log it
@@ -161,18 +163,6 @@ public:
         {
             // has it been enough time since last world buff?  if not, bail
             if ((timestamp - NerfHerder_WorldBuff_Horde_LastBuffTime) < (NerfHerder_WorldBuff_Cooldown * 60))
-                return;
-
-            // do we need to reset the faction kill count?
-            if ((timestamp - NerfHerder_WorldBuff_Horde_LastKillTime) >= (NerfHerder_WorldBuff_Cooldown * 60))
-                NerfHerder_WorldBuff_Horde_LastKillCount = 0;
-
-            // update faction kill count
-            NerfHerder_WorldBuff_Horde_LastKillTime = timestamp;
-            NerfHerder_WorldBuff_Horde_LastKillCount++;
-
-            // have we achieved enough kills?  if not, bail
-            if (NerfHerder_WorldBuff_Horde_LastKillCount < NerfHerder_WorldBuff_KillCount)
                 return;
 
             // at this point, we are going to world buff so log it
