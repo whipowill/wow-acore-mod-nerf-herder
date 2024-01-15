@@ -923,6 +923,9 @@ public:
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Honor_Enabled) return;
 
+        // catch errors
+        if (player->GetMap()->IsDungeon() || player->GetMap()->IsRaid() || player->GetMap()->IsBattleground()) return;
+
         if (player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
         {
             if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
