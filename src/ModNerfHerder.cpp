@@ -41,9 +41,10 @@ uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
 uint32_t NerfHerder_WorldEvent_Enabled = 0;
 uint32_t NerfHerder_WorldEvent_HealthThreshold = 0;
 float NerfHerder_WorldEvent_NerfRate = 0;
-uint32_t NerfHerder_NPCBots_XPEnabled = 0;
+uint32_t NerfHerder_Battleground_Enabled = 0;
 float NerfHerder_Battleground_DamageRate = 0;
 float NerfHerder_Battleground_HealingRate = 0;
+uint32_t NerfHerder_NPCBots_XPEnabled = 0;
 
 class NerfHerderConfig : public WorldScript
 {
@@ -84,6 +85,7 @@ public:
         NerfHerder_WorldEvent_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.Enabled", 0);
         NerfHerder_WorldEvent_HealthThreshold = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.HealthThreshold", 100000);
         NerfHerder_WorldEvent_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.WorldEvent.NerfRate", 0);
+        NerfHerder_Battleground_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.Enabled", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
