@@ -687,6 +687,9 @@ public:
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_NPCBots_XPEnabled) return;
 
+        // if not battleground, bail
+        if (!player->GetMap()->IsBattleground()) return;
+
         // Calculate and grant XP to the player
         uint32 xpReward = (creature->getLevel() * 200) / (player->getLevel() + 1);
         player->GiveXP(xpReward, creature);
