@@ -674,11 +674,11 @@ public:
         // if in battleground...
         if (creature->GetMap()->IsBattleground())
         {
-            NerfHerderHelper::UpdateCreatureBattleground(creature);
+            NerfHerderHelper::UpdatePlayerBattleground(creature);
         }
         else
         {
-            NerfHerderHelper::ResetCreatureBattleground(creature);
+            NerfHerderHelper::ResetPlayerBattleground(creature);
         }
     }
 
