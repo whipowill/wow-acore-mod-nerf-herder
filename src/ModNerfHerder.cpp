@@ -617,7 +617,7 @@ public:
         if (!NerfHerder_Battleground_Enabled) return;
 
         // if in battleground...
-        if (creature->GetMap()->IsBattleground())
+        if (creature->GetMap()->IsBattleground() || creature->InArena())
         {
             NerfHerderHelper::UpdateCreatureBattleground(creature);
         }
@@ -672,7 +672,7 @@ public:
         if (!NerfHerder_Battleground_Enabled) return;
 
         // if in battleground...
-        if (creature->GetMap()->IsBattleground())
+        if (creature->GetMap()->IsBattleground() || creature->InArena())
         {
             NerfHerderHelper::UpdatePlayerBattleground(creature);
         }
@@ -688,11 +688,14 @@ public:
         if (!NerfHerder_NPCBots_XPEnabled) return;
 
         // if not battleground, bail
-        if (!player->GetMap()->IsBattleground()) return;
+        if (!player->GetMap()->IsBattleground() && !player->InArena()) return;
 
-        // Calculate and grant XP to the player
-        uint32 xpReward = (creature->getLevel() * 200) / (player->getLevel() + 1);
-        player->GiveXP(xpReward, creature);
+        if (player->IsAlive())
+        {
+            // Calculate and grant XP to the player
+            uint32 xpReward = (creature->getLevel() * 200) / (player->getLevel() + 1);
+            player->GiveXP(xpReward, creature);
+        }
     }
 
     static void RewardHonor(Player* player, Creature* killed)
@@ -705,9 +708,9 @@ public:
         // https://github.com/azerothcore/mod-gain-honor-guard/blob/master/src/GainHonorGuard.cpp
 
         // catch errors
-        if (player->GetMap()->IsDungeon() || player->GetMap()->IsRaid() || player->GetMap()->IsBattleground()) return;
+        if (player->GetMap()->IsDungeon() || player->GetMap()->IsRaid() || player->GetMap()->IsBattleground() || player->InArena()) return;
 
-        if (player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
+        if (player->IsAlive() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
         {
             if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
             {
