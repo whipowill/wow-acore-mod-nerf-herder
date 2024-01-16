@@ -689,7 +689,7 @@ public:
 
         // Calculate and grant XP to the player
         uint32 xpReward = (creature->getLevel() * 200) / (player->getLevel() + 1);
-        player->GiveXP(xpReward, creature->GetGUID(), true);
+        player->GiveXP(xpReward, creature);
     }
 
     static void RewardHonor(Player* player, Creature* killed)
