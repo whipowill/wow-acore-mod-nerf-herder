@@ -71,3 +71,12 @@ NerfHerder.WorldEvent.NerfRate = 0.9
 
 # hide TBC and WOTLK pvp vendors if appropriate (based on max player level), 0=off 1=on
 NerfHerder.HidePvPVendorsEnabled = 1
+
+# if forcing npcbots to give experience (temp feature)
+NerfHerder.NPCBots.XPEnabled = 1
+
+# nerf how much dmg and healing allowed in battlegrounds (to match chromiecraft rules)
+# 0.7 = 70% normal
+NerfHerder.Battleground.Enabled = 1
+NerfHerder.Battleground.DamageRate = 0.7
+NerfHerder.Battleground.HealingRate = 0.8

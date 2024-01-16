@@ -41,6 +41,9 @@ uint32_t NerfHerder_WorldBuff_Horde_LastBuffTime = 0;
 uint32_t NerfHerder_WorldEvent_Enabled = 0;
 uint32_t NerfHerder_WorldEvent_HealthThreshold = 0;
 float NerfHerder_WorldEvent_NerfRate = 0;
+uint32_t NerfHerder_NPCBots_XPEnabled = 0;
+float NerfHerder_Battleground_DamageRate = 0;
+float NerfHerder_Battleground_HealingRate = 0;
 
 class NerfHerderConfig : public WorldScript
 {
@@ -81,6 +84,9 @@ public:
         NerfHerder_WorldEvent_Enabled = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.Enabled", 0);
         NerfHerder_WorldEvent_HealthThreshold = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.HealthThreshold", 100000);
         NerfHerder_WorldEvent_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.WorldEvent.NerfRate", 0);
+        NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
+        NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
+        NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
     }
 };
 
@@ -285,6 +291,528 @@ public:
     {
         // number of seconds
         return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    }
+
+    static void ResetCreatureWorld(Creature* creature)
+    {
+        // if not evading, bail... (we only reset after a fight)
+        if (!creature->IsInEvadeMode() && !creature->isDead()) return;
+
+        // load info
+        NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
+
+        // if not a modified creature, bail...
+        if (!creatureInfo->is_altered) return;
+
+        // if it's been less than 10 seconds since last reset, bail...
+        if (NerfHerderHelper::GetTime() - creatureInfo->last_reset < 10) return;
+
+        // amend logs
+        creatureInfo->is_altered = 0;
+        creatureInfo->last_reset = NerfHerderHelper::GetTime();
+
+        // if this is a dead creature situation...
+        if (creature->isDead())
+        {
+            return; // go no further
+        }
+
+        // The reason we even check for a necessary reset on the nerf is bc
+        // when a guard exits combat and he lived, he resets his own health
+        // and he ignores the nerf limitation completely.
+
+        // nerf auras
+        uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        uint32_t PhysicalDamageTakenAura = 89507;
+
+        // remove auras
+        creature->RemoveAura(HpAura);
+        creature->RemoveAura(DamageDoneTakenAura);
+        creature->RemoveAura(BaseStatAPAura);
+        creature->RemoveAura(AbsorbAura);
+        creature->RemoveAura(HealingDoneAura);
+        creature->RemoveAura(PhysicalDamageTakenAura);
+
+        // reset level
+        creature->SetLevel(creatureInfo->original_level); // happens so fast you never see it
+
+        // force rechange
+        NerfHerderHelper::UpdateCreatureWorld(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
+    }
+
+    static void UpdateCreatureWorld(Creature* creature, uint32_t new_level, float nerf_rate = 0, float additional_nerf_rate = 0)
+    {
+        // load info
+        NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
+
+        // if creature is already altered, bail...
+        if (creatureInfo->is_altered) return;
+        //if (creature->HasAura(89501)) return; // if has HP nerf already
+
+        // if first time...
+        if (creatureInfo->is_brand_new)
+        {
+            // log original numbers
+            creatureInfo->original_level = creature->GetLevel();
+            creatureInfo->original_health = creature->GetMaxHealth();
+            creatureInfo->original_armor = creature->GetArmor();
+
+            // log changes
+            creatureInfo->new_level = new_level;
+            creatureInfo->nerf_rate = nerf_rate;
+            creatureInfo->additional_nerf_rate = additional_nerf_rate;
+
+            // mark as not new anymore
+            creatureInfo->is_brand_new = 0;
+        }
+
+        // calc proportional level change
+        float ratio = static_cast<float>(new_level) / static_cast<float>(creatureInfo->original_level);
+
+        // calc nerf multiplier (negative)
+        float multiplier = -100 + (ratio * 100);
+
+        // if elite...
+        if (creature->isElite())
+        {
+            multiplier = multiplier - (NerfHerder_EliteNerfRate * (100 + multiplier)); // elites get nerfed harder
+        }
+
+        // some assumptions here:
+        // the proportional difference between a lvl 80 and lvl 60 is 25%, but
+        // the dmg done by a lvl 80 is not only 25% higher than a lvl 60, it's
+        // probably closer to 3x as much!  so our nerf needs to not be a linear
+        // or proportional nerf, it needs to curve.
+        // AT THE PRESENT TIME I WILL DO NOTHING
+        // https://us.forums.blizzard.com/en/wow/t/a-look-back-at-health-values/587645
+
+        // calc custom hp nerf (extra nerfs only apply to health, not damage)
+        float hp_multiplier = -100 + (ratio * 100);
+        if (creatureInfo->nerf_rate > 0)
+        {
+            hp_multiplier = hp_multiplier - (creatureInfo->nerf_rate * (100 + hp_multiplier));
+        }
+        if (creatureInfo->additional_nerf_rate > 0)
+        {
+            hp_multiplier = hp_multiplier - (creatureInfo->additional_nerf_rate * (100 + hp_multiplier));
+        }
+
+        // convert to int
+        int32_t negative_multiplier = static_cast<int>(multiplier);
+        int32_t negative_hp_multiplier = static_cast<int>(hp_multiplier);
+
+        // just in case something goes wrong
+        if (negative_multiplier > 0) negative_multiplier = 0;
+        if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
+        if (negative_multiplier < -100) negative_multiplier = -100;
+        if (negative_hp_multiplier < -100) negative_hp_multiplier = -100;
+
+        // some armor calculations
+        //int32_t armor_reduction = static_cast<int>(negative_multiplier * -1);
+        //int32_t armor_reduction = static_cast<int>((creatureInfo->original_armor / ([467.5 * new_level] + creatureInfo->original_armor - 22167.5)) * 100);
+
+        // calc proper health and armor
+        //uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
+        //int32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
+
+        // log calculations
+        //creatureInfo->new_health = new_health;
+        //creatureInfo->new_armor = new_armor;
+
+        /*
+        // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
+
+        // health
+        creature->SetCreateHealth(new_health);
+        creature->SetMaxHealth(new_health);
+        creature->SetHealth(new_health);
+        creature->ResetPlayerDamageReq();
+        creature->SetModifierValue(UNIT_MOD_HEALTH, BASE_VALUE, (float)new_health);
+
+        // armor
+        creature->SetArmor(new_armor);
+        creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
+        */
+
+        // nerf auras
+        uint32_t HpAura = 89501;
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t BaseStatAPAura = 89503;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+        //uint32_t PhysicalDamageTakenAura = 89507;
+
+        // nerf their damage done, base stats, absorbsion, and healing done
+        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &armor_reduction, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+
+        // set new level
+        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
+
+        // amend logs
+        creatureInfo->is_altered = 1;
+    }
+
+    static void ProcessCreatureWorld(Creature* creature)
+    {
+        // catch errors
+        if (!creature) return;
+        if (creature->IsPlayer()) return;
+        if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground() || creature->GetMap()->IsArena()) return;
+
+        // catch errors
+        if (!NerfHerder_Enabled) return;
+
+        // reset
+        NerfHerderHelper::ResetCreatureWorld(creature);
+
+        // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
+
+        // init
+        uint32_t max_level;
+
+        // determine alliance / horde npcs in the world
+        uint32_t is_field_agent = NerfHerderHelper::IsFieldAgent(creature);
+
+        // if nerfing high health npcs...
+        if (NerfHerder_WorldEvent_Enabled)
+        {
+            // if npc has high health...
+            if (creature->GetMaxHealth() > NerfHerder_WorldEvent_HealthThreshold)
+            {
+                // start off w/ no level change
+                max_level = creature->GetLevel();
+
+                // if we are enforcing level limits...
+                if (NerfHerder_PlayerLevelEnabled)
+                {
+                    // set appropriate level
+                    max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
+                }
+
+                // nerf them harder than normal
+                NerfHerderHelper::UpdateCreatureWorld(creature, max_level, NerfHerder_NerfRate, NerfHerder_WorldEvent_NerfRate);
+            }
+        }
+
+        // if max player level is enabled...
+        if (NerfHerder_PlayerLevelEnabled)
+        {
+            // what is max level allowed
+            max_level = NerfHerder_MaxPlayerLevel;
+
+            // if valid
+            if (max_level && max_level >= 10)
+            {
+                // if creature is too high...
+                if (creature->GetLevel() > max_level)
+                {
+                    // calc new max level
+                    max_level = creature->isElite() ? max_level : max_level - 5;
+
+                    // nerf em
+                    NerfHerderHelper::UpdateCreatureWorld(creature, max_level, NerfHerder_NerfRate);
+                }
+            }
+        }
+
+        // if max zone level is enabled...
+        if (NerfHerder_ZoneLevelEnabled)
+        {
+            if (is_field_agent)
+            {
+                // get max level for zone
+                max_level = NerfHerderHelper::GetZoneLevel(creature);
+
+                // if valid
+                if (max_level && max_level >= 10)
+                {
+                    // if creature is too high...
+                    if (creature->GetLevel() > max_level)
+                    {
+                        // nerf em
+                        NerfHerderHelper::UpdateCreatureWorld(creature, max_level); // don't add additional nerf to these guys
+                    }
+                }
+            }
+        }
+
+        // if force pvp is enabled...
+        if (NerfHerder_ForcePvPEnabled)
+        {
+            if (is_field_agent)
+            {
+                // force them to be pvp
+                creature->SetPvP(true);
+            }
+        }
+
+        // if hiding pvp vendors...
+        if (NerfHerder_HidePvPVendorsEnabled)
+        {
+            if (NerfHerderHelper::IsPvPVendor(creature))
+            {
+                // This "hiding" method works, but not if you are a GM.
+                // That means the characters aren't really removed from the game?
+                // Also not sure how this might effect world PvP.
+
+                // hide them
+                creature->SetVisible(false);
+            }
+        }
+    }
+
+    static void ResetCreatureBattleground(Creature* creature)
+    {
+        if (!creature->HasAura(89502)) return;
+
+        // nerf auras
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+
+        // remove auras
+        creature->RemoveAura(DamageDoneTakenAura);
+        creature->RemoveAura(AbsorbAura);
+        creature->RemoveAura(HealingDoneAura);
+    }
+
+    static void UpdateCreatureBattleground(Creature* creature)
+    {
+        // if already debuffed, bail
+        if (creature->HasAura(89502)) return;
+
+        // calc
+        int32_t negative_multiplier_damage = static_cast<int>(-100 + (100 * NerfHerder_Battleground_DamageRate));
+        int32_t negative_multiplier_healing = static_cast<int>(-100 + (100 * NerfHerder_Battleground_HealingRate));
+
+        // nerf auras
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+
+        // add debuffs
+        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier_damage, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier_healing, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier_healing, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+    }
+
+    static void ProcessCreatureBattleground(Creature* creature)
+    {
+        // catch errors
+        if (!creature) return;
+
+        // catch errors
+        if (!NerfHerder_Enabled) return;
+        if (!NerfHerder_Battleground_Enabled) return;
+
+        // if in battleground...
+        if (creature->GetMap()->IsBattleground() || creature->GetMap()->IsArena())
+        {
+            NerfHerderHelper::UpdateCreatureBattleground(creature);
+        }
+        else
+        {
+            NerfHerderHelper::ResetCreatureBattleground(creature);
+        }
+    }
+
+    static void ResetPlayerBattleground(Player* creature)
+    {
+        if (!creature->HasAura(89502)) return;
+
+        // nerf auras
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+
+        // remove auras
+        creature->RemoveAura(DamageDoneTakenAura);
+        creature->RemoveAura(AbsorbAura);
+        creature->RemoveAura(HealingDoneAura);
+    }
+
+    static void UpdatePlayerBattleground(Player* creature)
+    {
+        // if already debuffed, bail
+        if (creature->HasAura(89502)) return;
+
+        // calc
+        int32_t negative_multiplier_damage = static_cast<int>(-100 + (100 * NerfHerder_Battleground_DamageRate));
+        int32_t negative_multiplier_healing = static_cast<int>(-100 + (100 * NerfHerder_Battleground_HealingRate));
+
+        // nerf auras
+        uint32_t DamageDoneTakenAura = 89502;
+        uint32_t AbsorbAura = 89505;
+        uint32_t HealingDoneAura = 89506;
+
+        // add debuffs
+        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier_damage, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier_healing, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+        creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier_healing, NULL, NULL, true, NULL, NULL, creature->GetGUID());
+    }
+
+    static void ProcessPlayerBattleground(Player* creature)
+    {
+        // catch errors
+        if (!creature) return;
+
+        // catch errors
+        if (!NerfHerder_Enabled) return;
+        if (!NerfHerder_Battleground_Enabled) return;
+
+        // if in battleground...
+        if (creature->GetMap()->IsBattleground() || creature->GetMap()->IsArena())
+        {
+            NerfHerderHelper::UpdateCreatureBattleground(creature);
+        }
+        else
+        {
+            NerfHerderHelper::ResetCreatureBattleground(creature);
+        }
+    }
+
+    static void RewardXP(Player* player, Creature* creature)
+    {
+        if (!NerfHerder_Enabled) return;
+        if (!NerfHerder_NPCBots_XPEnabled) return;
+
+        // Calculate and grant XP to the player
+        uint32 xpReward = (creature->getLevel() * 200) / (player->getLevel() + 1);
+        player->GiveXP(xpReward, creature->GetGUID(), true);
+    }
+
+    static void RewardHonor(Player* player, Creature* killed)
+    {
+        if (!NerfHerder_Enabled) return;
+        if (!NerfHerder_Honor_Enabled) return;
+
+        // This was all taken straight from HonorGuard mod, but tweaked to
+        // give honor on any pvp flagged creature.
+        // https://github.com/azerothcore/mod-gain-honor-guard/blob/master/src/GainHonorGuard.cpp
+
+        // catch errors
+        if (player->GetMap()->IsDungeon() || player->GetMap()->IsRaid() || player->GetMap()->IsBattleground()) return;
+
+        if (player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
+        {
+            if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
+            {
+                if ((NerfHerder_Honor_Enabled && killed->ToCreature()->IsPvP()))
+                {
+                    std::ostringstream ss;
+                    int honor = -1; //Honor is added as an int
+                    float honor_f = (float)honor; //Convert honor to float for calculations
+                    player->UpdateHonorFields();
+
+                    //Determine level that is gray
+                    uint8 k_level = player->getLevel();
+                    uint8 k_grey = Acore::XP::GetGrayLevel(k_level);
+                    uint8 v_level = killed->getLevel();
+
+                    // handle grey override setting
+                    float honor_multiplier = NerfHerder_Honor_Rate;
+                    if (v_level <= k_grey) // if npc was too low
+                    {
+                        if (NerfHerder_Honor_GreyEnabled)
+                        {
+                            v_level = k_grey + 1; // treat npc as just above limit
+                            honor_multiplier = NerfHerder_Honor_GreyRate;
+                        }
+                    }
+
+                    // If guard or elite is grey to the player then no honor rewarded
+                    if (v_level > k_grey)
+                    {
+                        honor_f = ceil(Acore::Honor::hk_honor_at_level_f(k_level) * (v_level - k_grey) / (k_level - k_grey));
+
+                        // count the number of playerkills in one day
+                        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
+                        // and those in a lifetime
+                        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS, killed->getClass());
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_RACE, killed->getRace());
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL, 1, 0, killed);
+
+                        if (killed != nullptr)
+                        {
+                            // apply honor multiplier from aura (not stacking-get highest)
+                            AddPct(honor_f, player->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HONOR_GAIN_PCT));
+                        }
+
+                        //Custom Gain Honor Rate
+                        if (honor_multiplier)
+                        {
+                            honor_f *= honor_multiplier;
+                        }
+                        else
+                        {
+                            honor_f *= sWorld->getRate(RATE_HONOR);
+                        }
+
+                        //sLog->outError("%u: gained honor with a rate: %0.2f", player->GetGUID(), sWorld->getRate(RATE_HONOR));
+
+                        // Convert Honor Back to an int to add to player
+                        honor = int32(honor_f);
+
+                        //Not sure if this works.
+                        WorldPacket data(SMSG_PVP_CREDIT, 4 + 8 + 4);
+                        data << honor;
+
+                        // add honor points to player
+                        player->ModifyHonorPoints(honor);
+
+                        player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
+
+                        // announce to player if honor was gained
+                        uint32_t is_chat_enable = 0; // not a fan atm
+                        if (is_chat_enable)
+                        {
+                            ss << "You have been awarded |cff4CFF00%i |rHonor.";
+                            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
+                        }
+
+                        // give plunder
+                        if (NerfHerder_Honor_PlunderEnabled)
+                        {
+                            uint32_t currentmoney = player->GetMoney();
+                            uint32_t givenmoney = (v_level * NerfHerder_Honor_PlunderAmountPerLevel); // the creature's level in silver
+
+                            // Seed the random number generator
+                            std::random_device rd;
+                            std::mt19937 gen(rd());
+
+                            // Define the range for random percentage (±20%)
+                            double minPercentage = 0.8; // 80%
+                            double maxPercentage = 1.2; // 120%
+
+                            // Generate a random percentage
+                            std::uniform_real_distribution<double> dis(minPercentage, maxPercentage);
+                            double randomPercentage = dis(gen);
+
+                            // Apply the random percentage to modify givenmoney
+                            uint32_t modifiedmoney = static_cast<uint32_t>(givenmoney * randomPercentage);
+
+                            // give them reward
+                            player->SetMoney(currentmoney + modifiedmoney);
+                        }
+
+                        // apply world buff (if applicable)
+                        NerfHerderHelper::ApplyWorldBuff(player);
+                    }
+                }
+            }
+        }
     }
 };
 
@@ -616,286 +1144,11 @@ public:
 
     void OnAllCreatureUpdate(Creature* creature, uint32 /*diff*/) override
     {
-        ProcessCreature(creature);
-    }
+        // add any blanket debuffs (only effects world)
+        NerfHerderHelper::ProcessCreatureWorld(creature);
 
-    void ResetCreature(Creature* creature)
-    {
-        // if not evading, bail... (we only reset after a fight)
-        if (!creature->IsInEvadeMode() && !creature->isDead()) return;
-
-        // load info
-        NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
-
-        // if not a modified creature, bail...
-        if (!creatureInfo->is_altered) return;
-
-        // if it's been less than 10 seconds since last reset, bail...
-        if (NerfHerderHelper::GetTime() - creatureInfo->last_reset < 10) return;
-
-        // amend logs
-        creatureInfo->is_altered = 0;
-        creatureInfo->last_reset = NerfHerderHelper::GetTime();
-
-        // if this is a dead creature situation...
-        if (creature->isDead())
-        {
-            return; // go no further
-        }
-
-        // The reason we even check for a necessary reset on the nerf is bc
-        // when a guard exits combat and he lived, he resets his own health
-        // and he ignores the nerf limitation completely.
-
-        // nerf auras
-        uint32_t HpAura = 89501;
-        uint32_t DamageDoneTakenAura = 89502;
-        uint32_t BaseStatAPAura = 89503;
-        uint32_t AbsorbAura = 89505;
-        uint32_t HealingDoneAura = 89506;
-        uint32_t PhysicalDamageTakenAura = 89507;
-
-        // remove auras
-        creature->RemoveAura(HpAura);
-        creature->RemoveAura(DamageDoneTakenAura);
-        creature->RemoveAura(BaseStatAPAura);
-        creature->RemoveAura(AbsorbAura);
-        creature->RemoveAura(HealingDoneAura);
-        creature->RemoveAura(PhysicalDamageTakenAura);
-
-        // reset level
-        creature->SetLevel(creatureInfo->original_level); // happens so fast you never see it
-
-        // force rechange
-        UpdateCreature(creature, creatureInfo->new_level, creatureInfo->nerf_rate, creatureInfo->additional_nerf_rate);
-    }
-
-    void UpdateCreature(Creature* creature, uint32_t new_level, float nerf_rate = 0, float additional_nerf_rate = 0)
-    {
-        if (!creature) return;
-
-        // load info
-        NerfHerderCreatureInfo *creatureInfo = creature->CustomData.GetDefault<NerfHerderCreatureInfo>("NerfHerderCreatureInfo");
-
-        // if creature is already altered, bail...
-        if (creatureInfo->is_altered) return;
-        //if (creature->HasAura(89501)) return; // if has HP nerf already
-
-        // if first time...
-        if (creatureInfo->is_brand_new)
-        {
-            // log original numbers
-            creatureInfo->original_level = creature->GetLevel();
-            creatureInfo->original_health = creature->GetMaxHealth();
-            creatureInfo->original_armor = creature->GetArmor();
-
-            // log changes
-            creatureInfo->new_level = new_level;
-            creatureInfo->nerf_rate = nerf_rate;
-            creatureInfo->additional_nerf_rate = additional_nerf_rate;
-
-            // mark as not new anymore
-            creatureInfo->is_brand_new = 0;
-        }
-
-        // calc proportional level change
-        float ratio = static_cast<float>(new_level) / static_cast<float>(creatureInfo->original_level);
-
-        // calc nerf multiplier (negative)
-        float multiplier = -100 + (ratio * 100);
-
-        // if elite...
-        if (creature->isElite())
-        {
-            multiplier = multiplier - (NerfHerder_EliteNerfRate * (100 + multiplier)); // elites get nerfed harder
-        }
-
-        // some assumptions here:
-        // the proportional difference between a lvl 80 and lvl 60 is 25%, but
-        // the dmg done by a lvl 80 is not only 25% higher than a lvl 60, it's
-        // probably closer to 3x as much!  so our nerf needs to not be a linear
-        // or proportional nerf, it needs to curve.
-        // AT THE PRESENT TIME I WILL DO NOTHING
-        // https://us.forums.blizzard.com/en/wow/t/a-look-back-at-health-values/587645
-
-        // calc custom hp nerf (extra nerfs only apply to health, not damage)
-        float hp_multiplier = -100 + (ratio * 100);
-        if (creatureInfo->nerf_rate > 0)
-        {
-            hp_multiplier = hp_multiplier - (creatureInfo->nerf_rate * (100 + hp_multiplier));
-        }
-        if (creatureInfo->additional_nerf_rate > 0)
-        {
-            hp_multiplier = hp_multiplier - (creatureInfo->additional_nerf_rate * (100 + hp_multiplier));
-        }
-
-        // convert to int
-        int32_t negative_multiplier = static_cast<int>(multiplier);
-        int32_t negative_hp_multiplier = static_cast<int>(hp_multiplier);
-
-        // just in case something goes wrong
-        if (negative_multiplier > 0) negative_multiplier = 0;
-        if (negative_hp_multiplier > 0) negative_hp_multiplier = 0;
-        if (negative_multiplier < -100) negative_multiplier = -100;
-        if (negative_hp_multiplier < -100) negative_hp_multiplier = -100;
-
-        // some armor calculations
-        int32_t armor_reduction = static_cast<int>(negative_multiplier * -1);
-        //int32_t armor_reduction = static_cast<int>((creatureInfo->original_armor / ([467.5 * new_level] + creatureInfo->original_armor - 22167.5)) * 100);
-
-        // calc proper health and armor
-        //uint32_t new_health = creatureInfo->original_health * (1 - ((-1 * negative_hp_multiplier) / 100));
-        //int32_t new_armor = creatureInfo->original_armor * (1 - ((-1 * negative_multiplier) / 100)); // not using negative_hp_multiplier
-
-        // log calculations
-        //creatureInfo->new_health = new_health;
-        //creatureInfo->new_armor = new_armor;
-
-        /*
-        // the following health and armor technique comes from autobalance mod (way more complicated than it should be)
-
-        // health
-        creature->SetCreateHealth(new_health);
-        creature->SetMaxHealth(new_health);
-        creature->SetHealth(new_health);
-        creature->ResetPlayerDamageReq();
-        creature->SetModifierValue(UNIT_MOD_HEALTH, BASE_VALUE, (float)new_health);
-
-        // armor
-        creature->SetArmor(new_armor);
-        creature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, (float)new_armor);
-        */
-
-        // nerf auras
-        uint32_t HpAura = 89501;
-        uint32_t DamageDoneTakenAura = 89502;
-        uint32_t BaseStatAPAura = 89503;
-        uint32_t AbsorbAura = 89505;
-        uint32_t HealingDoneAura = 89506;
-        //uint32_t PhysicalDamageTakenAura = 89507;
-
-        // nerf their damage done, base stats, absorbsion, and healing done
-        creature->CastCustomSpell(creature, HpAura, &negative_hp_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, DamageDoneTakenAura, 0, &negative_multiplier, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, BaseStatAPAura, &negative_multiplier, &negative_multiplier, &negative_multiplier, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, AbsorbAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        creature->CastCustomSpell(creature, HealingDoneAura, &negative_multiplier, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-        //creature->CastCustomSpell(creature, PhysicalDamageTakenAura, &armor_reduction, NULL, NULL, true, NULL, NULL, creature->GetGUID());
-
-        // set new level
-        creature->SetLevel(new_level, false); // flag false to bypass any hooray animations
-
-        // amend logs
-        creatureInfo->is_altered = 1;
-    }
-
-    void ProcessCreature(Creature* creature)
-    {
-        // catch errors
-        if (!creature) return;
-        if (creature->IsPlayer()) return;
-        if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground()) return;
-
-        // catch errors
-        if (!NerfHerder_Enabled) return;
-
-        // reset
-        ResetCreature(creature);
-
-        // Notes to self -- this code will only ever nerf an NPC a single time, subsequent attempts will fail.
-
-        // init
-        uint32_t max_level;
-
-        // determine alliance / horde npcs in the world
-        uint32_t is_field_agent = NerfHerderHelper::IsFieldAgent(creature);
-
-        // if nerfing high health npcs...
-        if (NerfHerder_WorldEvent_Enabled)
-        {
-            // if npc has high health...
-            if (creature->GetMaxHealth() > NerfHerder_WorldEvent_HealthThreshold)
-            {
-                // start off w/ no level change
-                max_level = creature->GetLevel();
-
-                // if we are enforcing level limits...
-                if (NerfHerder_PlayerLevelEnabled)
-                {
-                    // set appropriate level
-                    max_level = creature->GetLevel() > NerfHerder_MaxPlayerLevel ? NerfHerder_MaxPlayerLevel : creature->GetLevel();
-                }
-
-                // nerf them harder than normal
-                UpdateCreature(creature, max_level, NerfHerder_NerfRate, NerfHerder_WorldEvent_NerfRate);
-            }
-        }
-
-        // if max player level is enabled...
-        if (NerfHerder_PlayerLevelEnabled)
-        {
-            // what is max level allowed
-            max_level = NerfHerder_MaxPlayerLevel;
-
-            // if valid
-            if (max_level && max_level >= 10)
-            {
-                // if creature is too high...
-                if (creature->GetLevel() > max_level)
-                {
-                    // calc new max level
-                    max_level = creature->isElite() ? max_level : max_level - 5;
-
-                    // nerf em
-                    UpdateCreature(creature, max_level, NerfHerder_NerfRate);
-                }
-            }
-        }
-
-        // if max zone level is enabled...
-        if (NerfHerder_ZoneLevelEnabled)
-        {
-            if (is_field_agent)
-            {
-                // get max level for zone
-                max_level = NerfHerderHelper::GetZoneLevel(creature);
-
-                // if valid
-                if (max_level && max_level >= 10)
-                {
-                    // if creature is too high...
-                    if (creature->GetLevel() > max_level)
-                    {
-                        // nerf em
-                        UpdateCreature(creature, max_level); // don't add additional nerf to these guys
-                    }
-                }
-            }
-        }
-
-        // if force pvp is enabled...
-        if (NerfHerder_ForcePvPEnabled)
-        {
-            if (is_field_agent)
-            {
-                // force them to be pvp
-                creature->SetPvP(true);
-            }
-        }
-
-        // if hiding pvp vendors...
-        if (NerfHerder_HidePvPVendorsEnabled)
-        {
-            if (NerfHerderHelper::IsPvPVendor(creature))
-            {
-                // This "hiding" method works, but not if you are a GM.
-                // That means the characters aren't really removed from the game?
-                // Also not sure how this might effect world PvP.
-
-                // hide them
-                creature->SetVisible(false);
-            }
-        }
+        // add any blanket debuffs (only effects battlegrounds and arenas)
+        NerfHerderHelper::ProcessCreatureBattleground(creature);
     }
 };
 
@@ -904,139 +1157,28 @@ class NerfHerderPlayer : public PlayerScript
 public:
     NerfHerderPlayer() : PlayerScript("NerfHerderPlayer") {}
 
-    // This was all taken straight from HonorGuard mod, but tweaked to
-    // give honor on any pvp flagged creature.
-    // https://github.com/azerothcore/mod-gain-honor-guard/blob/master/src/GainHonorGuard.cpp
+    void OnUpdate(Player* player, uint32 p_time)
+    {
+        // add any blanket debuffs (only effects battlegrounds and arenas)
+        NerfHerderHelper::ProcessPlayerBattleground(player);
+    }
 
     void OnCreatureKill(Player* player, Creature* killed)  //override
     {
-        RewardHonor(player, killed);
+        // only effects world
+        NerfHerderHelper::RewardHonor(player, killed);
+
+        // only effects battlegrounds
+        NerfHerderHelper::RewardXP(player, killed);
     }
 
     void OnCreatureKilledByPet(Player* player, Creature* killed) //override
     {
-        RewardHonor(player, killed);
-    }
+        // only effects world
+        NerfHerderHelper::RewardHonor(player, killed);
 
-    void RewardHonor(Player* player, Creature* killed)
-    {
-        if (!NerfHerder_Enabled) return;
-        if (!NerfHerder_Honor_Enabled) return;
-
-        // catch errors
-        if (player->GetMap()->IsDungeon() || player->GetMap()->IsRaid() || player->GetMap()->IsBattleground()) return;
-
-        if (player->IsAlive() && !player->InArena() && !player->HasAura(SPELL_AURA_PLAYER_INACTIVE))
-        {
-            if (killed || !killed->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
-            {
-                if ((NerfHerder_Honor_Enabled && killed->ToCreature()->IsPvP()))
-                {
-                    std::ostringstream ss;
-                    int honor = -1; //Honor is added as an int
-                    float honor_f = (float)honor; //Convert honor to float for calculations
-                    player->UpdateHonorFields();
-
-                    //Determine level that is gray
-                    uint8 k_level = player->getLevel();
-                    uint8 k_grey = Acore::XP::GetGrayLevel(k_level);
-                    uint8 v_level = killed->getLevel();
-
-                    // handle grey override setting
-                    float honor_multiplier = NerfHerder_Honor_Rate;
-                    if (v_level <= k_grey) // if npc was too low
-                    {
-                        if (NerfHerder_Honor_GreyEnabled)
-                        {
-                            v_level = k_grey + 1; // treat npc as just above limit
-                            honor_multiplier = NerfHerder_Honor_GreyRate;
-                        }
-                    }
-
-                    // If guard or elite is grey to the player then no honor rewarded
-                    if (v_level > k_grey)
-                    {
-                        honor_f = ceil(Acore::Honor::hk_honor_at_level_f(k_level) * (v_level - k_grey) / (k_level - k_grey));
-
-                        // count the number of playerkills in one day
-                        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
-                        // and those in a lifetime
-                        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
-                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
-                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS, killed->getClass());
-                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_RACE, killed->getRace());
-                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
-                        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL, 1, 0, killed);
-
-                        if (killed != nullptr)
-                        {
-                            // apply honor multiplier from aura (not stacking-get highest)
-                            AddPct(honor_f, player->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HONOR_GAIN_PCT));
-                        }
-
-                        //Custom Gain Honor Rate
-                        if (honor_multiplier)
-                        {
-                            honor_f *= honor_multiplier;
-                        }
-                        else
-                        {
-                            honor_f *= sWorld->getRate(RATE_HONOR);
-                        }
-
-                        //sLog->outError("%u: gained honor with a rate: %0.2f", player->GetGUID(), sWorld->getRate(RATE_HONOR));
-
-                        // Convert Honor Back to an int to add to player
-                        honor = int32(honor_f);
-
-                        //Not sure if this works.
-                        WorldPacket data(SMSG_PVP_CREDIT, 4 + 8 + 4);
-                        data << honor;
-
-                        // add honor points to player
-                        player->ModifyHonorPoints(honor);
-
-                        player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
-
-                        // announce to player if honor was gained
-                        uint32_t is_chat_enable = 0; // not a fan atm
-                        if (is_chat_enable)
-                        {
-                            ss << "You have been awarded |cff4CFF00%i |rHonor.";
-                            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
-                        }
-
-                        // give plunder
-                        if (NerfHerder_Honor_PlunderEnabled)
-                        {
-                            uint32_t currentmoney = player->GetMoney();
-                            uint32_t givenmoney = (v_level * NerfHerder_Honor_PlunderAmountPerLevel); // the creature's level in silver
-
-                            // Seed the random number generator
-                            std::random_device rd;
-                            std::mt19937 gen(rd());
-
-                            // Define the range for random percentage (±20%)
-                            double minPercentage = 0.8; // 80%
-                            double maxPercentage = 1.2; // 120%
-
-                            // Generate a random percentage
-                            std::uniform_real_distribution<double> dis(minPercentage, maxPercentage);
-                            double randomPercentage = dis(gen);
-
-                            // Apply the random percentage to modify givenmoney
-                            uint32_t modifiedmoney = static_cast<uint32_t>(givenmoney * randomPercentage);
-
-                            // give them reward
-                            player->SetMoney(currentmoney + modifiedmoney);
-                        }
-
-                        // apply world buff (if applicable)
-                        NerfHerderHelper::ApplyWorldBuff(player);
-                    }
-                }
-            }
-        }
+        // only effects battlegrounds
+        NerfHerderHelper::RewardXP(player, killed);
     }
 };
 
