@@ -466,7 +466,7 @@ public:
         // catch errors
         if (!creature) return;
         if (creature->IsPlayer()) return;
-        if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground() || creature->GetMap()->IsArena()) return;
+        if (creature->GetMap()->IsDungeon() || creature->GetMap()->IsRaid() || creature->GetMap()->IsBattleground()) return;
 
         // catch errors
         if (!NerfHerder_Enabled) return;
@@ -615,7 +615,7 @@ public:
         if (!NerfHerder_Battleground_Enabled) return;
 
         // if in battleground...
-        if (creature->GetMap()->IsBattleground() || creature->GetMap()->IsArena())
+        if (creature->GetMap()->IsBattleground())
         {
             NerfHerderHelper::UpdateCreatureBattleground(creature);
         }
@@ -670,7 +670,7 @@ public:
         if (!NerfHerder_Battleground_Enabled) return;
 
         // if in battleground...
-        if (creature->GetMap()->IsBattleground() || creature->GetMap()->IsArena())
+        if (creature->GetMap()->IsBattleground())
         {
             NerfHerderHelper::UpdateCreatureBattleground(creature);
         }
