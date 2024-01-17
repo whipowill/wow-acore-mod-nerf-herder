@@ -880,34 +880,38 @@ public:
 
         if (NerfHerder_Battleground_RepReward)
         {
-            uint32 faction_id = 0;
-            switch (bg->GetMapId())
+            // if winner...
+            if (player->GetTeamId() == winnerTeamId)
             {
-                case MAP_BG_WARSONG_GULCH:
-                    faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 890 : 889;
-                    break;
-                case MAP_BG_ARATHI_BASIN:
-                    faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 509 : 510;
-                    break;
-                case MAP_BG_ALTERAC_VALLEY:
-                    faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 730 : 729;
-                    break;
-                case RATE_XP_BG_KILL_EOTS:
-                    faction_id = 0;
-                    break;
-                case MAP_BG_STRAND_OF_THE_ANCIENTS:
-                    faction_id = 0;
-                    break;
-                case MAP_BG_ISLE_OF_CONQUEST:
-                    faction_id = 0;
-                    break;
-            }
+                uint32 faction_id = 0;
+                switch (bg->GetMapId())
+                {
+                    case MAP_BG_WARSONG_GULCH:
+                        faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 890 : 889;
+                        break;
+                    case MAP_BG_ARATHI_BASIN:
+                        faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 509 : 510;
+                        break;
+                    case MAP_BG_ALTERAC_VALLEY:
+                        faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 730 : 729;
+                        break;
+                    case RATE_XP_BG_KILL_EOTS:
+                        faction_id = 0;
+                        break;
+                    case MAP_BG_STRAND_OF_THE_ANCIENTS:
+                        faction_id = 0;
+                        break;
+                    case MAP_BG_ISLE_OF_CONQUEST:
+                        faction_id = 0;
+                        break;
+                }
 
-            if (faction_id)
-            {
-                // get current rep
-                uint32 current = player->GetReputation(faction_id);
-                player->SetReputation(faction_id, current + NerfHerder_Battleground_RepReward);
+                if (faction_id)
+                {
+                    // get current rep
+                    uint32 current = player->GetReputation(faction_id);
+                    player->SetReputation(faction_id, current + NerfHerder_Battleground_RepReward);
+                }
             }
         }
     }

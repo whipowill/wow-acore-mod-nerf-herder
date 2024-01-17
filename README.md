@@ -11,6 +11,7 @@ An AzerothCore module for nerfing NPCs en masse for various purposes.
 - Nerf battleground damage and healing (like ChromieCraft)
 - Allow NPCBots to give XP in battlegrounds (temp fix for that mod)
 - Grant extra honor kills as reward for winning battlegrounds
+- Grant extra reputation as reward for winning battlegrounds
 
 Does not affect world database.  Does not affect dungeons or raids.
 
