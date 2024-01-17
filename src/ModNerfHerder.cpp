@@ -825,7 +825,7 @@ public:
         }
     }
 
-    static void RewardHonorableKill(Player* player, Unit* victim)
+    static void RewardHonorableKill(Player* player, Unit* /*victim*/)
     {
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Battleground_Enabled) return;
@@ -1213,7 +1213,7 @@ class NerfHerderPlayer : public PlayerScript
 public:
     NerfHerderPlayer() : PlayerScript("NerfHerderPlayer") {}
 
-    void OnUpdate(Player* player, uint32 p_time)
+    void OnUpdate(Player* player, uint32 /*p_time*/)
     {
         // add any blanket debuffs (only effects battlegrounds and arenas)
         NerfHerderHelper::ProcessPlayerBattleground(player);
@@ -1238,7 +1238,7 @@ public:
     }
 
     //void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
-    void OnGiveHonorPoints(Player* player, float& honor, Unit* victim)
+    void OnGiveHonorPoints(Player* player, float& /*honor*/, Unit* victim)
     {
         NerfHerderHelper::RewardHonorableKill(player, victim);
     }
