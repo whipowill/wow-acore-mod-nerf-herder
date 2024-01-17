@@ -42,6 +42,7 @@ uint32_t NerfHerder_WorldEvent_Enabled = 0;
 uint32_t NerfHerder_WorldEvent_HealthThreshold = 0;
 float NerfHerder_WorldEvent_NerfRate = 0;
 uint32_t NerfHerder_Battleground_Enabled = 0;
+uint32_t NerfHerder_Battleground_CountHKEnabled = 0;
 float NerfHerder_Battleground_DamageRate = 0;
 float NerfHerder_Battleground_HealingRate = 0;
 uint32_t NerfHerder_NPCBots_XPEnabled = 0;
@@ -86,6 +87,7 @@ public:
         NerfHerder_WorldEvent_HealthThreshold = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.HealthThreshold", 100000);
         NerfHerder_WorldEvent_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.WorldEvent.NerfRate", 0);
         NerfHerder_Battleground_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.Enabled", 0);
+        NerfHerder_Battleground_CountHKEnabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.CountHKEnabled", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
@@ -822,6 +824,32 @@ public:
             }
         }
     }
+
+    static void RewardHonorableKills(Player* player, Battleground* bg)
+    {
+        if (!NerfHerder_Enabled) return;
+        if (!NerfHerder_Battleground_Enabled) return;
+        if (!NerfHerder_Battleground_CountHKEnabled) return;
+
+        // if not battleground, bail
+        if (!player->GetMap()->IsBattleground()) return;
+
+        // load bg data
+        BattlegroundData bgData = player->GetBattlegroundData();
+
+        uint32 killingBlows = bgData.KillingBlows;
+        uint32 honorableKills = bgData.honorableKills;
+
+        uint32 count = honorableKills - killingBlows;
+
+        // amend stats
+        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, count, true);
+        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, count, true);
+
+        // trigger achieves
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+    }
 };
 
 std::unordered_map<uint32_t, VendorData> NerfHerderHelper::vendorDataMap = {
@@ -1187,6 +1215,11 @@ public:
 
         // only effects battlegrounds
         NerfHerderHelper::RewardXP(player, killed);
+    }
+
+    void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
+    {
+        NerfHerderHelper::RewardHonorableKills(player, bg);
     }
 };
 

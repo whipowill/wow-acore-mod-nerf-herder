@@ -80,3 +80,6 @@ NerfHerder.NPCBots.XPEnabled = 1
 NerfHerder.Battleground.Enabled = 1
 NerfHerder.Battleground.DamageRate = 0.7
 NerfHerder.Battleground.HealingRate = 0.8
+
+# changes battlegrounds to add "honorable kills" to your total lifetime kill count
+NerfHerder.Battleground.CountHKEnabled = 1
