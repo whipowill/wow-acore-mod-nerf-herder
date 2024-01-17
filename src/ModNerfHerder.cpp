@@ -650,7 +650,7 @@ public:
         if (creature->HasAura(89502)) return;
 
         // calc
-        int32_t negative_multiplier_damage = static_cast<int>(-100 + (100 * NerfHerder_Battleground_DamageRate));
+        int32_t negative_multiplier_dscoreamage = static_cast<int>(-100 + (100 * NerfHerder_Battleground_DamageRate));
         int32_t negative_multiplier_healing = static_cast<int>(-100 + (100 * NerfHerder_Battleground_HealingRate));
 
         // nerf auras
@@ -835,20 +835,28 @@ public:
         if (!player->GetMap()->IsBattleground()) return;
 
         // load bg data
-        BattlegroundData bgData = player->GetBattlegroundData();
+        BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
+        auto const& score = bgScores->find(player->GetGUID().GetCounter());
 
-        uint32 killingBlows = bgData.KillingBlows;
-        uint32 honorableKills = bgData.honorableKills;
+        if (score != bgScores->end())
+        {
+            uint32 killingBlows = score->second->GetKillingBlows();
+            uint32 honorableKills = score->second->GetHonorableKills();
 
-        uint32 count = honorableKills - killingBlows;
+            uint32 count = honorableKills - killingBlows;
 
-        // amend stats
-        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, count, true);
-        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, count, true);
+            // amend stats
+            player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, count, true);
+            player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, count, true);
 
-        // trigger achieves
-        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
-        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+            // trigger achieves
+            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+        }
+        else
+        {
+            // player scores not found
+        }
     }
 };
 
