@@ -81,5 +81,5 @@ NerfHerder.Battleground.Enabled = 1
 NerfHerder.Battleground.DamageRate = 0.7
 NerfHerder.Battleground.HealingRate = 0.8
 
-# add addition incentive to win w/ extra honorable kills
+# add additional incentive to win w/ extra honorable kills (0=off)
 NerfHerder.Battleground.HKReward = 100

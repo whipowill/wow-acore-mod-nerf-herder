@@ -835,7 +835,7 @@ public:
         if (!player->GetMap()->IsBattleground()) return;
 
         // if winner...
-        if (bg->GetWinner() == player->GetTeam())
+        if (bg->GetWinner() == player->GetTeamId())
         {
             // amend stats
             player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, NerfHerder_Battleground_HKReward, true);
