@@ -834,15 +834,14 @@ public:
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
 
-        // this was attempt at using final score of bg but it uses protected methods...
         // load bg data
         Battleground::BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
         auto const& score = bgScores->find(player->GetGUID().GetCounter());
 
         if (score != bgScores->end())
         {
-            uint32 killingBlows = score->second.KillingBlows;
-            uint32 honorableKills = score->second.HonorableKills;
+            uint32 killingBlows = score->second->KillingBlows;
+            uint32 honorableKills = score->second->HonorableKills;
 
             uint32 count = honorableKills - killingBlows;
 
