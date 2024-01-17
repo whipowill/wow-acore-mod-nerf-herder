@@ -832,7 +832,7 @@ public:
         if (!NerfHerder_Battleground_HKReward) return;
 
         // if not battleground, bail
-        if (!player->GetMap()->IsBattleground()) return;
+        //if (!player->GetMap()->IsBattleground()) return;
 
         // determine winner
         uint32_t team_id = GetPvPTeamId(player->GetTeamId());
