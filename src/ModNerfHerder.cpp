@@ -825,7 +825,7 @@ public:
         }
     }
 
-    static void RewardHonorableKills(Battleground* bg, Player* player, TeamId winnerTeamId)
+    static void RewardHonorableKills(Player* player, TeamId winnerTeamId)
     {
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Battleground_Enabled) return;
@@ -1247,9 +1247,9 @@ class NerfHerderBattleground: public AllBattlegroundScript
 public:
     NerfHerderBattleground() : AllBattlegroundScript("NerfHerderBattleground") {}
 
-    void OnBattlegroundEndReward(Battleground* bg, Player* player, TeamId winnerTeamId)
+    void OnBattlegroundEndReward(Battleground* /*bg*/, Player* player, TeamId winnerTeamId)
     {
-        NerfHerderHelper::RewardHonorableKills(bg, player, winnerTeamId);
+        NerfHerderHelper::RewardHonorableKills(player, winnerTeamId);
     }
 };
 
