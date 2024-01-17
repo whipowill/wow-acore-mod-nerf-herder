@@ -825,7 +825,7 @@ public:
         }
     }
 
-    static void RewardHonorableKills(Player* player, Battleground* bg)
+    static void RewardHonorableKill(Player* player, Unit* victim)
     {
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Battleground_Enabled) return;
@@ -834,6 +834,16 @@ public:
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
 
+        // amend stats
+        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
+        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
+
+        // trigger achieves
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+
+        /*
+        // this was attempt at using final score of bg but it needs protected methods...
         // load bg data
         Battleground::BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
         auto const& score = bgScores->find(player->GetGUID().GetCounter());
@@ -857,6 +867,8 @@ public:
         {
             // player scores not found
         }
+        */
+
     }
 };
 
@@ -1225,9 +1237,10 @@ public:
         NerfHerderHelper::RewardXP(player, killed);
     }
 
-    void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
+    //void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
+    void OnGiveHonorPoints(Player* player, float& honor, Unit* victim)
     {
-        NerfHerderHelper::RewardHonorableKills(player, bg);
+        NerfHerderHelper::RewardHonorableKill(player, victim);
     }
 };
 
