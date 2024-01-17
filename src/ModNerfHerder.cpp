@@ -834,8 +834,11 @@ public:
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
 
+        // determine winner
+        uint32_t is_win = (bg->GetWinner() == PVP_TEAM_HORDE && player->GetTeamId() == PVP_TEAM_HORDE) || (bg->GetWinner() == PVP_TEAM_ALLIANCE && player->GetTeamId() == PVP_TEAM_ALLIANCE) ? 1 : 0;
+
         // if winner...
-        if (bg->GetWinner() == player->GetTeamId())
+        if (is_win)
         {
             // amend stats
             player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, NerfHerder_Battleground_HKReward, true);
