@@ -42,7 +42,7 @@ uint32_t NerfHerder_WorldEvent_Enabled = 0;
 uint32_t NerfHerder_WorldEvent_HealthThreshold = 0;
 float NerfHerder_WorldEvent_NerfRate = 0;
 uint32_t NerfHerder_Battleground_Enabled = 0;
-uint32_t NerfHerder_Battleground_CountHKEnabled = 0;
+uint32_t NerfHerder_Battleground_HKReward = 0;
 float NerfHerder_Battleground_DamageRate = 0;
 float NerfHerder_Battleground_HealingRate = 0;
 uint32_t NerfHerder_NPCBots_XPEnabled = 0;
@@ -87,7 +87,7 @@ public:
         NerfHerder_WorldEvent_HealthThreshold = sConfigMgr->GetOption<int>("NerfHerder.WorldEvent.HealthThreshold", 100000);
         NerfHerder_WorldEvent_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.WorldEvent.NerfRate", 0);
         NerfHerder_Battleground_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.Enabled", 0);
-        NerfHerder_Battleground_CountHKEnabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.CountHKEnabled", 0);
+        NerfHerder_Battleground_HKReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HKReward", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
@@ -829,10 +829,25 @@ public:
     {
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Battleground_Enabled) return;
-        if (!NerfHerder_Battleground_CountHKEnabled) return;
+        if (!NerfHerder_Battleground_HKReward) return;
 
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
+
+        // if winner...
+        if (bg->GetWinner() == player->GetTeam())
+        {
+            // amend stats
+            player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, NerfHerder_Battleground_HKReward, true);
+            player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, NerfHerder_Battleground_HKReward, true);
+
+            // trigger achieves
+            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+        }
+
+        /*
+        // can't use this code bc the data is protected in the class
 
         // load bg data
         Battleground::BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
@@ -857,6 +872,7 @@ public:
         {
             // player scores not found
         }
+        */
     }
 };
 
