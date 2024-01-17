@@ -619,7 +619,7 @@ public:
         if (!NerfHerder_Battleground_Enabled) return;
 
         // if in battleground...
-        if (creature->GetMap()->IsBattleground() || creature->InArena())
+        if (creature->GetMap()->IsBattleground())
         {
             NerfHerderHelper::UpdateCreatureBattleground(creature);
         }
