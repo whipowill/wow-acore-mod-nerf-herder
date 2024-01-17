@@ -650,7 +650,7 @@ public:
         if (creature->HasAura(89502)) return;
 
         // calc
-        int32_t negative_multiplier_dscoreamage = static_cast<int>(-100 + (100 * NerfHerder_Battleground_DamageRate));
+        int32_t negative_multiplier_damage = static_cast<int>(-100 + (100 * NerfHerder_Battleground_DamageRate));
         int32_t negative_multiplier_healing = static_cast<int>(-100 + (100 * NerfHerder_Battleground_HealingRate));
 
         // nerf auras
