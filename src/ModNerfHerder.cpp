@@ -43,6 +43,7 @@ uint32_t NerfHerder_WorldEvent_HealthThreshold = 0;
 float NerfHerder_WorldEvent_NerfRate = 0;
 uint32_t NerfHerder_Battleground_Enabled = 0;
 uint32_t NerfHerder_Battleground_HKReward = 0;
+uint32_t NerfHerder_Battleground_RepReward = 0;
 float NerfHerder_Battleground_DamageRate = 0;
 float NerfHerder_Battleground_HealingRate = 0;
 uint32_t NerfHerder_NPCBots_XPEnabled = 0;
@@ -88,6 +89,7 @@ public:
         NerfHerder_WorldEvent_NerfRate = sConfigMgr->GetOption<float>("NerfHerder.WorldEvent.NerfRate", 0);
         NerfHerder_Battleground_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.Enabled", 0);
         NerfHerder_Battleground_HKReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HKReward", 0);
+        NerfHerder_Battleground_RepReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.RepReward", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
@@ -690,7 +692,7 @@ public:
         if (!NerfHerder_NPCBots_XPEnabled) return;
 
         // if not battleground, bail
-        if (!player->GetMap()->IsBattleground() && !player->InArena()) return;
+        if (!player->GetMap()->IsBattleground()) return;
 
         if (player->IsAlive())
         {
@@ -825,54 +827,89 @@ public:
         }
     }
 
-    static void RewardHonorableKills(Player* player, TeamId winnerTeamId)
+    static void RewardHonorableKills(Player* player, Battleground* bg, TeamId winnerTeamId)
     {
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Battleground_Enabled) return;
-        if (!NerfHerder_Battleground_HKReward) return;
 
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
 
-        // if winner...
-        if (player->GetTeamId() == winnerTeamId)
+        if (NerfHerder_Battleground_HKReward)
         {
-            // amend stats
-            player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, NerfHerder_Battleground_HKReward, true);
-            player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, NerfHerder_Battleground_HKReward, true);
+            // if winner...
+            if (player->GetTeamId() == winnerTeamId)
+            {
+                // amend stats
+                player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, NerfHerder_Battleground_HKReward, true);
+                player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, NerfHerder_Battleground_HKReward, true);
 
-            // trigger achieves
-            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
-            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+                // trigger achieves
+                player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+                player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+            }
+
+            /*
+            // can't use this code bc the data is protected in the class
+
+            // load bg data
+            Battleground::BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
+            auto const& score = bgScores->find(player->GetGUID().GetCounter());
+
+            if (score != bgScores->end())
+            {
+                uint32 killingBlows = score->second->KillingBlows;
+                uint32 honorableKills = score->second->HonorableKills;
+
+                uint32 count = honorableKills - killingBlows;
+
+                // amend stats
+                player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, count, true);
+                player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, count, true);
+
+                // trigger achieves
+                player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
+                player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+            }
+            else
+            {
+                // player scores not found
+            }
+            */
         }
 
-        /*
-        // can't use this code bc the data is protected in the class
-
-        // load bg data
-        Battleground::BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
-        auto const& score = bgScores->find(player->GetGUID().GetCounter());
-
-        if (score != bgScores->end())
+        if (NerfHerder_Battleground_RepReward)
         {
-            uint32 killingBlows = score->second->KillingBlows;
-            uint32 honorableKills = score->second->HonorableKills;
+            uint32 faction_id = 0;
+            switch (bg->GetMapId())
+            {
+                case MAP_BG_WARSONG_GULCH:
+                    faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 890 : 889;
+                    break;
+                case MAP_BG_ARATHI_BASIN:
+                    faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 509 : 510;
+                    break;
+                case MAP_BG_ALTERAC_VALLEY:
+                    faction_id = player->GetTeamId() == TEAM_ALLIANCE ? 730 : 729;
+                    break;
+                case RATE_XP_BG_KILL_EOTS:
+                    faction_id = 0;
+                    break;
+                case MAP_BG_STRAND_OF_THE_ANCIENTS:
+                    faction_id = 0;
+                    break;
+                case MAP_BG_ISLE_OF_CONQUEST:
+                    faction_id = 0;
+                    break;
+            }
 
-            uint32 count = honorableKills - killingBlows;
-
-            // amend stats
-            player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, count, true);
-            player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, count, true);
-
-            // trigger achieves
-            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
-            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
+            if (faction_id)
+            {
+                // get current rep
+                uint32 current = player->GetReputation(faction_id);
+                player->SetReputation(faction_id, current + NerfHerder_Battleground_RepReward);
+            }
         }
-        else
-        {
-            // player scores not found
-        }
-        */
     }
 };
 
@@ -1247,9 +1284,9 @@ class NerfHerderBattleground: public AllBattlegroundScript
 public:
     NerfHerderBattleground() : AllBattlegroundScript("NerfHerderBattleground") {}
 
-    void OnBattlegroundEndReward(Battleground* /*bg*/, Player* player, TeamId winnerTeamId)
+    void OnBattlegroundEndReward(Battleground* bg, Player* player, TeamId winnerTeamId)
     {
-        NerfHerderHelper::RewardHonorableKills(player, winnerTeamId);
+        NerfHerderHelper::RewardHonorableKills(player, bg, winnerTeamId);
     }
 };
 

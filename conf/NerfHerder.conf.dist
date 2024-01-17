@@ -83,3 +83,6 @@ NerfHerder.Battleground.HealingRate = 0.8
 
 # add additional incentive to win w/ extra honorable kills (0=off)
 NerfHerder.Battleground.HKReward = 100
+
+# add rep gains for battleground factions if you win (0=off)
+NerfHerder.Battleground.RepReward = 500
