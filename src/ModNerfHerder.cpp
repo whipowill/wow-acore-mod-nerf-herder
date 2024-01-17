@@ -825,20 +825,17 @@ public:
         }
     }
 
-    static void RewardHonorableKills(Player* player, Battleground* bg)
+    static void RewardHonorableKills(Battleground* bg, Player* player, TeamId winnerTeamId)
     {
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Battleground_Enabled) return;
         if (!NerfHerder_Battleground_HKReward) return;
 
         // if not battleground, bail
-        //if (!player->GetMap()->IsBattleground()) return;
-
-        // determine winner
-        uint32_t is_win = ((player->GetTeamId() == TEAM_ALLIANCE && bg->GetWinner() == PVP_TEAM_ALLIANCE) || (player->GetTeamId() == TEAM_HORDE && bg->GetWinner() == PVP_TEAM_HORDE)) ? 1 : 0;
+        if (!player->GetMap()->IsBattleground()) return;
 
         // if winner...
-        if (is_win)
+        if (player->GetTeamId() == winnerTeamId)
         {
             // amend stats
             player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, NerfHerder_Battleground_HKReward, true);
@@ -1243,10 +1240,16 @@ public:
         // only effects battlegrounds
         NerfHerderHelper::RewardXP(player, killed);
     }
+};
 
-    void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
+class NerfHerderBattleground: public AllBattlegroundScript
+{
+public:
+    NerfHerderBattleground() : AllBattlegroundScript("NerfHerderBattleground") {}
+
+    void OnBattlegroundEndReward(Battleground* bg, Player* player, TeamId winnerTeamId)
     {
-        NerfHerderHelper::RewardHonorableKills(player, bg);
+        NerfHerderHelper::RewardHonorableKills(bg, player, winnerTeamId);
     }
 };
 
@@ -1256,4 +1259,5 @@ void AddNerfHerderScripts()
     new NerfHerderHelper();
     new NerfHerderCreature();
     new NerfHerderPlayer();
+    new NerfHerderBattleground();
 }
