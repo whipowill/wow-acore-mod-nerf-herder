@@ -834,17 +834,6 @@ public:
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
 
-        // bc I can't figure out how many HKs the player had, just assume it was 30
-
-        // amend stats
-        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, 30, true);
-        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 30, true);
-
-        // trigger achieves
-        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
-        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
-
-        /*
         // this was attempt at using final score of bg but it uses protected methods...
         // load bg data
         Battleground::BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
@@ -852,8 +841,8 @@ public:
 
         if (score != bgScores->end())
         {
-            uint32 killingBlows = score->second->GetKillingBlows();
-            uint32 honorableKills = score->second->GetHonorableKills();
+            uint32 killingBlows = score->second.KillingBlows;
+            uint32 honorableKills = score->second.HonorableKills;
 
             uint32 count = honorableKills - killingBlows;
 
@@ -869,8 +858,6 @@ public:
         {
             // player scores not found
         }
-        */
-
     }
 };
 
