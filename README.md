@@ -9,7 +9,8 @@ An AzerothCore module for nerfing NPCs en masse for various purposes.
 - Enable world buff and money rewards for faction raids
 - Hide PvP vendors who don't belong in the game
 - Nerf battleground damage and healing (like ChromieCraft)
-- Allow NPCBots to give XP in battlegrounds (temp fix for another mod)
+- Allow NPCBots to give XP in battlegrounds (temp fix for that mod)
+- Grant extra honor kills as reward for winning battlegrounds
 
 Does not affect world database.  Does not affect dungeons or raids.
 
