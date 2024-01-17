@@ -825,7 +825,7 @@ public:
         }
     }
 
-    static void RewardHonorableKill(Player* player, Unit* /*victim*/)
+    static void RewardHonorableKills(Player* player, Battleground* bg)
     {
         if (!NerfHerder_Enabled) return;
         if (!NerfHerder_Battleground_Enabled) return;
@@ -834,16 +834,18 @@ public:
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
 
+        // bc I can't figure out how many HKs the player had, just assume it was 30
+
         // amend stats
-        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
-        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
+        player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, 30, true);
+        player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 30, true);
 
         // trigger achieves
         player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
         player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, player->GetAreaId());
 
         /*
-        // this was attempt at using final score of bg but it needs protected methods...
+        // this was attempt at using final score of bg but it uses protected methods...
         // load bg data
         Battleground::BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
         auto const& score = bgScores->find(player->GetGUID().GetCounter());
@@ -1237,10 +1239,9 @@ public:
         NerfHerderHelper::RewardXP(player, killed);
     }
 
-    //void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
-    void OnGiveHonorPoints(Player* player, float& /*honor*/, Unit* victim)
+    void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
     {
-        NerfHerderHelper::RewardHonorableKill(player, victim);
+        NerfHerderHelper::RewardHonorableKills(player, victim);
     }
 };
 
