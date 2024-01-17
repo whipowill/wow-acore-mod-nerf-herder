@@ -835,7 +835,7 @@ public:
         if (!player->GetMap()->IsBattleground()) return;
 
         // load bg data
-        BattlegroundScoreMap const* bgScores = bg->GetPlayerScores();
+        BattlegroundScore* bgScores = bg->GetPlayerScores();
         auto const& score = bgScores->find(player->GetGUID().GetCounter());
 
         if (score != bgScores->end())
