@@ -1243,7 +1243,7 @@ public:
 
     void OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
     {
-        NerfHerderHelper::RewardHonorableKills(player, victim);
+        NerfHerderHelper::RewardHonorableKills(player, bg);
     }
 };
 
