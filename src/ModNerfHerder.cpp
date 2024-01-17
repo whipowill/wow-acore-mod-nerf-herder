@@ -835,8 +835,7 @@ public:
         //if (!player->GetMap()->IsBattleground()) return;
 
         // determine winner
-        uint32_t team_id = GetPvPTeamId(player->GetTeamId());
-        uint32_t is_win = (bg->GetWinner() == team_id) ? 1 : 0;
+        uint32_t is_win = ((player->GetTeamId() == TEAM_ALLIANCE && bg->GetWinner() == PVP_TEAM_ALLIANCE) || (player->GetTeamId() == TEAM_HORDE && bg->GetWinner() == PVP_TEAM_HORDE)) ? 1 : 0;
 
         // if winner...
         if (is_win)
