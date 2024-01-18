@@ -91,7 +91,7 @@ public:
         NerfHerder_Battleground_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.Enabled", 0);
         NerfHerder_Battleground_HKReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HKReward", 0);
         NerfHerder_Battleground_RepReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.RepReward", 0);
-        NerfHerder_Battleground_RepReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HonorReward", 0);
+        NerfHerder_Battleground_HonorReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HonorReward", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
@@ -784,11 +784,11 @@ public:
                         player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
 
                         // announce to player if honor was gained
-                        uint32_t is_chat_enable = 0; // not a fan atm
+                        uint32_t is_chat_enable = 1; // not a fan atm
                         if (is_chat_enable)
                         {
                             std::ostringstream ss;
-                            ss << "You have been awarded |cff4CFF00%i |rHonor.";
+                            ss << "|cff0000FFYou have been awarded %i honor.|r";
                             ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
                         }
 
@@ -919,14 +919,13 @@ public:
             if (player->GetTeamId() == winnerTeamId)
             {
                 std::ostringstream ss;
-                ss << "You have been awarded |cff4CFF00%i |rHonor.";
+                ss << "|cff0000FFYou have been awarded %i honor.|r";
                 ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HonorReward);
 
                 // add bonus honor
                 player->ModifyHonorPoints(NerfHerder_Battleground_HonorReward);
                 player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, NerfHerder_Battleground_HonorReward, true);
             }
-
         }
     }
 };
