@@ -922,6 +922,11 @@ public:
             // if winner...
             if (player->GetTeamId() == winnerTeamId)
             {
+                WorldPacket data(SMSG_PVP_CREDIT, 4 + 8 + 4);
+                data << NerfHerder_Battleground_HonorReward;
+                //data << victim_guid;
+                //data << victim_rank;
+
                 // add bonus honor
                 player->ModifyHonorPoints(NerfHerder_Battleground_HonorReward);
                 player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, NerfHerder_Battleground_HonorReward, true);
