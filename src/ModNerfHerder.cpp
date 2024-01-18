@@ -44,6 +44,7 @@ float NerfHerder_WorldEvent_NerfRate = 0;
 uint32_t NerfHerder_Battleground_Enabled = 0;
 uint32_t NerfHerder_Battleground_HKReward = 0;
 uint32_t NerfHerder_Battleground_RepReward = 0;
+uint32_t NerfHerder_Battleground_HonorReward = 0;
 float NerfHerder_Battleground_DamageRate = 0;
 float NerfHerder_Battleground_HealingRate = 0;
 uint32_t NerfHerder_NPCBots_XPEnabled = 0;
@@ -90,6 +91,7 @@ public:
         NerfHerder_Battleground_Enabled = sConfigMgr->GetOption<int>("NerfHerder.Battleground.Enabled", 0);
         NerfHerder_Battleground_HKReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HKReward", 0);
         NerfHerder_Battleground_RepReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.RepReward", 0);
+        NerfHerder_Battleground_RepReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HonorReward", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
@@ -913,6 +915,18 @@ public:
                     player->SetReputation(faction_id, current + NerfHerder_Battleground_RepReward);
                 }
             }
+        }
+
+        if (NerfHerder_Battleground_HonorReward)
+        {
+            // if winner...
+            if (player->GetTeamId() == winnerTeamId)
+            {
+                // add bonus honor
+                player->ModifyHonorPoints(NerfHerder_Battleground_HonorReward);
+                player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, NerfHerder_Battleground_HonorReward, true);
+            }
+
         }
     }
 };
