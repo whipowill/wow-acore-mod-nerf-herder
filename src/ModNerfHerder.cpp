@@ -779,13 +779,8 @@ public:
                         // Convert Honor Back to an int to add to player
                         honor = int32(honor_f);
 
-                        //Not sure if this works.
-                        WorldPacket data(SMSG_PVP_CREDIT, 4 + 8 + 4);
-                        data << honor;
-
                         // add honor points to player
                         player->ModifyHonorPoints(honor);
-
                         player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
 
                         // announce to player if honor was gained
@@ -922,10 +917,8 @@ public:
             // if winner...
             if (player->GetTeamId() == winnerTeamId)
             {
-                WorldPacket data(SMSG_PVP_CREDIT, 4 + 8 + 4);
-                data << NerfHerder_Battleground_HonorReward;
-                //data << victim_guid;
-                //data << victim_rank;
+                ss << "You have been awarded |cff4CFF00%i |rHonor.";
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HonorReward);
 
                 // add bonus honor
                 player->ModifyHonorPoints(NerfHerder_Battleground_HonorReward);
