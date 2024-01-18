@@ -787,6 +787,7 @@ public:
                         uint32_t is_chat_enable = 0; // not a fan atm
                         if (is_chat_enable)
                         {
+                            std::ostringstream ss;
                             ss << "You have been awarded |cff4CFF00%i |rHonor.";
                             ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
                         }
@@ -917,6 +918,7 @@ public:
             // if winner...
             if (player->GetTeamId() == winnerTeamId)
             {
+                std::ostringstream ss;
                 ss << "You have been awarded |cff4CFF00%i |rHonor.";
                 ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HonorReward);
 
