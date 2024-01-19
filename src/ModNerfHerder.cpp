@@ -46,6 +46,7 @@ uint32_t NerfHerder_Battleground_HKReward = 0;
 uint32_t NerfHerder_Battleground_RepReward = 0;
 uint32_t NerfHerder_Battleground_HonorReward = 0;
 uint32_t NerfHerder_Battleground_GoldReward = 0;
+uint32_t NerfHerder_Battleground_XPReward = 0;
 float NerfHerder_Battleground_DamageRate = 0;
 float NerfHerder_Battleground_HealingRate = 0;
 uint32_t NerfHerder_NPCBots_XPEnabled = 0;
@@ -94,6 +95,7 @@ public:
         NerfHerder_Battleground_RepReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.RepReward", 0);
         NerfHerder_Battleground_HonorReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HonorReward", 0);
         NerfHerder_Battleground_GoldReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.GoldReward", 0);
+        NerfHerder_Battleground_XPReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.XPReward", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
@@ -904,15 +906,30 @@ public:
             if (player->GetTeamId() == winnerTeamId)
             {
                 uint32_t currentmoney = player->GetMoney();
-                uint32_t rewardmoney = NerfHerder_Battleground_GoldReward * 100 * 100;
+                uint32_t rewardmoney = NerfHerder_Battleground_GoldReward; // in copper from config
 
                 std::ostringstream ss;
                 ss << "|cffffc107You have been awarded %i gold.|r";
                 ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), rewardmoney / 100 / 100);
 
                 // add bonus gold
-
                 player->SetMoney(currentmoney + rewardmoney);
+            }
+        }
+
+        if (NerfHerder_Battleground_XPeward)
+        {
+            // if winner...
+            if (player->GetTeamId() == winnerTeamId)
+            {
+                uint32_t bonusxp = NerfHerder_Battleground_XPeward;
+
+                std::ostringstream ss;
+                ss << "|cff7e57c2You have been awarded %i experience.|r";
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), bonusxp);
+
+                // add bonus gold
+                player->GiveXP(bonusxp, player); // use player as victim bc there is no victim
             }
         }
 

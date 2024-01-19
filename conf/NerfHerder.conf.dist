@@ -90,5 +90,8 @@ NerfHerder.Battleground.RepReward = 500
 # add honor gains for battlegrounds if you win (0=off)
 NerfHerder.Battleground.HonorReward = 500
 
-# add gold gains for battlegrounds if you win (0=off, 5=5g)
-NerfHerder.Battleground.GoldReward = 5
+# add gold gains for battlegrounds if you win (0=off, 50000=5g)
+NerfHerder.Battleground.GoldReward = 50000
+
+# add XP gains for battlegrounds if you win
+NerfHerder.Battleground.XPReward = 5000
