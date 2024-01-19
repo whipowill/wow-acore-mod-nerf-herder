@@ -917,12 +917,12 @@ public:
             }
         }
 
-        if (NerfHerder_Battleground_XPeward)
+        if (NerfHerder_Battleground_XPReward)
         {
             // if winner...
             if (player->GetTeamId() == winnerTeamId)
             {
-                uint32_t bonusxp = NerfHerder_Battleground_XPeward;
+                uint32_t bonusxp = NerfHerder_Battleground_XPReward;
 
                 std::ostringstream ss;
                 ss << "|cff7e57c2You have been awarded %i experience.|r";
