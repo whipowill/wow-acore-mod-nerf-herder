@@ -836,6 +836,21 @@ public:
         // if not battleground, bail
         if (!player->GetMap()->IsBattleground()) return;
 
+        if (NerfHerder_Battleground_HonorReward)
+        {
+            // if winner...
+            if (player->GetTeamId() == winnerTeamId)
+            {
+                std::ostringstream ss;
+                ss << "|cff2196f3You have been awarded %i honor.|r";
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HonorReward);
+
+                // add bonus honor
+                player->ModifyHonorPoints(NerfHerder_Battleground_HonorReward);
+                player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, NerfHerder_Battleground_HonorReward, true);
+            }
+        }
+
         if (NerfHerder_Battleground_HKReward)
         {
             // if winner...
@@ -883,6 +898,24 @@ public:
             */
         }
 
+        if (NerfHerder_Battleground_GoldReward)
+        {
+            // if winner...
+            if (player->GetTeamId() == winnerTeamId)
+            {
+                uint32_t currentmoney = player->GetMoney();
+                uint32_t rewardmoney = NerfHerder_Battleground_GoldReward * 100 * 100;
+
+                std::ostringstream ss;
+                ss << "|cffffc107You have been awarded %i gold.|r";
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), rewardmoney / 100 / 100);
+
+                // add bonus gold
+
+                player->SetMoney(currentmoney + rewardmoney);
+            }
+        }
+
         if (NerfHerder_Battleground_RepReward)
         {
             // if winner...
@@ -919,39 +952,6 @@ public:
                     uint32 current = player->GetReputation(faction_id);
                     player->SetReputation(faction_id, current + NerfHerder_Battleground_RepReward);
                 }
-            }
-        }
-
-        if (NerfHerder_Battleground_HonorReward)
-        {
-            // if winner...
-            if (player->GetTeamId() == winnerTeamId)
-            {
-                std::ostringstream ss;
-                ss << "|cff2196f3You have been awarded %i honor.|r";
-                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HonorReward);
-
-                // add bonus honor
-                player->ModifyHonorPoints(NerfHerder_Battleground_HonorReward);
-                player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, NerfHerder_Battleground_HonorReward, true);
-            }
-        }
-
-        if (NerfHerder_Battleground_GoldReward)
-        {
-            // if winner...
-            if (player->GetTeamId() == winnerTeamId)
-            {
-                uint32_t currentmoney = player->GetMoney();
-                uint32_t rewardmoney = NerfHerder_Battleground_GoldReward * 100 * 100;
-
-                std::ostringstream ss;
-                ss << "|cffffc107You have been awarded %i gold.|r";
-                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), rewardmoney / 100 / 100);
-
-                // add bonus gold
-
-                player->SetMoney(currentmoney + rewardmoney);
             }
         }
     }
