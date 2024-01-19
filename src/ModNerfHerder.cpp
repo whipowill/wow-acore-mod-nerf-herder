@@ -786,13 +786,9 @@ public:
                         player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, honor, true);
 
                         // announce to player if honor was gained
-                        uint32_t is_chat_enable = 1; // not a fan atm
-                        if (is_chat_enable)
-                        {
-                            std::ostringstream ss;
-                            ss << "|cff1976d2You have been awarded %i honor.|r";
-                            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
-                        }
+                        std::ostringstream ss;
+                        ss << "|cff2196f3You have been awarded %i honor.|r";
+                        ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
 
                         // give plunder
                         if (NerfHerder_Honor_PlunderEnabled)
@@ -817,6 +813,11 @@ public:
 
                             // give them reward
                             player->SetMoney(currentmoney + modifiedmoney);
+
+                            // report
+                            std::ostringstream ss;
+                            ss << "|cffffa000You have recovered %i gold.|r";
+                            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), modifiedmoney / 100 / 100);
                         }
 
                         // apply world buff (if applicable)
@@ -840,6 +841,10 @@ public:
             // if winner...
             if (player->GetTeamId() == winnerTeamId)
             {
+                std::ostringstream ss;
+                ss << "|cff2196f3You have been awarded %i honorable kills.|r";
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HKReward);
+
                 // amend stats
                 player->ApplyModUInt32Value(PLAYER_FIELD_KILLS, NerfHerder_Battleground_HKReward, true);
                 player->ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, NerfHerder_Battleground_HKReward, true);
@@ -908,6 +913,8 @@ public:
 
                 if (faction_id)
                 {
+                    // game reports this to player already
+
                     // get current rep
                     uint32 current = player->GetReputation(faction_id);
                     player->SetReputation(faction_id, current + NerfHerder_Battleground_RepReward);
@@ -921,7 +928,7 @@ public:
             if (player->GetTeamId() == winnerTeamId)
             {
                 std::ostringstream ss;
-                ss << "|cff1976d2You have been awarded %i honor.|r";
+                ss << "|cff2196f3You have been awarded %i honor.|r";
                 ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HonorReward);
 
                 // add bonus honor
@@ -940,7 +947,7 @@ public:
 
                 std::ostringstream ss;
                 ss << "|cffffa000You have been awarded %i gold.|r";
-                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), rewardmoney);
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), rewardmoney / 100 / 100);
 
                 // add bonus gold
 
