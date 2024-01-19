@@ -929,7 +929,7 @@ public:
                 ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), bonusxp);
 
                 // add bonus gold
-                player->GiveXP(bonusxp, player); // use player as victim bc there is no victim
+                player->GiveXP(bonusxp, nullptr);
             }
         }
 
