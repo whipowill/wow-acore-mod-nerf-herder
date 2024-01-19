@@ -935,13 +935,16 @@ public:
             // if winner...
             if (player->GetTeamId() == winnerTeamId)
             {
+                uint32_t currentmoney = player->GetMoney();
+                uint32_t rewardmoney = NerfHerder_Battleground_GoldReward * 100 * 100;
+
                 std::ostringstream ss;
                 ss << "|cffffa000You have been awarded %i gold.|r";
-                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_GoldReward);
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), rewardmoney);
 
                 // add bonus gold
-                uint32_t currentmoney = player->GetMoney();
-                player->SetMoney(currentmoney + NerfHerder_Battleground_GoldReward);
+
+                player->SetMoney(currentmoney + rewardmoney);
             }
         }
     }
