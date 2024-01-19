@@ -45,6 +45,7 @@ uint32_t NerfHerder_Battleground_Enabled = 0;
 uint32_t NerfHerder_Battleground_HKReward = 0;
 uint32_t NerfHerder_Battleground_RepReward = 0;
 uint32_t NerfHerder_Battleground_HonorReward = 0;
+uint32_t NerfHerder_Battleground_GoldReward = 0;
 float NerfHerder_Battleground_DamageRate = 0;
 float NerfHerder_Battleground_HealingRate = 0;
 uint32_t NerfHerder_NPCBots_XPEnabled = 0;
@@ -92,6 +93,7 @@ public:
         NerfHerder_Battleground_HKReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HKReward", 0);
         NerfHerder_Battleground_RepReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.RepReward", 0);
         NerfHerder_Battleground_HonorReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.HonorReward", 0);
+        NerfHerder_Battleground_GoldReward = sConfigMgr->GetOption<int>("NerfHerder.Battleground.GoldReward", 0);
         NerfHerder_Battleground_DamageRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.DamageRate", 0);
         NerfHerder_Battleground_HealingRate = sConfigMgr->GetOption<float>("NerfHerder.Battleground.HealingRate", 0);
         NerfHerder_NPCBots_XPEnabled = sConfigMgr->GetOption<int>("NerfHerder.NPCBots.XPEnabled", 0);
@@ -788,7 +790,7 @@ public:
                         if (is_chat_enable)
                         {
                             std::ostringstream ss;
-                            ss << "|cff0000FFYou have been awarded %i honor.|r";
+                            ss << "|cff1976d2You have been awarded %i honor.|r";
                             ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), honor);
                         }
 
@@ -919,12 +921,27 @@ public:
             if (player->GetTeamId() == winnerTeamId)
             {
                 std::ostringstream ss;
-                ss << "|cff0000FFYou have been awarded %i honor.|r";
+                ss << "|cff1976d2You have been awarded %i honor.|r";
                 ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_HonorReward);
 
                 // add bonus honor
                 player->ModifyHonorPoints(NerfHerder_Battleground_HonorReward);
                 player->ApplyModUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, NerfHerder_Battleground_HonorReward, true);
+            }
+        }
+
+        if (NerfHerder_Battleground_GoldReward)
+        {
+            // if winner...
+            if (player->GetTeamId() == winnerTeamId)
+            {
+                std::ostringstream ss;
+                ss << "|cffffa000You have been awarded %i gold.|r";
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_GoldReward);
+
+                // add bonus gold
+                uint32_t currentmoney = player->GetMoney();
+                player->SetMoney(currentmoney + NerfHerder_Battleground_GoldReward);
             }
         }
     }

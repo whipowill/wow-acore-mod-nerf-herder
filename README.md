@@ -13,6 +13,7 @@ An AzerothCore module for nerfing NPCs en masse for various purposes.
 - Grant extra honor kills as reward for winning battlegrounds
 - Grant extra reputation as reward for winning battlegrounds
 - Grant extra honor as reward for winning battlegrounds
+- Grant extra gold as reward for winning battlegrounds
 
 Does not affect world database.  Does not affect dungeons or raids.
 
