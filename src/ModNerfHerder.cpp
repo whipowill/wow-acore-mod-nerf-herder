@@ -816,7 +816,7 @@ public:
 
                             // report
                             std::ostringstream ss;
-                            ss << "|cffffa000You have recovered %i gold.|r";
+                            ss << "|cffffc107You have recovered %i gold.|r";
                             ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), modifiedmoney / 100 / 100);
                         }
 
@@ -946,7 +946,7 @@ public:
                 uint32_t rewardmoney = NerfHerder_Battleground_GoldReward * 100 * 100;
 
                 std::ostringstream ss;
-                ss << "|cffffa000You have been awarded %i gold.|r";
+                ss << "|cffffc107You have been awarded %i gold.|r";
                 ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), rewardmoney / 100 / 100);
 
                 // add bonus gold
