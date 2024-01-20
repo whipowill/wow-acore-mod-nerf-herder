@@ -922,14 +922,14 @@ public:
             // if winner...
             if (player->GetTeamId() == winnerTeamId)
             {
-                uint32_t bonusxp = NerfHerder_Battleground_XPReward;
-
                 std::ostringstream ss;
                 ss << "|cff7e57c2You have been awarded %i experience.|r";
-                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), bonusxp);
+                ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), NerfHerder_Battleground_XPReward);
 
                 // add bonus gold
-                player->GiveXP(bonusxp, nullptr);
+                uint32 basexp = sObjectMgr->GetBaseXP(player->GetLevel());
+                float bonusxp = (static_cast<float>(NerfHerder_Battleground_XPReward) / basexp) * 100.0f;
+                player->GiveXP(static_cast<uint32>(bonusxp), nullptr);
             }
         }
 
