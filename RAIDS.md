@@ -1,0 +1,199 @@
+# Dungeon & Raid Nerfs
+
+I'm playing w/ [AutoBalance](https://github.com/azerothcore/mod-AutoBalance), [NPCBots](https://github.com/trickerer/AzerothCore-wotlk-with-NPCBots), and [Vanilla Naxx](https://github.com/sogladev/mod-vanilla-naxxramas) mods.  While AutoBalance does 90% of the work in scaling enemy mobs, there are mechanical issues not addressed by AutoBalance.
+
+I've been working my way thru the game tuning raid bosses as I go so they can be completed solo or w/ a small party of unintelligent robots.  My goal is to nerf boss abilities just enough to keep them challenging.
+
+This is about solving bosses that you can't defeat due to playing solo, or due to having a team of imbecile robots who don't know when it's time to duck and cover.  It's my way of removing the advanced mechanics so I can progress.
+
+**This is a work in progress and reflects the content I've been working thru on my own server, which at this time is limited to level 60 vanilla.**
+
+- Vanilla - 99% complete
+- TBC - 70% complete
+- WOTLK - 0% complete
+
+## Vanilla
+
+### Darrowshire
+
+- Captain Redpath
+    - Takes no damage
+
+This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/7844) in Azerothcore and cannot be completed.
+
+### Scholo
+
+- Malicia
+    - Dark Shade removed
+
+### BWL
+
+- Vaelastrasz
+    - Burning Adrenaline AOE reduced 70%
+
+### AQ40
+
+- Viscidus
+    - Freezing phase removed
+
+- Princess Huhuran
+    - Acid Spit reduced 30%
+    - Poison Bolt reduced 70%
+
+- Twin Emperors
+    - Healing disabled
+    - [MySQL](https://github.com/whipowill/sh-azerothcore/tree/master/patches/FixClassicAQ.sql) needed to fix immunities
+
+- Ouro
+    - Quake less severe
+
+- C'Thun
+    - Eye Beam reduced 90%
+    - Dark Glare reduced 90%
+    - Phase 2 removed
+
+### Naxx
+
+- Razuvious
+    - Unbalancing Strike reduced 50%
+
+- Four Horsemen
+    - Damage reduced 50%
+
+- Patchwerk
+    - Hateful Strike reduced 50%
+
+- Gluth
+    - Zombie Chow removed
+
+- Thaddius
+    - Health reduced 50%
+    - Tesla Coil reduced 50%
+    - Chain Lightning reduced 50%
+    - Charges reduced 50%
+
+- Sapphiron
+    - Frost Breath reduced 90%
+
+### World Bosses
+
+- Faction Leaders
+    - Health reduced
+    - Damage reduced
+
+## TBC
+
+### Sethek Halls
+
+- Time-Lost Controller (trash mob)
+    - Charming Totem removed
+
+- Talon King Ikiss
+    - Arcane Explosion reduced 50%
+
+### The Mechanar
+
+- Nethermancer Sepethrea
+    - Raging Flames removed
+
+### Shattered Halls
+
+- Warchief Kargath Bladefist
+    - Blade Dance reduced 50%
+
+### Karazhan
+
+- Nighbane
+    - Damage reduced 30%
+
+- Netherspite
+    - Nether Portal effects removed
+    - Damage reduced 30%
+    - Healing disabled
+
+- Chess Event
+    - Play as Horde King and you cannot die
+    - Bloodlust kills off Horde pawns (so you can move)
+    - Heroism kills off Alliance pawns (so you can reach opponent)
+    - Cleave does 10x damage
+
+- Prince Malchezaar
+    - Enfeeble triggers a heal to help you recover
+
+### Magtheridon's Lair
+
+- Hellfire Channeler / Warder (trash mob)
+    - Damage reduced 50%
+    - Healing disabled
+
+- Magtheridon
+    - Blast Nova reduced 50%
+
+### Tempest Keep
+
+- Al'ar
+    - Ember of Al'ar (adds) removed
+    - Flame Quills reduced 100%
+    - Bleeds down to 50% health
+
+- Crystalcore Mechanic (trash)
+    - Saw Blade reduced 70%
+
+- Void Reaver
+    - Arcane Orb no longer silences
+
+- Nether Scryer (trash)
+    - Domination charm effect removed
+
+- Kael'thas Sunstrider
+    - Mind Control removed
+    - Flamestrike removed
+    - Pyroblast reduced 50%
+    - Phoenix Egg removed
+
+### Serpentshrine Caverns
+
+- Hydross the Unstable
+    - Damage reduced 30%
+
+- Lady Vashj
+    - Removed phase 2 (undoable w/out team)
+
+### Black Temple
+
+- TO DO
+
+### Zul'Aman
+
+- TO DO
+
+### Sunwell Plateau
+
+- TO DO
+
+### Hyjal Summit
+
+- Anetheron
+    - Healing disabled
+    - Carrion Swarm disabled
+
+- Gargoyles (flying trash)
+    - Removed
+
+- Frost Wyrms (flying trash)
+    - Removed
+
+- Archimonde
+    - Finger of Death removed
+
+### World Bosses
+
+- Doom Lord Kazzak (Hellfire Peninsula)
+    - Damage reduced 70%
+    - Healing disabled
+    - Mark of Kazzak removed
+
+- Doomwalker (Shadowmoon Valley)
+    - Damage reduced 30%
+    - Chain Lightning reduced 90%
+    - Mark of Death removed

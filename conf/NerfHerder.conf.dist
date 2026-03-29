@@ -1,0 +1,150 @@
+[worldserver]
+
+# 0=off 1=on
+NerfHerder.Enabled = 1
+
+# nerf any creature over max player level, 0=off 1=on
+NerfHerder.PlayerLevelEnabled = 1
+
+# nerf any alliance/horde npc over max zone level, 0=off 1=on
+NerfHerder.ZoneLevelEnabled = 1
+
+# force any alliance/horde npc to pvp, 0=off 1=on
+NerfHerder.ForcePvPEnabled = 1
+
+# nerf players when partied w/ lower level teammates, 0=off 1=on
+NerfHerder.PartyNerfEnabled = 1
+
+#################################################
+# HONOR
+#################################################
+
+# give honor on every pvp flagged kill, 0=off 1=on
+NerfHerder.Honor.Enabled = 1
+
+# rate of honor on every pvp flagged kill, 1=100% 2=200%
+NerfHerder.Honor.Rate = 0.5
+
+# grey pvp flagged npc still give honor, 0=off 1=on
+NerfHerder.Honor.GreyEnabled = 1
+
+# rate of honor on every grey pvp flagged kill, 1=100% 2=200%
+NerfHerder.Honor.GreyRate = 0.25
+
+# give money on honor kills? 0=off 1=on
+NerfHerder.Honor.PlunderEnabled = 1
+
+# how much money per creature level on honor kill? (in copper, some randomness is applied)
+NerfHerder.Honor.PlunderAmountPerLevel = 50
+
+#################################################
+# WORLD BUFFS
+#################################################
+
+# give world buff on kills, 0=off 1=on
+NerfHerder.WorldBuff.Enabled = 1
+
+# chance on kill to get world buff (1.0=100% chance)
+NerfHerder.WorldBuff.KillChance = 0.02
+
+# time cooldown before world buff can be gained again (in minutes, should apply to entire server)
+NerfHerder.WorldBuff.Cooldown = 60
+
+# which world bufff to give (will choose randomly)
+NerfHerder.WorldBuff.SpellId.01 = 16609
+NerfHerder.WorldBuff.SpellId.02 = 22888
+NerfHerder.WorldBuff.SpellId.03 = 24425
+# Warchief's Blessing (16609)
+# Rallying Cry of the Dragonslayer (22888)
+# Spirit of Zandalar (24425)
+
+#################################################
+# BATTLEGROUNDS
+#################################################
+
+# nerf how much dmg and healing allowed in battlegrounds (to match chromiecraft rules)
+# 0.7 = 70% of normal damage
+NerfHerder.Battleground.Enabled = 1
+NerfHerder.Battleground.DamageRate = 0.7
+NerfHerder.Battleground.HealingRate = 0.7
+
+# Win Reward
+# -------------------------------------------------
+
+# add additional incentive to win w/ extra honorable kills (0=off)
+NerfHerder.Battleground.Win.HKReward = 0
+
+# add rep gains for battlegrounds if you win (0=off)
+NerfHerder.Battleground.Win.RepReward = 500
+
+# add honor gains for battlegrounds if you win (0=off)
+NerfHerder.Battleground.Win.HonorReward = 500
+
+# add arena points for battlegrounds if you win (0=off)
+NerfHerder.Battleground.Win.APReward = 0
+
+# add gold gains per character level for battlegrounds if you win (0=off, 5000=5 silver)
+NerfHerder.Battleground.Win.GoldReward = 5000
+
+# add XP gains for battlegrounds if you win (as a percentage)
+NerfHerder.Battleground.Win.XPReward = 20
+
+# Lose Reward
+# -------------------------------------------------
+
+# add additional incentive to lose w/ extra honorable kills (0=off)
+NerfHerder.Battleground.Lose.HKReward = 0
+
+# add rep gains for battlegrounds if you lose (0=off)
+NerfHerder.Battleground.Lose.RepReward = 250
+
+# add honor gains for battlegrounds if you lose (0=off)
+NerfHerder.Battleground.Lose.HonorReward = 250
+
+# add arena points for battlegrounds if you lose (0=off)
+NerfHerder.Battleground.Lose.APReward = 0
+
+# add gold gains per character level for battlegrounds if you lose (0=off, 5000=5 silver)
+NerfHerder.Battleground.Lose.GoldReward = 2500
+
+# add XP gains for battlegrounds if you lose (as a percentage)
+NerfHerder.Battleground.Lose.XPReward = 10
+
+# Per Kill Reward
+# -------------------------------------------------
+
+# add additional incentive w/ extra honorable kills per kill (0=off) NOTE THAT ACORE ALREADY DOES THIS
+NerfHerder.Battleground.PerKill.HKReward = 0
+
+# add rep gains for battlegrounds per kill (0=off)
+NerfHerder.Battleground.PerKill.RepReward = 20
+
+# add honor gains for battlegrounds per kill (0=off) NOTE THAT ACORE ALREADY DOES THIS
+NerfHerder.Battleground.PerKill.HonorReward = 0
+
+# add arena points for battlegrounds per kill (0=off)
+NerfHerder.Battleground.PerKill.APReward = 1
+
+# add gold gains per character level for battlegrounds per kill (0=off, 5000=5 silver)
+NerfHerder.Battleground.PerKill.GoldReward = 0
+
+# add XP gains for battlegrounds per kill (as a percentage) NOTE THAT ACORE ALREADY DOES THIS
+NerfHerder.Battleground.PerKill.XPReward = 0
+
+#################################################
+# RAIDS
+#################################################
+
+# custom fixes for small-party raids
+NerfHerder.RaidFixesEnabled = 1
+
+#################################################
+# HEROICS
+#################################################
+
+# custom fixes for small-party heroics
+NerfHerder.Heroics.Enabled = 1
+
+# the percentage of damage allowed in heroic instances
+# 0.7 = 70% of normal damage
+NerfHerder.Heroics.DamageRate = 0.9

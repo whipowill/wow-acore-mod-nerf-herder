@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+DB_WORLD_CUSTOM_PATHS+=(
+	"$MOD_SKELETON_ROOT/data/sql/db-world/"
+)
