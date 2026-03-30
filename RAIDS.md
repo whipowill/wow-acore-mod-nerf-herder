@@ -1,15 +1,15 @@
 # Dungeon & Raid Nerfs
 
+This is about solving bosses that I can't defeat due to playing solo, or due to having a team of imbecile robots who don't know when it's time to duck and cover.  It's my way of removing the advanced mechanics so I can progress.
+
 I'm playing w/ [AutoBalance](https://github.com/azerothcore/mod-AutoBalance), [NPCBots](https://github.com/trickerer/AzerothCore-wotlk-with-NPCBots), and [Vanilla Naxx](https://github.com/sogladev/mod-vanilla-naxxramas) mods.  While AutoBalance does 90% of the work in scaling enemy mobs, there are mechanical issues not addressed by AutoBalance.
 
-I've been working my way thru the game tuning raid bosses as I go so they can be completed solo or w/ a small party of unintelligent robots.  My goal is to nerf boss abilities just enough to keep them challenging.
+I've been working my way thru the game tuning raid bosses as I go.  The goal is to nerf boss abilities just enough to keep them challenging.  If you think I've nerfed something too hard, or missed something, open a ticket and let me know.
 
-This is about solving bosses that you can't defeat due to playing solo, or due to having a team of imbecile robots who don't know when it's time to duck and cover.  It's my way of removing the advanced mechanics so I can progress.
-
-**This is a work in progress and reflects the content I've been working thru on my own server, which at this time is limited to level 60 vanilla.**
+**This is a work in progress and reflects the content I've been working thru on my own server.**
 
 - Vanilla - 99% complete
-- TBC - 70% complete
+- TBC - 80% complete (only Illidan, Zul'Aman, and Sunwell Plateau left)
 - WOTLK - 0% complete
 
 ## Vanilla
@@ -81,7 +81,7 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
     - Health reduced
     - Damage reduced
 
-## TBC
+## The Burning Crusade
 
 ### Sethek Halls
 
@@ -103,7 +103,7 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 
 ### Karazhan
 
-- Nighbane
+- Nightbane
     - Damage reduced 30%
 
 - Netherspite
@@ -134,10 +134,10 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 - Al'ar
     - Ember of Al'ar (adds) removed
     - Flame Quills reduced 100%
-    - Bleeds down to 50% health
+    - Bleeds down to 50% health (annoying encounter)
 
 - Crystalcore Mechanic (trash)
-    - Saw Blade reduced 70%
+    - Saw Blade reduced 50%
 
 - Void Reaver
     - Arcane Orb no longer silences
@@ -156,20 +156,29 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 - Hydross the Unstable
     - Damage reduced 30%
 
+- Leotheras the Blind
+    - Consuming Madness removed
+
 - Lady Vashj
     - Removed phase 2 (undoable w/out team)
 
 ### Black Temple
 
-- TO DO
+- Shade of Akama
+    - Wing Clip removed (from adds)
 
-### Zul'Aman
+- Reliquary of the Lost
+    - Auras removed
 
-- TO DO
+- Teron Gorefiend
+    - Shadowy Constructs removed (adds)
 
-### Sunwell Plateau
+- Illidari Council
+    - Healing disabled
+    - Lady Malande bleeds (buggy report in code comments)
 
-- TO DO
+- Illidan
+    - NOT DONT YET
 
 ### Hyjal Summit
 
@@ -186,14 +195,25 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 - Archimonde
     - Finger of Death removed
 
+### Zul'Aman
+
+- TO DO
+
+### Sunwell Plateau
+
+- TO DO
+
 ### World Bosses
 
 - Doom Lord Kazzak (Hellfire Peninsula)
-    - Damage reduced 70%
+    - Damage reduced 30%
     - Healing disabled
     - Mark of Kazzak removed
 
 - Doomwalker (Shadowmoon Valley)
-    - Damage reduced 30%
-    - Chain Lightning reduced 90%
+    - Chain Lightning reduced 70%
     - Mark of Death removed
+
+## Wrath of the Lich King
+
+NOT HERE YET

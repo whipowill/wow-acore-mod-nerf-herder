@@ -1471,8 +1471,14 @@ std::vector<raidDisallowedAurasData> NerfHerderHelper::raidDisallowedAurasMap =
     {550, 34190}, // tempest keep, void reaver arcane orb silence
     {550, 37135}, // tempest keep, domination charm effect
     {550, 36797}, // tempest keep, mind control charm effect
+    {548, 37749}, // ssc, consuming madness (demon fight)
     {548, 38112}, // serpenshrine carverns, magic barrier (lady vashj phase 2)
     {534, 31306}, // hyjal summit, anetheron carrion swarm
+    {564, 39584}, // black temple, wing clip (from shade of akama adds)
+    {564, 41337}, // black temple, reliquary, aura or anger
+    {564, 41350}, // black temple, reliquary, aura of desire
+    {564, 41292}, // black temple, reliquary, aura of suffering
+    //{564, 40251}, // black temple, gorefiend, shadow of death
 
     // note that outland (all zones) have map_id 530
     {530, 32960}, // hellfire peninsula, doom lord kazzak mark of kazzak
@@ -1492,6 +1498,7 @@ std::vector<raidDisallowedMobsData> NerfHerderHelper::raidDisallowedMobsMap =
     {550, 19551}, // tempest keep, ember of alar
     {550, 21364}, // tempest keep, phoenix egg
     //{550, 21362}, // tempest keep, phoenix
+    {564, 23111}, // black temple, shadowy construct (gorefiend adds)
     {534, 17906}, // hyjal summit, gargoyles (horde camp)
     {534, 17907}, // hyjal summit, frost wyrms (horde camp)
 };
@@ -1499,11 +1506,19 @@ std::vector<raidDisallowedMobsData> NerfHerderHelper::raidDisallowedMobsMap =
 // mobs that will be bled in dungeon or raid
 std::vector<raidBleedingMobsData> NerfHerderHelper::raidBleedingMobsMap =
 {
-    // zone_id, unit_id, health % to start bleeding, heath % stop bleeding, amount to bleed per second
-    {531, 15299, 10, 0, 20000}, // aq40, viscidus <-- to skip freeze phase
-    //{531, 15727, 100, 0, 20000}, // aq40, cthun (phase 2) <-- this doesn't work, have to do manual
-    {571, 351000, 100, 50, 20000}, // naxx60, thaddius
-    {550, 19514, 100, 50, 20000}, // tempest keep, alar
+    // zone_id, unit_id, health % to start bleeding, heath % stop bleeding, % amount to bleed per second
+    {531, 15299, 10, 0, 10}, // aq40, viscidus <-- to skip freeze phase
+    {531, 15727, 100, 0, 10}, // aq40, cthun (phase 2)
+    {571, 351000, 100, 50, 10}, // naxx60, thaddius
+    {550, 19514, 100, 50, 10}, // tempest keep, alar
+    {564, 22951, 100, 0, 10}, // black temple, lady malande (buggy stuff here, bleeding is the only solution I could find)
+    /*
+    This encounter with Illidari Council is buggy!  Lady Malande being alive seems to heal the other
+    members no matter what she's doing, just by her being alive.  Every 2 seconds, reset to full health.
+    I tried outright killing her, but that bugged the other NPCs.  I tried removing health sharing, that
+    didn't work either.  A slight bleed of 10% seemed to be enough to counteract this healing effect.
+    And I have all healing turned off on these NPCs anyway!
+    */
     // faction leaders are bled custom based on server max lvl
 };
 
@@ -1516,6 +1531,10 @@ std::vector<raidHealMultiMobsData> NerfHerderHelper::raidHealMultiMobsMap =
     {532, 15689, 0}, // kara, netherspite
     {544, 17256, 0}, // magetheridons lair, hellfire channeler
     {544, 18829, 0}, // magetheridons lair, hellfire warder
+    {564, 22949, 0}, // black temple, gathios the shatterer (doesn't work??)
+    {564, 22950, 0}, // black temple, high nethermancer zerevor (doesn't work??)
+    {564, 22951, 0}, // black temple, lady malande (doesn't work??)
+    {564, 22952, 0}, // black temple, veras darkshadow (doesn't work??)
     {534, 17808, 0}, // hyjal summit, anetheron
     {530, 18728, 0}, // hellfire peninsula, doom lord kazzak
 
@@ -1538,13 +1557,14 @@ std::vector<raidDmgMultiMobsData> NerfHerderHelper::raidDmgMultiMobsMap =
     {571, 351038, 0.5}, // naxx60, four horsemen
     {571, 351039, 0.5}, // naxx60, four horsemen
     {571, 351040, 0.5}, // naxx60, four horsemen
-    {556, 18473, 0.5}, // sethek halls, talon king ikiss
+    //{556, 18473, 0.5}, // sethek halls, talon king ikiss
     {532, 15689, 0.7}, // kara, netherspite
     {532, 17225, 0.7}, // kara, nightbane
     {544, 17256, 0.5}, // magtheridons lair, hellfire channeler
     {544, 18829, 0.5}, // magtheridons lair, hellfire warderer
-    {530, 18728, 0.3}, // hellfire peninsula, doom lord kazzak
-    {530, 17711, 0.7}, // shadowmoon valley, doomwalker
+    //{564, 22950, 0.5}, // black temple, high nethermancer zerevor
+    {530, 18728, 0.7}, // hellfire peninsula, doom lord kazzak
+    //{530, 17711, 0.7}, // shadowmoon valley, doomwalker
     {548, 21216, 0.7}, // serpentshrine caverns, hydross the unstable
     //{550, 19622, 0.5}, // tempest keep, kaelthas sunstrider
 };
@@ -1553,7 +1573,7 @@ std::vector<raidDmgMultiMobsData> NerfHerderHelper::raidDmgMultiMobsMap =
 std::vector<raidDmgMultiSpellsData> NerfHerderHelper::raidDmgMultiSpellsMap =
 {
     // zone_id, unit_id, spell_id, dmg multi (.1 = 90% reduction)
-    // {556, 18473, 38197, 0.5}, // sethek halls, talon king ikiss, arcane explosion (doesn't work, so nerfing all his dmg?)
+    {556, 0, 38197, 0.5}, // sethek halls, talon king ikiss, arcane explosion
     {540, 16808, 30739, 0.5}, // shattered halls, warchief kargath bladefist, blade dance
     {469, 0, 23478, 0.3}, // bwl, vaelastrasz (but comes from allies?), burning adrenaline -- hurt your neighbor version (23478), instakill version (23644)
     {531, 15509, 26053, 0.7}, // aq40, princess huhuran, noxious poison
@@ -1608,7 +1628,7 @@ std::vector<raidDmgMultiSpellsData> NerfHerderHelper::raidDmgMultiSpellsMap =
     {534, 17968, 31984, 0}, // hyjal summit, archimonde, finger of death
     {534, 17968, 32111, 0}, // hyjal summit, archimonde, finger of death
     {534, 17968, 39369, 0}, // hyjal summit, archimonde, finger of death
-    {530, 17711, 28167, 0.1}, // shadowmoon valley, doomwalker, chain lightning
+    {530, 17711, 28167, 0.3}, // shadowmoon valley, doomwalker, chain lightning
 };
 
 class NerfHerderUnit : public UnitScript
@@ -1749,27 +1769,31 @@ public:
             {
                 if (creature->GetMapId() == entry.map_id && creature->GetEntry() == entry.creature_id)
                 {
-                    creature->setDeathState(DeathState::JustDied);
+                    if (creature->IsInCombat())
+                        creature->setDeathState(DeathState::JustDied);
                 }
             }
 
             // find and bleed bleedable mobs
             uint32 current_health_percentage = 100;
+            uint32 bleed_amount = 0;
             for (const auto& entry : NerfHerderHelper::raidBleedingMobsMap)
             {
                 if (creature->GetMapId() == entry.map_id && creature->GetEntry() == entry.creature_id)
                 {
                     if (creature->IsInCombat())
                     {
-                        //current_health_percentage = 100 * (creature->GetHealth() / creature->GetMaxHealth());
                         current_health_percentage = static_cast<uint32>(100.0f * (
                             static_cast<float>(creature->GetHealth()) / static_cast<float>(creature->GetMaxHealth())
                         ));
+
+                        bleed_amount = static_cast<uint32>(static_cast<float>(entry.damage / 100.0f) * static_cast<float>(creature->GetMaxHealth()));
+
                         if (current_health_percentage <= entry.health_percentage_start && current_health_percentage > entry.health_percentage_stop)
                         {
                             if (Player* nearest_player = creature->SelectNearestPlayer(100.0f))
                             {
-                                nearest_player->DealDamage(nearest_player, creature, entry.damage);
+                                nearest_player->DealDamage(nearest_player, creature, bleed_amount);
                             }
                         }
                     }
@@ -1794,6 +1818,7 @@ public:
                     }
 
                     // special fix for cthun phase 2
+                    /*
                     if (creature->GetEntry() == 15727) // 15589 is the eye? 15727 is c'thun?
                     {
                         // if he is attackable (meaning the eye is dead)...
@@ -1806,6 +1831,7 @@ public:
                             }
                         }
                     }
+                    */
                 }
 
                 // if in kara...
