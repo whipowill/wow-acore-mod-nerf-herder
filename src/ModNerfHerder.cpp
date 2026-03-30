@@ -1061,7 +1061,7 @@ public:
         float fdamage = static_cast<float>(damage);
 
         // catch errors...
-        if (!victim) return static_cast<uint32>(fdamage);
+        if (!victim || !attacker) return static_cast<uint32>(fdamage);
 
         // if battleground...
         if (NerfHerder_Battleground_Enabled)
@@ -1073,78 +1073,96 @@ public:
         // if heroic...
         if (NerfHerder_Heroics_Enabled)
         {
-            // if player or npcbot or pet of either
-            bool isPlayerOrBotControlled = false;
-
-            // CHANGE CONDITION IF NOT USING NPCBOTS!!
-            if (attacker->IsPlayer() || attacker->IsNPCBotOrPet())
-                isPlayerOrBotControlled = true;
-
-            if (attacker->IsPet() && attacker->GetOwner())
+            if (victim->GetMap()->IsHeroic())
             {
-                 if (attacker->GetOwner()->IsPlayer())
+                // if player or npcbot or pet of either
+                bool isPlayerOrBotControlled = false;
+
+                // We don't want ourselves to be nerfed in heroic instances!
+
+                // CHANGE CONDITION IF NOT USING NPCBOTS!!
+                if (attacker->IsPlayer() || attacker->IsNPCBotOrPet())
                     isPlayerOrBotControlled = true;
-            }
 
-            if (!isPlayerOrBotControlled)
-            {
-                fdamage = fdamage * NerfHerder_Heroics_DamageRate;
+                if (attacker->IsPet() && attacker->GetOwner())
+                {
+                     if (attacker->GetOwner()->IsPlayer())
+                        isPlayerOrBotControlled = true;
+                }
+
+                if (!isPlayerOrBotControlled)
+                {
+                    fdamage = fdamage * NerfHerder_Heroics_DamageRate;
+                }
             }
         }
 
         // if custom end game fixes...
         if (NerfHerder_RaidFixes_Enabled)
         {
-            if (attacker)
+            // enact custom damage multipliers
+            for (const auto& entry : NerfHerderHelper::raidDmgMultiMobsMap)
             {
-                // enact custom damage multipliers
-                for (const auto& entry : NerfHerderHelper::raidDmgMultiMobsMap)
+                if (victim->GetMapId() == entry.map_id && attacker->GetEntry() == entry.creature_id)
                 {
-                    if (victim->GetMapId() == entry.map_id && attacker->GetEntry() == entry.creature_id)
-                    {
-                        fdamage = fdamage * entry.multi;
-                    }
+                    fdamage = fdamage * entry.multi;
+                }
+            }
+
+            // enact custom spell damage multipliers
+            for (const auto& entry : NerfHerderHelper::raidDmgMultiSpellsMap)
+            {
+                if (victim->GetMapId() == entry.map_id && (attacker->GetEntry() == entry.creature_id || !entry.creature_id) && spellID == entry.spell_id)
+                {
+                    fdamage = fdamage * entry.multi;
+                }
+            }
+
+            // if dungeon or raid...
+            if (victim->GetMap()->IsDungeon() || victim->GetMap()->IsRaid())
+            {
+                // kara chess event horde king
+                if (victim->GetEntry() == 21752)
+                {
+                    fdamage = 0; // you can't lose
                 }
 
-                // enact custom spell damage multipliers
-                for (const auto& entry : NerfHerderHelper::raidDmgMultiSpellsMap)
+                // kara chess event (any alliance piece)
+                if (victim->GetEntry() == 21684 || victim->GetEntry() == 17211 || victim->GetEntry() == 21160 || victim->GetEntry() == 21664 || victim->GetEntry() == 21682|| victim->GetEntry() == 21683)
                 {
-                    if (victim->GetMapId() == entry.map_id && (attacker->GetEntry() == entry.creature_id || !entry.creature_id) && spellID == entry.spell_id)
-                    {
-                        fdamage = fdamage * entry.multi;
-                    }
+                    fdamage = fdamage * 10;
                 }
 
-                // if dungeon or raid...
-                if (victim->GetMap()->IsDungeon() || victim->GetMap()->IsRaid())
+                // special fix for demonic illidan custom
+                /*
+                if (attacker->GetEntry() == 22917)
                 {
-                    // kara chess event horde king
-                    if (victim->GetEntry() == 21752)
+                    // if he is in demon form
+                    if (attacker->HasAura(40506))
                     {
-                        fdamage = 0; // you can't lose
+                        fdamage = fdamage * 0.7;
                     }
-
-                    // kara chess event (any alliance piece)
-                    if (victim->GetEntry() == 21684 || victim->GetEntry() == 17211 || victim->GetEntry() == 21160 || victim->GetEntry() == 21664 || victim->GetEntry() == 21682|| victim->GetEntry() == 21683)
+                    else
                     {
-                        fdamage = fdamage * 10;
+                        fdamage = fdamage * 0.7;
                     }
                 }
+                */
+            }
 
-                // if world...
-                if (!victim->GetMap()->IsDungeon() && !victim->GetMap()->IsRaid() && !victim->GetMap()->IsBattlegroundOrArena())
+            // if world...
+            if (!victim->GetMap()->IsDungeon() && !victim->GetMap()->IsRaid() && !victim->GetMap()->IsBattlegroundOrArena())
+            {
+                // World Faction Leaders
+                // Horde: Thrall (4949), Lady Sylvanis (10181), Cairne Bloodhoof (3057), Lor'themar Theron (16802)
+                // Alliance: King Varian (29611), King Mangi (2784), Tyrande Whisperwind (7999), Prophet Velen (17468)
+                if (attacker->GetEntry() == 4949 || attacker->GetEntry() == 10181 || attacker->GetEntry() == 3057 || attacker->GetEntry() == 16802 || attacker->GetEntry() == 29611 || attacker->GetEntry() == 2784 || attacker->GetEntry() == 7999 || attacker->GetEntry() == 17468)
                 {
-                    // World Faction Leaders
-                    // Horde: Thrall (4949), Lady Sylvanis (10181), Cairne Bloodhoof (3057), Lor'themar Theron (16802)
-                    // Alliance: King Varian (29611), King Mangi (2784), Tyrande Whisperwind (7999), Prophet Velen (17468)
-                    if (attacker->GetEntry() == 4949 || attacker->GetEntry() == 10181 || attacker->GetEntry() == 3057 || attacker->GetEntry() == 16802 || attacker->GetEntry() == 29611 || attacker->GetEntry() == 2784 || attacker->GetEntry() == 7999 || attacker->GetEntry() == 17468)
-                    {
-                        if (NerfHerder_MaxPlayerLevel <= 60)
-                            fdamage = fdamage * 0.33;
+                    if (NerfHerder_MaxPlayerLevel <= 60)
+                        fdamage = fdamage * 0.33;
 
-                        else if (NerfHerder_MaxPlayerLevel > 60 && NerfHerder_MaxPlayerLevel <= 70)
-                            fdamage = fdamage * 0.66;
-                    }
+                    else if (NerfHerder_MaxPlayerLevel > 60 && NerfHerder_MaxPlayerLevel <= 70)
+                        fdamage = fdamage * 0.66;
                 }
             }
         }
@@ -1499,6 +1517,9 @@ std::vector<raidDisallowedMobsData> NerfHerderHelper::raidDisallowedMobsMap =
     {550, 21364}, // tempest keep, phoenix egg
     //{550, 21362}, // tempest keep, phoenix
     {564, 23111}, // black temple, shadowy construct (gorefiend adds)
+    {564, 23498}, // black temple, parasitic shadowfiends (illidan adds)
+    {564, 23375}, // black temple, shadow demon (illidan adds)
+
     {534, 17906}, // hyjal summit, gargoyles (horde camp)
     {534, 17907}, // hyjal summit, frost wyrms (horde camp)
 };
@@ -1519,6 +1540,7 @@ std::vector<raidBleedingMobsData> NerfHerderHelper::raidBleedingMobsMap =
     didn't work either.  A slight bleed of 10% seemed to be enough to counteract this healing effect.
     And I have all healing turned off on these NPCs anyway!
     */
+    {564, 22997, 100, 0, 5}, // black temple, flame of azinoth (illidan adds)
     // faction leaders are bled custom based on server max lvl
 };
 
@@ -1563,15 +1585,19 @@ std::vector<raidDmgMultiMobsData> NerfHerderHelper::raidDmgMultiMobsMap =
     {544, 17256, 0.5}, // magtheridons lair, hellfire channeler
     {544, 18829, 0.5}, // magtheridons lair, hellfire warderer
     //{564, 22950, 0.5}, // black temple, high nethermancer zerevor
+    //{564, 22917, 0.7}, // black temple, illidan <-- special code used elsewhere
     {530, 18728, 0.7}, // hellfire peninsula, doom lord kazzak
     //{530, 17711, 0.7}, // shadowmoon valley, doomwalker
     {548, 21216, 0.7}, // serpentshrine caverns, hydross the unstable
     //{550, 19622, 0.5}, // tempest keep, kaelthas sunstrider
+    {564, 22917, 0.8}, // black temple, illidan
+    {564, 22997, 0.1}, // black temple, flame of azzinoth
 };
 
 // damage multiplier for specific spells
 std::vector<raidDmgMultiSpellsData> NerfHerderHelper::raidDmgMultiSpellsMap =
 {
+    // If the spell is an AOE, you prob need the caster ID as 0.
     // zone_id, unit_id, spell_id, dmg multi (.1 = 90% reduction)
     {556, 0, 38197, 0.5}, // sethek halls, talon king ikiss, arcane explosion
     {540, 16808, 30739, 0.5}, // shattered halls, warchief kargath bladefist, blade dance
@@ -1625,6 +1651,16 @@ std::vector<raidDmgMultiSpellsData> NerfHerderHelper::raidDmgMultiSpellsMap =
     //{550, 19622, 36805, 0.5}, // tempest keep, kaelthas, fireball
     {550, 19622, 36819, 0.5}, // tempest keep, kaelthas, pyroblast
     {550, 0, 36731, 0}, // tempest keep, kaelthas, flamestrike (doesn't originate from boss)
+    {564, 0, 40832, 0.4}, // black temple, illidan, flame crash (may not originate from him?)
+    {564, 0, 23336, 0.4}, // black temple, illidan, flame crash (may not originate from him?)
+    {564, 0, 40611, 0.4}, // black temple, illidan, blaze (may not originate from him?)
+    {564, 0, 40834, 0.4}, // black temple, illidan, agonizing flames (may not originate from him?)
+    {564, 0, 40932, 0.4}, // black temple, illidan, agonizing flames (may not originate from him?)
+    {564, 0, 41078, 0}, // black temple, illidan, shadow blast (may not originate from him?)
+    {564, 0, 38085, 0}, // black temple, illidan, shadow blast (may not originate from him?)
+    {564, 0, 41126, 0.4}, // black temple, illidan, flame burst (may not originate from him?)
+    {564, 0, 41131, 0.4}, // black temple, illidan, flame burst (may not originate from him?)
+    {564, 0, 41080, 0}, // black temple, illidan, consume soul (from shadow demons)
     {534, 17968, 31984, 0}, // hyjal summit, archimonde, finger of death
     {534, 17968, 32111, 0}, // hyjal summit, archimonde, finger of death
     {534, 17968, 39369, 0}, // hyjal summit, archimonde, finger of death

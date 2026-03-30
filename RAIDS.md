@@ -21,17 +21,17 @@ I've been working my way thru the game tuning raid bosses as I go.  The goal is 
 
 This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/7844) in Azerothcore and cannot be completed.
 
-### Scholo
+### Scholomance
 
 - Malicia
     - Dark Shade removed
 
-### BWL
+### Black Wing Lair
 
 - Vaelastrasz
     - Burning Adrenaline AOE reduced 70%
 
-### AQ40
+### Ahn'Qiraj
 
 - Viscidus
     - Freezing phase removed
@@ -50,9 +50,9 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 - C'Thun
     - Eye Beam reduced 90%
     - Dark Glare reduced 90%
-    - Phase 2 removed
+    - Phase 2 removed (undoable w/out team)
 
-### Naxx
+### Naxxramas
 
 - Razuvious
     - Unbalancing Strike reduced 50%
@@ -78,8 +78,8 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 ### World Bosses
 
 - Faction Leaders
-    - Health reduced
-    - Damage reduced
+    - Health reduced (depends on server max lvl)
+    - Damage reduced (depends on server max lvl)
 
 ## The Burning Crusade
 
@@ -136,14 +136,12 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
     - Flame Quills reduced 100%
     - Bleeds down to 50% health (annoying encounter)
 
-- Crystalcore Mechanic (trash)
-    - Saw Blade reduced 50%
-
 - Void Reaver
+    - Saw Blade reduced 50% (from Crystalcore Mechanic adds)
     - Arcane Orb no longer silences
 
-- Nether Scryer (trash)
-    - Domination charm effect removed
+- High Astromancer Solarian
+    - Domination charm effect removed (from Nether Scryer adds)
 
 - Kael'thas Sunstrider
     - Mind Control removed
@@ -168,17 +166,21 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
     - Wing Clip removed (from adds)
 
 - Reliquary of the Lost
-    - Auras removed
+    - Auras removed (buggy, so it pulses)
 
 - Teron Gorefiend
-    - Shadowy Constructs removed (adds)
+    - Shadowy Constructs removed
 
 - Illidari Council
     - Healing disabled
-    - Lady Malande bleeds (buggy report in code comments)
+    - Lady Malande bleeds (bug report in code comments)
 
 - Illidan
-    - NOT DONT YET
+    - Physical damage reduced 20%
+    - Magic damage reduced 60% (all AOEs)
+    - Flames of Azzinoth are short lived and do less damage
+    - Parasitic Shadowfiends removed (adds)
+    - Shadow Demons removed (adds)
 
 ### Hyjal Summit
 
