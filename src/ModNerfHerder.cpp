@@ -1133,21 +1133,17 @@ public:
                     fdamage = fdamage * 10;
                 }
 
-                // special fix for demonic illidan custom
-                /*
-                if (attacker->GetEntry() == 22917)
+                // sunwell kalecgos fight
+                if (victim->GetEntry() == 24891)
                 {
-                    // if he is in demon form
-                    if (attacker->HasAura(40506))
-                    {
-                        fdamage = fdamage * 0.7;
-                    }
-                    else
-                    {
-                        fdamage = fdamage * 0.7;
-                    }
+                    // human for of kalecgos cannot die
+                    fdamage = 0;
                 }
-                */
+                if (attacker->GetEntry() == 24891)
+                {
+                    // human form of kalecgos cannot damage either
+                    fdamage = 0;
+                }
             }
 
             // if world...
@@ -1497,6 +1493,16 @@ std::vector<raidDisallowedAurasData> NerfHerderHelper::raidDisallowedAurasMap =
     {564, 41350}, // black temple, reliquary, aura of desire
     {564, 41292}, // black temple, reliquary, aura of suffering
     //{564, 40251}, // black temple, gorefiend, shadow of death
+    {568, 42479}, // zulaman, protective ward (trash mobs cast this)
+    {580, 46021}, // sunwell, spectral realm (kalageos)
+    {580, 44806}, // sunwell, crazed rage (kalageos)
+    {580, 45150}, // sunwell, meteor slash (brutallus)
+    {580, 46394}, // sunwell, burn (brutallus)
+    {580, 26662}, // sunwell, berserk (brutallus)
+    {580, 45411}, // sunwell, demonic vapor (felmyst)
+    {580, 45399}, // sunwell, demonic vapor periodic (felmyst)
+    //{580, 45717}, // sunwell, fog of corruption charm 1 (felmyst) <-- dispelling killed player
+    //{580, 45726}, // sunwell, fog of corruption charm 2 (felmyst)
 
     // note that outland (all zones) have map_id 530
     {530, 32960}, // hellfire peninsula, doom lord kazzak mark of kazzak
@@ -1519,9 +1525,10 @@ std::vector<raidDisallowedMobsData> NerfHerderHelper::raidDisallowedMobsMap =
     {564, 23111}, // black temple, shadowy construct (gorefiend adds)
     {564, 23498}, // black temple, parasitic shadowfiends (illidan adds)
     {564, 23375}, // black temple, shadow demon (illidan adds)
-
     {534, 17906}, // hyjal summit, gargoyles (horde camp)
     {534, 17907}, // hyjal summit, frost wyrms (horde camp)
+    {580, 25268}, // sunwell, unyeilding dead (felmyst)
+    {580, 25851}, // sunwell, volatile feind
 };
 
 // mobs that will be bled in dungeon or raid
@@ -1541,7 +1548,8 @@ std::vector<raidBleedingMobsData> NerfHerderHelper::raidBleedingMobsMap =
     And I have all healing turned off on these NPCs anyway!
     */
     {564, 22997, 100, 0, 5}, // black temple, flame of azinoth (illidan adds)
-    // faction leaders are bled custom based on server max lvl
+    //{580, 24882, 100, 0, 0.5}, // sunwell, brutallus (after 2 minutes he will lose 60%)
+    {580, 25038, 100, 0, 0.5}, // sunwell, felmyst (the necessary nerfs make this a lame encounter)
 };
 
 // mobs that cannot heal at all
@@ -1592,6 +1600,7 @@ std::vector<raidDmgMultiMobsData> NerfHerderHelper::raidDmgMultiMobsMap =
     //{550, 19622, 0.5}, // tempest keep, kaelthas sunstrider
     {564, 22917, 0.8}, // black temple, illidan
     {564, 22997, 0.1}, // black temple, flame of azzinoth
+    {580, 24882, 0.9}, // sunwell, brutallus
 };
 
 // damage multiplier for specific spells
@@ -1907,6 +1916,39 @@ public:
                     if (creature->HasAura(30843) || creature->HasAura(41624))
                     {
                         Unit::DealHeal(creature, creature, 500); // help them recover
+                    }
+                }
+
+                // if in sunwell...
+                if (creature->GetMapId() == 580)
+                {
+                    // if sathrovarr the corruptor
+                    if (creature->GetEntry() == 24892)
+                    {
+                        // match health percentage to kathecgos
+                        if (Creature* dragon = creature->FindNearestCreature(24850, 300.0f))
+                        {
+                            // get his health percentage and match it to demon
+                            float dragonHealthPct = dragon->GetHealthPct();
+                            uint32 targetHealth = creature->GetMaxHealth() * (dragonHealthPct / 100.0f);
+                            uint32 currentHealth = creature->GetHealth();
+                            uint32 damageNeeded = currentHealth - targetHealth;
+
+                            if (damageNeeded > 0)
+                            {
+                                // Find nearest player
+                                if (Player* player = creature->SelectNearestPlayer(300.0f))
+                                {
+                                    // Have the player deal the damage to establish loot eligibility
+                                    player->DealDamage(player, creature, damageNeeded);
+                                }
+                                else
+                                {
+                                    // Fallback: just set health directly if no player found
+                                    creature->SetHealth(targetHealth);
+                                }
+                            }
+                        }
                     }
                 }
             }

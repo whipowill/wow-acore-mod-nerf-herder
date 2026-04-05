@@ -1,6 +1,6 @@
 # Dungeon & Raid Nerfs
 
-This is about solving bosses that I can't defeat due to playing solo, or due to having a team of imbecile robots who don't know when it's time to duck and cover.  It's my way of removing the advanced mechanics so I can progress.
+This is about solving bosses that I can't defeat due to playing solo, or due to having a team of imbecile robots who don't know when it's time to duck and cover.  It's my way of removing advanced mechanics so I can progress.
 
 I'm playing w/ [AutoBalance](https://github.com/azerothcore/mod-AutoBalance), [NPCBots](https://github.com/trickerer/AzerothCore-wotlk-with-NPCBots), and [Vanilla Naxx](https://github.com/sogladev/mod-vanilla-naxxramas) mods.  While AutoBalance does 90% of the work in scaling enemy mobs, there are mechanical issues not addressed by AutoBalance.
 
@@ -8,8 +8,8 @@ I've been working my way thru the game tuning raid bosses as I go.  The goal is 
 
 **This is a work in progress and reflects the content I've been working thru on my own server.**
 
-- Vanilla - 99% complete
-- TBC - 80% complete (only Illidan, Zul'Aman, and Sunwell Plateau left)
+- Vanilla - 100% complete
+- TBC - 90% complete (only Zul'Aman left untuned)
 - WOTLK - 0% complete
 
 ## Vanilla
@@ -134,7 +134,7 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 - Al'ar
     - Ember of Al'ar (adds) removed
     - Flame Quills reduced 100%
-    - Bleeds down to 50% health (annoying encounter)
+    - Bleeds down to 50% health
 
 - Void Reaver
     - Saw Blade reduced 50% (from Crystalcore Mechanic adds)
@@ -199,11 +199,31 @@ This raid/quest is [bugged](https://github.com/chromiecraft/chromiecraft/issues/
 
 ### Zul'Aman
 
-- TO DO
+- Trash Mobs
+    - Protective Ward removed
 
 ### Sunwell Plateau
 
-- TO DO
+- Kalecgos (Sathrovarr the Corruptor)
+    - Players no longer enter Spectral Realm
+    - Kalec does not take nor deal damage (cannot die)
+    - Sathrovarr the Corruptor's health will match Kalecgos at all times
+    - Crazed Rage removed
+
+- Brutallus
+    - Burn removed
+    - Meteor Slash removed
+    - Physical damage reduced 10%
+    - Enrage removed
+
+- Felmyst
+    - Air Phase neutralized (bots unable to cope)
+        - Demonic Vapor removed
+        - Unyeilding Dead removed
+    - She bleeds slightly
+
+- Volatile Feind (trash)
+    - Removed
 
 ### World Bosses
 
